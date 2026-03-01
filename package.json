@@ -1,0 +1,9 @@
+{
+  "name": "suwamed",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "mobile": "cd suwamed-mobile && npx expo start --web --port 8081",
+    "backend": "cd suwamed-backend && npx nodemon --exec ts-node server.ts"
+  }
+}
