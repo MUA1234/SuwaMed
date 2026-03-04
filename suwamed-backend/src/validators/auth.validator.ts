@@ -17,6 +17,32 @@ export const registerSchema = Joi.object({
   dateOfBirth: Joi.date().optional(),
   gender: Joi.string().valid('male', 'female', 'other').optional(),
   district: Joi.string().optional(),
+  // Doctor-specific fields
+  slmcRegistrationNo: Joi.when('role', {
+    is: 'doctor',
+    then: Joi.string().required().messages({
+      'any.required': 'SLMC Registration Number is required for doctors',
+    }),
+    otherwise: Joi.string().optional(),
+  }),
+  specialization: Joi.when('role', {
+    is: 'doctor',
+    then: Joi.array().items(Joi.string()).min(1).required().messages({
+      'array.min': 'At least one specialization is required',
+      'any.required': 'Specialization is required for doctors',
+    }),
+    otherwise: Joi.array().items(Joi.string()).optional(),
+  }),
+  consultationFee: Joi.when('role', {
+    is: 'doctor',
+    then: Joi.number().min(0).required().messages({
+      'any.required': 'Consultation fee is required for doctors',
+    }),
+    otherwise: Joi.number().optional(),
+  }),
+  experience: Joi.number().optional(),
+  bio: Joi.string().max(500).optional(),
+  languages: Joi.array().items(Joi.string().valid('en', 'si', 'ta')).optional(),
 });
 
 export const loginSchema = Joi.object({

@@ -1,4 +1,9 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
+
+// Use Google DNS to resolve MongoDB Atlas SRV records
+// (fixes ECONNREFUSED on mobile hotspot / restrictive networks)
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 
 const connectDB = async (): Promise<void> => {
   try {

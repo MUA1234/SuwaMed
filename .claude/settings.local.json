@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs wc:*)",
+      "Bash(npx tsc:*)",
+      "Bash(test:*)",
+      "Bash(printf %s\\\\n:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(mongosh:*)",
+      "Bash(where:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(grep:*)"
+    ]
+  }
+}

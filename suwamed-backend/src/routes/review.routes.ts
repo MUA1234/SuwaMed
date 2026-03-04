@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { protect } from '../middleware/auth.middleware';
+import { createReview, getMyReviews } from '../controllers/review.controller';
 
 const router = Router();
 
-router.get('/', (_req, res) => {
-  res.json({ success: true, message: 'Review routes' });
-});
+router.post('/', protect, createReview);
+router.get('/my', protect, getMyReviews);
 
 export default router;

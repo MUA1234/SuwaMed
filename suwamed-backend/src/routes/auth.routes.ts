@@ -9,6 +9,7 @@ import {
   refreshToken,
   logout,
   getMe,
+  changePassword,
 } from '../controllers/auth.controller';
 import { protect } from '../middleware/auth.middleware';
 import { authLimiter } from '../middleware/rateLimiter.middleware';
@@ -24,5 +25,6 @@ router.post('/reset-password', resetPassword);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', protect, logout);
 router.get('/me', protect, getMe);
+router.put('/change-password', protect, changePassword);
 
 export default router;

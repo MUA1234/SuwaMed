@@ -1,0 +1,964 @@
+Name: Nawarathne Adikaram 
+
+Student Reference Number: 10953507 
+
+Module Code: PUSL3190 
+
+Module Name:   Computing Project 
+
+Coursework Title: PID 
+Deadline Date: 16th January 2026, 
+4.00 pm Sri Lankan Time. 
+
+Member of staff responsible for coursework:  
+Mr. Anton Jayakody 
+
+Programme: BSc. (Hons) in Computer Science Plymouth 
+
+Please note that University Academic Regulations are available under Rules and Regulations on the 
+University website www.plymouth.ac.uk/studenthandbook. 
+
+Group work: please list all names of all participants formally associated with this work and state whether the work 
+was undertaken alone or as part of a team.  Please note you may be required to identify individual responsibility for 
+component parts. 
+
+We confirm that we have read and understood the Plymouth University regulations relating to 
+Assessment Offences and that we are aware of the possible penalties for any breach of these 
+regulations.  We confirm that this is the independent work of the group. 
+
+Signed on behalf of the group: 
+
+Individual assignment: I confirm that I have read and understood the Plymouth University regulations relating to 
+Assessment Offences and that I am aware of the possible penalties for any breach of these regulations.  I confirm 
+that this is my own independent work. 
+
+Signed :        
+
+Use of translation software: failure to declare that translation software or a similar writing aid has been used will be 
+treated as an assessment offence. 
+
+I *have used/not used translation software. 
+
+If used, please state name of software………………………………………………………………… 
+
+Overall mark _____%          Assessors Initials ______      Date_________ 
+
+ 
+ 
+                                        
+   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+PUSL3190 Computing Project 
+
+Project Initiation Document 
+
+SuwaMed: A Comprehensive Telehealth Platform 
+
+Bridging the Rural-Urban Healthcare Divide in Sri Lanka 
+
+Supervisor: Mr. Anton Jayakody 
+
+Name: Nawarathne Adikaram 
+
+Plymouth Index Number: 10953507 
+
+Degree Program: BSc (Hons) Computer Science 
+
+January 2026 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Table of Contents 
+Chapter 01 – Introduction ............................................................................................................................. 5 
+
+1.1 Background and Context .................................................................................................................... 5 
+
+1.2 Problem Statement .............................................................................................................................. 5 
+
+1.3 Scope and Limitations ........................................................................................................................ 5 
+
+1.4 Expected Impact and Stakeholders ..................................................................................................... 6 
+
+Chapter 02 – Business Case .......................................................................................................................... 7 
+
+2.1 Business Need..................................................................................................................................... 7 
+
+2.2 Business Objectives ............................................................................................................................ 7 
+
+2.3 Financial Overview ............................................................................................................................. 7 
+
+Chapter 03 – Project Objectives.................................................................................................................... 9 
+
+3.1 Functional Deliverables ...................................................................................................................... 9 
+
+3.2 Quality Criteria and Success Metrics ................................................................................................. 9 
+
+Chapter 04 – Literature Review .................................................................................................................. 11 
+
+4.1 Existing Solutions Analysis .............................................................................................................. 11 
+
+4.2 Identified Research Gaps .................................................................................................................. 11 
+
+4.3 How SuwaMed Addresses These Gaps ............................................................................................ 12 
+
+Chapter 05 – Method of Approach ............................................................................................................. 13 
+
+5.1 Research Design ............................................................................................................................... 13 
+
+5.2 Technology Stack ............................................................................................................................. 13 
+
+5.3 Development Methodology .............................................................................................................. 13 
+
+5.4 Special Knowledge Requirements .................................................................................................... 14 
+
+5.5 Data Collection and Validation ........................................................................................................ 14 
+
+Chapter 06 – Conceptual Diagram .............................................................................................................. 15 
+
+6.1 System Architecture Overview ......................................................................................................... 15 
+
+6.2 Data Flow Description ...................................................................................................................... 15 
+
+Chapter 07 – Initial Project Plan ................................................................................................................. 17 
+
+7.1 Project Timeline ............................................................................................................................... 17 
+
+7.2 Project Phases and Milestones .......................................................................................................... 17 
+
+7.3 Key Milestones ................................................................................................................................. 17 
+
+Chapter 08 – Risk Analysis ......................................................................................................................... 18 
+
+8.1 Technical Risks................................................................................................................................. 18 
+
+8.2 Project Management Risks ............................................................................................................... 18 
+
+8.3 External Risks ................................................................................................................................... 18 
+
+References ................................................................................................................................................... 19 
+
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 01 – Introduction 
+
+1.1 Background and Context 
+
+In Sri Lanka, the quality of health care varies considerably between urban and rural areas. Rural 
+populations lack adequate health care infrastructure, qualified medical professionals, and reliable 
+transportation  to  urban  hospitals.  This  creates  a  serious  health  care  gap  where  rural  residents 
+experience delayed diagnosis, inadequate treatment, and increased health risks. 
+
+Digital technology and mobile connectivity have created opportunities to democratize health care 
+access. While mobile phone penetration extends even to rural areas of Sri Lanka, the healthcare 
+sector  has  not  taken  full  advantage  of  this  infrastructure  to  address  the  urban-rural  healthcare 
+divide.  Research  indicates  that  properly  designed  telemedicine  systems  can  provide  rural 
+populations equitable access to health care resources without the need for physical travel. 
+
+Current health care models rely heavily on physical presence, creating substantial barriers. 
+Patients must take time off work, arrange transportation, and incur significant expenses for basic 
+consultations. Meanwhile, qualified doctors remain concentrated in urban areas, with their 
+expertise underutilized by rural populations. The COVID-19 pandemic further highlighted these 
+disparities, demonstrating the urgent need for remote health care solutions. 
+
+1.2 Problem Statement 
+
+When individuals experience clinical symptoms, they often lack immediate access to professional 
+medical  advice, leading  to  unreliable self-diagnosis or delayed consultation. The cost  and time 
+required  to  travel  to  urban  health  facilities  pose  considerable  barriers,  particularly  for  elderly 
+patients, people with mobility problems, or families with limited resources. 
+
+While telemedicine has emerged globally, existing platforms fail to meet the specific needs of 
+Sri Lankan rural communities. Many international telehealth applications require high-speed 
+Internet, require digital literacy, and lack local language support. These platforms rarely integrate 
+culturally appropriate interfaces or account for the unique health care ecosystem in Sri Lanka, 
+including local payment systems, endemic diseases such as dengue, and doctor-patient 
+communication styles. 
+
+1.3 Scope and Limitations 
+
+Features Included: 
+
+•  Dual-platform application (Flutter Mobile and React Web) 
+
+•  AI symptom checker supporting Sinhala, Tamil, and English 
+
+•  Secure video and text consultation optimized for low bandwidth (2G/3G) 
+
+•  Appointment scheduling system for patients and doctors 
+
+•  Encrypted electronic health records with document upload 
+
+Page 5 
+
+SuwaMed - Project Initiation Document 
+
+•  Multi-tier membership system with local payment integration (LankaQR, iPay) 
+
+•  Doctor profiles with specialization, availability, and fee management 
+
+•  Patient and doctor dashboards with history tracking 
+
+•  Rating and review system for quality assurance 
+
+•  Push notifications, in-app chat, and digital prescription generation 
+
+Features Excluded: 
+
+•  Hospital Management System Integration 
+
+•  Laboratory test ordering and medical imaging viewing 
+
+•  Wearable device integration 
+
+• 
+
+Insurance claim processing 
+
+•  Offline consultation mode 
+
+•  AI-powered diagnostics (only initial assessment provided) 
+
+1.4 Expected Impact and Stakeholders 
+
+Major Effects of the Current Problem: 
+
+•  Delayed diagnosis and treatment leading to poor health outcomes 
+
+•  High costs associated with travel to urban health facilities 
+
+•  Limited access to specialist advice for chronic conditions 
+
+•  Lack of health information and reliance on unreliable self-diagnosis 
+
+•  Underutilization of qualified doctors who could serve larger populations remotely 
+
+Expected Outcomes: 
+
+•  Fully functional mobile apps (iOS/Android) and responsive web application 
+
+•  AI symptom checker operational in three languages 
+
+•  Secure infrastructure supporting 50+ concurrent consultations 
+
+•  Encrypted medical records compliant with data security standards 
+
+•  Sustainable subscription-based revenue model 
+
+•  25+ registered doctors and 250+ patients are targeted in the pilot phase 
+
+•  Platform optimized for 2G/3G connections with 99.5% uptime during business hours 
+
+Page 6 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 02 – Business Case 
+
+2.1 Business Need 
+
+The lack of a comprehensive, locally focused telehealth platform means that rural communities 
+in Sri Lanka suffer from preventable health complications and limited access to timely medical 
+intervention. The project addresses the critical health care access challenges faced by millions of 
+Sri Lankans. 
+
+Key Business Drivers: 
+
+•  Rural populations face 2-4 hour travel times for basic medical consultations 
+
+•  Average consultation cost including travel expenses exceeds LKR 2,000 per visit 
+
+•  Existing international platforms (oDoc, Practo, WebMD) do not address local language 
+
+needs or low-bandwidth environments 
+
+•  Over 65% of Sri Lanka’s population resides outside major urban centers with limited 
+
+healthcare access 
+
+•  Post-pandemic awareness has increased demand for remote healthcare solutions 
+
+2.2 Business Objectives 
+
+1.  Reduce average patient travel time for consultations from 2-4 hours to under 15 minutes 
+
+through remote access 
+
+2.  Achieve platform accessibility for users on 2G/3G networks while maintaining video 
+
+quality at minimum 360p 
+
+3.  Enable doctors to expand their practice beyond geographical boundaries, increasing 
+
+patient reach by 300% 
+
+4.  Establish a sustainable subscription-based revenue model with tiered pricing for different 
+
+user segments 
+
+5.  Integrate local payment gateways (LankaQR, iPay, card payments) achieving 95% 
+
+transaction success rate 
+
+6.  Build user trust through verified doctor credentials and patient rating system achieving 
+
+minimum 4.0 average rating 
+
+2.3 Financial Overview 
+
+The estimated project development cost is LKR 175,000, with potential optimization up to LKR 
+75,000 through the use of cost-effective cloud providers. The subscription-based model ensures 
+long-term sustainability while maintaining affordability for the rural population. 
+
+Item Description 
+
+Firebase Services (5 months) 
+
+Cost (LKR) 
+
+45,000 
+
+Page 7 
+
+Video Consultation API (Agora.io) 
+
+Payment Gateway Integration 
+
+UI/UX Design Tools (Figma - 5 months) 
+
+Cloud Hosting (AWS/Google Cloud) 
+
+SSL Certificates and Domain 
+
+Testing Devices (Android) 
+
+AI/ML Training Resources 
+
+Developer Tools and Plugins 
+
+Documentation Tools 
+
+Total Estimated Cost 
+
+SuwaMed - Project Initiation Document 
+
+30,000 
+
+15,000 
+
+8,000 
+
+25,000 
+
+5,000 
+
+20,000 
+
+15,000 
+
+7,000 
+
+5,000 
+
+175,000 
+
+Page 8 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 03 – Project Objectives 
+
+3.1 Functional Deliverables 
+
+Objective 1: Develop a Cross-Platform Telehealth Application 
+
+Build a mobile application for iOS and Android using Flutter, and a web application using React 
+with a Firebase backend for real-time data synchronization, authentication, and cloud storage. 
+The system will support responsive design across all device types. 
+
+Objective 2: Implement AI-Powered Symptom Checker 
+
+Develop  an  intelligent  symptom  assessment  system  with  structured  questionnaires  in  Sinhala, 
+Tamil  and  English.  The  system  will  provide  initial  health  assessments  and  suggest  when 
+professional  consultation  is  needed,  trained  on  Sri  Lankan  disease  patterns  including  endemic 
+conditions like dengue. 
+
+Objective 3: Integrate Secure Video and Chat Consultation 
+
+Implement end-to-end encrypted video conferencing and messaging using WebRTC/Agora.io, 
+optimized for low-bandwidth connections (2G/3G). Enable real-time doctor-patient consultation 
+with digital prescription capabilities. 
+
+Objective 4: Create Comprehensive Appointment Management 
+
+Develop a two-way platform that allows patients to find and book consultations based on 
+expertise, language, ratings and fees, while enabling doctors to manage calendars, schedule 
+availability and set consultation fees. 
+
+Objective 5: Develop Secure Electronic Health Record Storage 
+
+Implement AES-256 encrypted health record storage with role-based access controls. Patients 
+can maintain health history and upload documents, while doctors can access relevant information 
+during consultation. 
+
+Objective 6: Create Subscription-Based Payment System 
+
+Integrate  local  payment  gateways  (LankaQR,  iPay,  card  payments)  supporting  different 
+subscription tiers with automated billing. The system will include income dashboards for doctors 
+with payment tracking. 
+
+3.2 Quality Criteria and Success Metrics 
+
+•  Support for 50+ concurrent video consultations 
+
+•  Response time less than 2 seconds for all operations 
+
+•  Video quality maintained at 360p minimum on 2G/3G networks 
+
+•  End-to-end encryption for all consultations 
+
+•  AES-256 encryption for stored health records 
+
+Page 9 
+
+SuwaMed - Project Initiation Document 
+
+•  Role-based access control implementation 
+
+•  99.5% system uptime during business hours 
+
+•  Android 7.0+ and iOS 12+ compatibility 
+
+•  Web compatibility with all modern browsers 
+
+•  Optimization for devices with minimum 2GB RAM 
+
+Page 10 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 04 – Literature Review 
+
+4.1 Existing Solutions Analysis 
+
+oDoc (Sri Lanka) 
+
+Sri Lanka’s leading telehealth platform offers video consultations and home healthcare. However, 
+it  primarily  targets  urban  populations  with  reliable  internet  access.  It  lacks  an  integrated  AI 
+symptom checker, has limited language support, and requires high bandwidth. Its cost structure 
+may be prohibitive for rural populations. 
+
+WebMD Symptom Checker 
+
+Provides comprehensive symptom screening but  is designed for Western healthcare  systems.  It 
+lacks localization for Sri Lankan endemic diseases, has no local language support, and does not 
+connect users to local doctors or integrate with local healthcare providers. 
+
+Practo (India) 
+
+Offers comprehensive healthcare services but faces integration challenges with Sri Lankan medical 
+systems, payment gateways, and regulations. It is optimized for the Indian urban environment and 
+does not address rural bandwidth challenges specific to Sri Lanka. 
+
+Doctor on Call (Sri Lanka) 
+
+Provides telephone consultation but lacks video capabilities, symptom assessment tools, and 
+digital health record management, limiting its effectiveness for comprehensive health care 
+delivery. 
+
+4.2 Identified Research Gaps 
+
+Knowledge Gap 
+
+Limited research exists on integrated telehealth platforms combining AI symptom assessment, 
+video consultation and health records specifically for Sri Lankan rural communities. Most 
+research focuses on components independently rather than integrated, culturally appropriate 
+systems. 
+
+Technological Gap 
+
+Current solutions do not adequately address Sri Lankan rural technological challenges: 
+intermittent electricity, low bandwidth connections (2G/3G), and limited smartphone 
+capabilities. There is a significant gap in developing applications that provide quality 
+consultation over 2G while maintaining security and user experience. 
+
+Methodological Gap 
+
+Existing symptom checkers use rule-based algorithms from Western medical databases without 
+machine learning adapted to local disease patterns and spatial conditions. Current platforms lack 
+
+Page 11 
+
+SuwaMed - Project Initiation Document 
+
+mechanisms for continuous improvement through local medical data and do not account for Sri 
+Lankan doctor-patient communication styles. 
+
+Contextual Gap 
+
+International platforms are not designed with Sri Lankan regulatory requirements, payment 
+systems or cultural expectations in mind. They do not integrate local payment gateways, lack 
+Sinhala/Tamil support, and do not focus on the trust-building needed in communities where face-
+to-face health care has been the norm. 
+
+4.3 How SuwaMed Addresses These Gaps 
+
+SuwaMed provides a local-centric ecosystem addressing the identified gaps. Unlike oDoc’s urban 
+approach,  SuwaMed  optimizes  for  low-bandwidth  through  adaptive  video  quality  and  2G/3G 
+compatibility. It offers full multilingual support with culturally appropriate medical terminology 
+in Sinhala, Tamil, and English. 
+
+Unlike  WebMD,  SuvaMed's  AI  will  train  on  Sri  Lankan  disease  patterns,  including  endemic 
+conditions like dengue. The Symptom Checker connects seamlessly to the doctor's consultation, 
+creating an integrated health care journey rather than separate assessments. 
+
+Key  innovations  include:  integrated  ecosystem  combining  symptom  screening,  counseling  and 
+health  records;  Dual  platform  access  (mobile  and  web);  Affordable  subscription  model;  low-
+bandwidth optimization; encrypted health records; and local payment integration. For doctors, it 
+enables  practice  expansion  beyond  geographical  boundaries  with  flexible  scheduling,  patient 
+management, and earnings analysis. 
+
+Page 12 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 05 – Method of Approach 
+
+5.1 Research Design 
+
+The project follows a prototype development approach with iterative refinements based on user 
+feedback. The development methodology combines agile principles with structured milestone 
+delivery to ensure orderly progress while maintaining flexibility for improvement. 
+
+5.2 Technology Stack 
+
+Development Tools: 
+
+•  Flutter SDK for cross-platform mobile development (iOS/Android) 
+
+•  React.js for web application frontend 
+
+•  Firebase Console for backend services 
+
+•  Android Studio and Xcode for mobile development 
+
+•  Visual Studio Code as primary IDE 
+
+•  UI/UX design with Figma 
+
+•  version control with Git/GitHub 
+
+•  API testing with Postman 
+
+APIs and Services: 
+
+•  Firebase Authentication for user management 
+
+•  Cloud Firestore for real-time database 
+
+•  Firebase Cloud Storage for file storage 
+
+•  WebRTC/Agora.io for video consultation 
+
+•  PayHere/iPay for payment processing 
+
+•  Firebase Cloud Messaging for notifications 
+
+Programming Languages: 
+
+•  Dart for Flutter mobile development 
+
+• 
+
+JavaScript/TypeScript for React web development 
+
+•  Python for AI/ML symptom checker development 
+
+•  SQL for database queries 
+
+5.3 Development Methodology 
+
+The project employs an agile development methodology with two-week sprints, allowing 
+iterative development and continuous improvement based on feedback from pilot users and 
+stakeholders. 
+
+Page 13 
+
+SuwaMed - Project Initiation Document 
+
+Sprint Structure: 
+
+1.  Requirements Refinement and Sprint Planning 
+
+2.  development and implementation 
+
+3.  Testing and quality assurance 
+
+4.  Sprint review and retrospective 
+
+5.4 Special Knowledge Requirements 
+
+•  Cross-platform mobile development expertise 
+
+•  Firebase architecture and real-time database design 
+
+•  WebRTC protocols for video communication 
+
+•  Payment gateway integration with local providers 
+
+•  Machine learning for symptom assessment 
+
+•  Healthcare Data Privacy and Security Standards 
+
+•  UI/UX Design for Health Care Applications 
+
+•  Low-bandwidth optimization techniques 
+
+•  Medical terminology in Sinhala, Tamil and English 
+
+5.5 Data Collection and Validation 
+
+Partnerships are being established with local healthcare providers and private practice doctors in 
+Colombo and Gampaha districts for validation and pilot testing. Selected rural community centers 
+in  Kurunegala  and  Anuradhapura  will  serve  as  test  sites  for  low-bandwidth  performance 
+evaluation. 
+
+Technical  integration  support  is  being  sought  from  payment  gateway  providers  (PayHere  and 
+iPay). Medical advisory input will be obtained from qualified healthcare professionals to validate 
+the symptom checker algorithms. User experience testing will include focus groups with urban 
+and  rural  users  representing  different  demographics,  digital  literacy  levels,  and  language 
+preferences. 
+
+Page 14 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 06 – Conceptual Diagram 
+
+6.1 System Architecture Overview 
+
+The SuvaMed platform follows a three-tier architecture that includes the presentation layer 
+(mobile and web applications), application layer (Firebase services and APIs), and data layer 
+(Cloud Firestore and Firebase Storage). 
+
+High-Level Architecture Components: 
+
+PRESENTATION LAYER 
+Flutter Mobile App (iOS/Android) | React Web Application 
+
+↓ 
+
+APPLICATION LAYER 
+Firebase Auth | AI Symptom Checker | Video API (Agora.io) | Payment Gateway 
+
+↓ 
+
+DATA LAYER 
+Cloud Firestore | Firebase Storage | Encrypted Health Records 
+
+6.2 Data Flow Description 
+
+Patient Flow: 
+
+7.  User registers/logs in via mobile or web application 
+
+8.  Completes AI symptom checker questionnaire in preferred language 
+
+9.  Receives initial assessment and doctor recommendations 
+
+10. Searches and selects doctor based on expertise, rating, and availability 
+
+11. Books appointment and completes payment through local gateway 
+
+12. Conducts video/chat consultation with doctor 
+
+13. Receives digital prescription and follow-up notifications 
+
+Doctor Flow: 
+
+14. Registers with credential verification 
+
+15. Sets up profile, expertise areas, and consultation fees 
+
+16. Manages availability calendar 
+
+Page 15 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+17. Receives appointment notifications 
+
+18. Accesses patient history and symptom checker results 
+
+19. Conducts consultation and writes digital prescriptions 
+
+20. Tracks earnings through income dashboard 
+
+Page 16 
+
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 07 – Initial Project Plan 
+
+7.1 Project Timeline 
+
+The SuwaMed project will be completed in five months (20 weeks) following a structured timeline 
+to ensure systematic progress in research, design, development, testing, and documentation. The 
+timeline allocates sufficient time to learn new technologies, implement complex features, conduct 
+thorough testing, and prepare comprehensive documentation. 
+
+7.2 Project Phases and Milestones 
+
+Phase 
+
+Duration 
+
+Key Deliverables 
+
+Research & Planning 
+
+Weeks 1-4 
+
+Requirements analysis, literature review, system 
+design 
+
+Design 
+
+Weeks 3-6 
+
+UI/UX design, database schema, API specification 
+
+Development Setup 
+
+Weeks 5-6 
+
+Environment setup, Firebase configuration, project 
+scaffolding 
+
+Core Development 
+
+Weeks 6-12 
+
+Authentication, symptom checker, user dashboards 
+
+Communication Features  Weeks 10-14 
+
+Video consultation, chat, notifications 
+
+Health Records 
+
+Weeks 12-16 
+
+Testing 
+
+Weeks 14-18 
+
+EHR system, prescription generation, payment 
+integration 
+
+Unit testing, integration testing, UAT, performance 
+testing 
+
+Documentation 
+
+Weeks 18-20 
+
+Technical documentation, user manuals, final report 
+
+7.3 Key Milestones 
+
+•  Week 4: Requirements analysis completion 
+
+•  Week 6: UI/UX design finalization 
+
+•  Week 12: MVP (Minimum Viable Product) development 
+
+•  Week 16: Testing phase completion 
+
+•  Week 20: Final documentation and project submission 
+
+Page 17 
+
+ 
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+Chapter 08 – Risk Analysis 
+
+8.1 Technical Risks 
+
+Risk 
+
+Likelihood  Impact  Mitigation Strategy 
+
+Video quality issues on 
+2G/3G 
+
+High 
+
+High 
+
+Implement adaptive bitrate streaming; fallback to audio-
+only mode 
+
+Firebase service 
+limitations 
+
+AI symptom checker 
+accuracy 
+
+Payment gateway 
+integration failures 
+
+Cross-platform 
+compatibility issues 
+
+Medium  Medium  Design for scalability; implement caching; plan for 
+
+alternative backends 
+
+Medium 
+
+High 
+
+Extensive testing with medical professionals; clear 
+disclaimers; continuous improvement 
+
+Medium 
+
+High  Multiple gateway support; offline payment verification; 
+
+transaction retry logic 
+
+Medium  Medium  Comprehensive testing on multiple devices; responsive 
+
+design principles 
+
+8.2 Project Management Risks 
+
+Risk 
+
+Likelihood  Impact  Mitigation Strategy 
+
+Schedule delays 
+
+Medium 
+
+High 
+
+Buffer time in schedule; prioritize MVP features; 
+regular progress reviews 
+
+Learning curve for new 
+technologies 
+
+Scope creep 
+
+Pilot user recruitment 
+
+High 
+
+Medium  Early technology exploration; online courses; prototype 
+
+development 
+
+Medium  Medium  Clear scope definition; change control process; 
+
+stakeholder communication 
+
+Medium  Medium  Early engagement with healthcare providers; incentive 
+
+programs 
+
+8.3 External Risks 
+
+•  Regulatory changes in healthcare data privacy: Monitor policy developments; design for 
+
+compliance flexibility 
+
+•  Payment gateway policy changes: Maintain relationships with multiple providers; 
+
+implement abstraction layer 
+
+• 
+
+Internet infrastructure limitations: Design for graceful degradation; implement offline-
+capable features where possible 
+
+Page 18 
+
+ 
+ 
+ 
+ 
+SuwaMed - Project Initiation Document 
+
+References 
+
+Agora.io (2024) Real-Time Engagement Platform Documentation. Available at: 
+https://docs.agora.io/ (Accessed: December 2024). 
+
+Firebase (2024) Firebase Documentation. Google. Available at: https://firebase.google.com/docs 
+(Accessed: December 2024). 
+
+Flutter (2024) Flutter Documentation. Google. Available at: https://flutter.dev/docs (Accessed: 
+December 2024). 
+
+Ministry of Health Sri Lanka (2023) Annual Health Bulletin. Colombo: Ministry of Health. 
+
+oDoc (2024) oDoc Healthcare Platform. Available at: https://odoc.life/ (Accessed: December 
+2024). 
+
+PayHere (2024) PayHere Payment Gateway Documentation. Available at: 
+https://payhere.lk/docs (Accessed: December 2024). 
+
+Practo (2024) Practo Healthcare Platform. Available at: https://www.practo.com/ (Accessed: 
+December 2024). 
+
+React (2024) React Documentation. Meta. Available at: https://react.dev/ (Accessed: December 
+2024). 
+
+WebMD (2024) WebMD Symptom Checker. Available at: https://www.webmd.com/symptom-
+checker (Accessed: December 2024). 
+
+World Health Organization (2022) WHO guideline: recommendations on digital interventions 
+for health system strengthening. Geneva: World Health Organization. 
+
+Page 19 
+
+

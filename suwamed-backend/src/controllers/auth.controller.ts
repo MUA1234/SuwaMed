@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcryptjs';
 import { AuthService } from '../services/auth.service';
 import {
   registerSchema,
@@ -98,6 +99,17 @@ export const resendOTP = async (req: Request, res: Response, next: NextFunction)
       throw new AppError('User not found', 404);
     }
 
+    // Generate new OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    // Log OTP to console for development
+    console.log(`\n========================================`);
+    console.log(`  📱 Resent OTP for ${phone}: ${otp}`);
+    console.log(`========================================\n`);
+
     res.status(200).json({
       success: true,
       message: 'OTP resent successfully',
@@ -192,6 +204,33 @@ export const logout = async (req: Request, res: Response, next: NextFunction): P
       message: 'Logout successful',
       data: result,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as any).user!.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      throw new AppError('currentPassword and newPassword are required', 400);
+    }
+    if (newPassword.length < 8) {
+      throw new AppError('New password must be at least 8 characters', 400);
+    }
+
+    const user = await User.findById(userId).select('+password');
+    if (!user) throw new AppError('User not found', 404);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) throw new AppError('Current password is incorrect', 401);
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({ success: true, message: 'Password changed successfully' });
   } catch (error) {
     next(error);
   }

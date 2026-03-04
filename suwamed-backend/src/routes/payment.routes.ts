@@ -1,9 +1,10 @@
 import { Router } from 'express';
+import { protect } from '../middleware/auth.middleware';
+import { getHistory, requestWithdrawal } from '../controllers/payment.controller';
 
 const router = Router();
 
-router.get('/', (_req, res) => {
-  res.json({ success: true, message: 'Payment routes' });
-});
+router.get('/history', protect, getHistory);
+router.post('/withdraw', protect, requestWithdrawal);
 
 export default router;

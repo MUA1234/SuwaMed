@@ -28,6 +28,8 @@ export interface IUser extends Document {
   fcmTokens: string[];
   lastLogin?: Date;
   refreshToken?: string;
+  otp?: string;
+  otpExpiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -98,6 +100,8 @@ const userSchema = new Schema<IUser>(
     fcmTokens: [{ type: String }],
     lastLogin: { type: Date },
     refreshToken: { type: String },
+    otp: { type: String, select: false },
+    otpExpiresAt: { type: Date, select: false },
   },
   { timestamps: true }
 );
