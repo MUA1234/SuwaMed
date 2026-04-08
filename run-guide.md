@@ -35,3 +35,21 @@ Backend (from suwamed-backend/):
 
   The simplest path is option 2 — just use npx expo start (no tunnel) and make sure both devices are on the 
   same network.
+
+
+
+  1. Always activate the venv first before using notebooklm. Every new terminal session:
+bashC:\Users\malit\.notebooklm-venv\Scripts\Activate.ps1
+
+2. Make it less annoying — add a PowerShell function to your profile. Run this once:
+bashnotepad $PROFILE
+If it asks to create the file, say yes. Paste this in and save:
+powershellfunction nblm {
+    & C:\Users\malit\.notebooklm-venv\Scripts\Activate.ps1
+    python -m notebooklm @args
+}
+Now from any terminal, any directory, you can just run:
+bashnblm list
+nblm ask "what's in my sources"
+nblm create "Travion Research"
+It auto-activates the venv and passes args through. Much cleaner.
