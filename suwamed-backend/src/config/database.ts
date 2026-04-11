@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dns from 'dns';
+import logger from '../utils/logger';
 
 // Use Google DNS to resolve MongoDB Atlas SRV records
 // (fixes ECONNREFUSED on mobile hotspot / restrictive networks)
@@ -10,10 +11,10 @@ const connectDB = async (): Promise<void> => {
     const conn = await mongoose.connect(process.env.MONGODB_URI as string, {
       serverSelectionTimeoutMS: 10000,
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    logger.info(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error: any) {
-    console.error(`MongoDB connection failed: ${error.message}`);
-    console.error('Server will start without database connection. Retrying in 30 seconds...');
+    logger.error(`MongoDB connection failed: ${error.message}`);
+    logger.error('Server will start without database connection. Retrying in 30 seconds...');
     setTimeout(connectDB, 30000);
   }
 };

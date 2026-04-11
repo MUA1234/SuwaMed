@@ -53,3 +53,5 @@ bashnblm list
 nblm ask "what's in my sources"
 nblm create "Travion Research"
 It auto-activates the venv and passes args through. Much cleaner.
+
+python -m notebooklm login

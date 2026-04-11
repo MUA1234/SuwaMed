@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import { AuthService } from '../services/auth.service';
+import logger from '../utils/logger';
 import {
   registerSchema,
   loginSchema,
@@ -105,10 +106,10 @@ export const resendOTP = async (req: Request, res: Response, next: NextFunction)
     user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
-    // Log OTP to console for development
-    console.log(`\n========================================`);
-    console.log(`  📱 Resent OTP for ${phone}: ${otp}`);
-    console.log(`========================================\n`);
+    // In production, send OTP via SMS. In dev, log for debugging.
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(`Resent OTP for ${phone}: ${otp}`);
+    }
 
     res.status(200).json({
       success: true,

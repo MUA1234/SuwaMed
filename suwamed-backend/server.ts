@@ -12,7 +12,14 @@ import logger from './src/utils/logger';
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['*'];
+
+app.use(cors({
+  origin: allowedOrigins.includes('*') ? true : allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -22,6 +29,11 @@ app.use((req, _res, next) => {
 });
 
 app.use('/api', routes);
+
+// 404 handler for unknown routes
+app.use((_req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
 
 app.use(errorHandler);
 

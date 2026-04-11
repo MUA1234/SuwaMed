@@ -523,3 +523,173 @@
 2026-04-06 19:03:10 [INFO]: GET /api/admin/dashboard
 2026-04-06 19:03:11 [INFO]: GET /api/admin/dashboard
 2026-04-06 21:33:44 [INFO]: Server running on port 5000
+2026-04-09 14:31:52 [INFO]: Server running on port 5000
+2026-04-09 14:44:43 [INFO]: GET /api/admin/dashboard
+2026-04-09 14:44:43 [INFO]: POST /api/auth/refresh-token
+2026-04-09 14:44:43 [INFO]: GET /api/admin/dashboard
+2026-04-09 14:44:46 [INFO]: GET /api/admin/users
+2026-04-09 14:44:48 [INFO]: GET /api/admin/dashboard
+2026-04-09 14:44:48 [INFO]: GET /api/admin/appointment-analytics
+2026-04-09 15:01:02 [INFO]: Server running on port 5000
+2026-04-09 15:01:46 [INFO]: Server running on port 5000
+2026-04-09 19:04:05 [INFO]: Server running on port 5000
+2026-04-09 20:30:08 [INFO]: Server running on port 5000
+2026-04-09 20:35:40 [INFO]: POST /api/auth/login
+2026-04-09 20:35:41 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:35:44 [INFO]: GET /api/admin/users
+2026-04-09 20:35:48 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:35:48 [INFO]: GET /api/admin/appointment-analytics
+2026-04-09 20:35:57 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:35:57 [INFO]: GET /api/admin/appointment-analytics
+2026-04-09 20:35:59 [INFO]: GET /api/admin/users
+2026-04-09 20:35:59 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:36:02 [INFO]: GET /api/admin/users
+2026-04-09 20:36:03 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:36:03 [INFO]: GET /api/admin/appointment-analytics
+2026-04-09 20:36:07 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:36:07 [INFO]: GET /api/admin/appointment-analytics
+2026-04-09 20:36:09 [INFO]: GET /api/admin/users
+2026-04-09 20:36:10 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:36:12 [INFO]: GET /api/admin/dashboard
+2026-04-09 20:36:38 [INFO]: POST /api/auth/login
+2026-04-09 20:49:28 [INFO]: GET /api/doctors/dashboard
+2026-04-09 20:49:50 [INFO]: GET /api/doctors/dashboard
+2026-04-09 20:49:56 [INFO]: GET /api/doctors/profile
+2026-04-09 20:50:01 [INFO]: GET /api/appointments?date=2026-04-09
+2026-04-09 20:50:04 [INFO]: GET /api/doctors/patients
+2026-04-09 20:50:12 [INFO]: GET /api/doctors/earnings
+2026-04-09 20:50:20 [INFO]: GET /api/doctors/profile
+2026-04-09 20:50:24 [INFO]: GET /api/doctors/dashboard
+2026-04-09 20:50:25 [INFO]: GET /api/doctors/dashboard
+2026-04-09 20:50:40 [INFO]: GET /api/doctors/dashboard
+2026-04-09 21:26:07 [INFO]: GET /api/doctors/dashboard
+2026-04-09 21:26:07 [INFO]: POST /api/auth/refresh-token
+2026-04-09 21:26:08 [INFO]: GET /api/doctors/dashboard
+2026-04-11 13:32:41 [INFO]: Server running on port 5000
+2026-04-11 13:36:06 [INFO]: Server running on port 5000
+2026-04-11 13:37:39 [INFO]: GET /api/doctors/dashboard
+2026-04-11 13:37:39 [INFO]: POST /api/auth/refresh-token
+2026-04-11 13:37:49 [INFO]: GET /api/doctors/dashboard
+2026-04-11 13:52:31 [INFO]: GET /api/auth
+2026-04-11 13:52:45 [INFO]: POST /api/auth/login
+2026-04-11 13:53:42 [INFO]: GET /api/doctors
+2026-04-11 13:53:43 [INFO]: GET /api/health-tips
+2026-04-11 13:53:44 [INFO]: GET /api/subscriptions
+2026-04-11 13:53:44 [INFO]: GET /api/consultations
+2026-04-11 13:53:44 [INFO]: GET /api/chat
+2026-04-11 13:53:44 [INFO]: GET /api/symptoms
+2026-04-11 13:53:44 [INFO]: GET /api/appointments
+2026-04-11 13:53:45 [INFO]: GET /api/patients/profile
+2026-04-11 13:53:45 [INFO]: GET /api/notifications
+2026-04-11 13:53:45 [INFO]: GET /api/payments/history
+2026-04-11 13:53:45 [INFO]: GET /api/admin/dashboard
+2026-04-11 13:53:45 [INFO]: GET /api/health-records
+2026-04-11 13:53:45 [INFO]: GET /api/prescriptions
+2026-04-11 13:53:45 [INFO]: GET /api/reviews
+2026-04-11 13:58:16 [INFO]: Server running on port 5000
+2026-04-11 13:58:37 [INFO]: Server running on port 5000
+2026-04-11 13:58:52 [INFO]: Server running on port 5000
+2026-04-11 13:59:03 [INFO]: Server running on port 5000
+2026-04-11 13:59:14 [INFO]: Server running on port 5000
+2026-04-11 13:59:29 [INFO]: Server running on port 5000
+2026-04-11 13:59:39 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-00.e6vetwj.mongodb.net
+2026-04-11 13:59:39 [INFO]: Server running on port 5000
+2026-04-11 14:01:09 [INFO]: POST /api/auth/login
+2026-04-11 14:01:09 [INFO]: POST /api/auth/register
+2026-04-11 14:01:09 [INFO]: GET /api/subscriptions
+2026-04-11 14:01:09 [INFO]: GET /api/consultations
+2026-04-11 14:01:09 [INFO]: GET /api/chat
+2026-04-11 14:01:09 [INFO]: GET /api/nonexistent
+2026-04-11 14:01:09 [INFO]: GET /api/doctors
+2026-04-11 14:01:19 [INFO]: POST /api/auth/register
+2026-04-11 14:01:45 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-01.e6vetwj.mongodb.net
+2026-04-11 14:01:45 [INFO]: Server running on port 5000
+2026-04-11 14:02:16 [INFO]: POST /api/auth/login
+2026-04-11 14:02:17 [INFO]: GET /api/doctors
+2026-04-11 14:02:19 [INFO]: GET /api/health-tips
+2026-04-11 14:02:20 [INFO]: GET /api/subscriptions
+2026-04-11 14:02:21 [INFO]: GET /api/consultations
+2026-04-11 14:02:21 [INFO]: GET /api/chat
+2026-04-11 14:02:21 [INFO]: GET /api/nonexistent
+2026-04-11 14:02:21 [INFO]: GET /api/slmc/verify/SLMC-10234
+2026-04-11 14:02:21 [INFO]: POST /api/auth/register
+2026-04-11 14:12:58 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-02.e6vetwj.mongodb.net
+2026-04-11 14:12:58 [INFO]: Server running on port 5000
+2026-04-11 14:15:18 [INFO]: GET /api/doctors/dashboard
+2026-04-11 14:15:20 [INFO]: POST /api/auth/refresh-token
+2026-04-11 14:15:22 [INFO]: GET /api/doctors/dashboard
+2026-04-11 14:15:23 [INFO]: GET /api/doctors/profile
+2026-04-11 14:15:26 [INFO]: GET /api/doctors/dashboard
+2026-04-11 14:15:34 [INFO]: GET /api/doctors/dashboard
+2026-04-11 14:15:35 [INFO]: GET /api/appointments?date=2026-04-11
+2026-04-11 14:15:42 [INFO]: GET /api/doctors/patients
+2026-04-11 14:15:59 [INFO]: GET /api/doctors/earnings
+2026-04-11 14:16:15 [INFO]: GET /api/doctors/profile
+2026-04-11 14:28:42 [INFO]: GET /api/doctors/profile
+2026-04-11 14:28:52 [INFO]: GET /api/doctors/profile
+2026-04-11 14:29:03 [INFO]: GET /api/doctors/dashboard
+2026-04-11 14:29:09 [INFO]: GET /api/appointments?status=pending
+2026-04-11 14:29:20 [INFO]: GET /api/doctors/dashboard
+2026-04-11 14:29:25 [INFO]: GET /api/doctors/patients
+2026-04-11 14:29:28 [INFO]: GET /api/doctors/patients
+2026-04-11 14:29:30 [INFO]: GET /api/doctors/earnings
+2026-04-11 14:29:33 [INFO]: GET /api/doctors/profile
+2026-04-11 14:30:00 [INFO]: GET /api/doctors/dashboard
+2026-04-11 15:15:52 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-01.e6vetwj.mongodb.net
+2026-04-11 15:15:52 [INFO]: Server running on port 5000
+2026-04-11 15:16:41 [INFO]: GET /api/doctors/dashboard
+2026-04-11 15:16:41 [INFO]: POST /api/auth/refresh-token
+2026-04-11 15:16:41 [INFO]: GET /api/doctors/dashboard
+2026-04-11 15:16:48 [INFO]: GET /api/appointments?date=2026-04-11
+2026-04-11 15:16:49 [INFO]: GET /api/doctors/patients
+2026-04-11 15:16:51 [INFO]: GET /api/doctors/earnings
+2026-04-11 15:16:52 [INFO]: GET /api/doctors/profile
+2026-04-11 15:16:55 [INFO]: GET /api/doctors/earnings
+2026-04-11 15:16:57 [INFO]: GET /api/doctors/profile
+2026-04-11 15:16:59 [INFO]: GET /api/doctors/patients
+2026-04-11 15:17:02 [INFO]: GET /api/doctors/dashboard
+2026-04-11 15:17:08 [INFO]: GET /api/doctors/patients
+2026-04-11 15:17:09 [INFO]: GET /api/doctors/earnings
+2026-04-11 15:17:11 [INFO]: GET /api/doctors/profile
+2026-04-11 15:17:32 [INFO]: POST /api/auth/login
+2026-04-11 15:17:33 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:17:36 [INFO]: GET /api/admin/users
+2026-04-11 15:17:41 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:17:42 [INFO]: GET /api/admin/appointment-analytics
+2026-04-11 15:17:52 [INFO]: GET /api/admin/users
+2026-04-11 15:17:54 [INFO]: GET /api/admin/users/69a7a027e74b665771202758
+2026-04-11 15:18:01 [INFO]: GET /api/admin/users
+2026-04-11 15:18:03 [INFO]: GET /api/admin/users/69a7a027e74b665771202757
+2026-04-11 15:18:05 [INFO]: GET /api/admin/users
+2026-04-11 15:18:05 [INFO]: GET /api/admin/users/69a7a027e74b665771202755
+2026-04-11 15:18:07 [INFO]: GET /api/admin/users
+2026-04-11 15:18:08 [INFO]: GET /api/admin/users/69a7a025e74b665771202746
+2026-04-11 15:18:09 [INFO]: GET /api/admin/users
+2026-04-11 15:18:10 [INFO]: GET /api/admin/users/69a7a025e74b665771202746
+2026-04-11 15:18:14 [INFO]: GET /api/admin/users
+2026-04-11 15:18:15 [INFO]: GET /api/admin/users/69a7a025e74b665771202741
+2026-04-11 15:18:19 [INFO]: GET /api/admin/users
+2026-04-11 15:18:21 [INFO]: GET /api/admin/users/69a7a025e74b665771202748
+2026-04-11 15:18:22 [INFO]: GET /api/admin/users
+2026-04-11 15:18:23 [INFO]: GET /api/admin/users/69a7a025e74b665771202742
+2026-04-11 15:18:25 [INFO]: GET /api/admin/users
+2026-04-11 15:18:27 [INFO]: GET /api/admin/users/69a7a025e74b665771202745
+2026-04-11 15:18:29 [INFO]: GET /api/admin/users
+2026-04-11 15:18:30 [INFO]: GET /api/admin/users/69a7a025e74b665771202747
+2026-04-11 15:18:32 [INFO]: GET /api/admin/users
+2026-04-11 15:18:34 [INFO]: GET /api/admin/users/69a7a023e74b66577120273d
+2026-04-11 15:18:35 [INFO]: GET /api/admin/users
+2026-04-11 15:18:38 [INFO]: GET /api/admin/users/69a7a027e74b665771202758
+2026-04-11 15:18:40 [INFO]: GET /api/admin/users
+2026-04-11 15:18:43 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:18:48 [INFO]: GET /api/admin/users
+2026-04-11 15:18:50 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:18:51 [INFO]: GET /api/admin/doctors/pending
+2026-04-11 15:18:56 [INFO]: GET /api/admin/users
+2026-04-11 15:18:58 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:19:00 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:19:00 [INFO]: GET /api/admin/appointment-analytics
+2026-04-11 15:19:03 [INFO]: GET /api/admin/dashboard
+2026-04-11 15:19:11 [INFO]: GET /api/doctors
+2026-04-11 15:19:18 [INFO]: GET /api/health-tips/admin/all
+2026-04-11 15:19:24 [INFO]: GET /api/admin/dashboard

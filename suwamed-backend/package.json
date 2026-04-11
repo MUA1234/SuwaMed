@@ -7,7 +7,8 @@
     "dev": "nodemon --exec ts-node server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:slmc": "ts-node scripts/seedSlmc.ts"
   },
   "keywords": [],
   "author": "",

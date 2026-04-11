@@ -14,6 +14,7 @@ import healthTipRoutes from './healthTip.routes';
 import adminRoutes from './admin.routes';
 import consultationRoutes from './consultation.routes';
 import chatRoutes from './chat.routes';
+import slmcRoutes from './slmc.routes';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use('/health-tips', healthTipRoutes);
 router.use('/admin', adminRoutes);
 router.use('/consultations', consultationRoutes);
 router.use('/chat', chatRoutes);
+router.use('/slmc', slmcRoutes);
 
 export default router;

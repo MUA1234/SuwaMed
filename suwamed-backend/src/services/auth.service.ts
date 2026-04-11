@@ -1,6 +1,7 @@
 import User, { IUser } from '../models/User.model';
 import Patient from '../models/Patient.model';
 import Doctor from '../models/Doctor.model';
+import SlmcRegistry from '../models/SlmcRegistry.model';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/tokenUtils';
 import { AppError } from '../utils/errorResponse';
 import { generateOTP } from '../utils/helpers';
@@ -26,14 +27,13 @@ export class AuthService {
     followUpFee?: number;
     languages?: string[];
   }) {
-    // Temporarily disabled for testing — allows duplicate email/phone
-    // const existingUser = await User.findOne({
-    //   $or: [{ email: data.email }, { phone: data.phone }],
-    // });
-    //
-    // if (existingUser) {
-    //   throw new AppError('User with this email or phone already exists', 400);
-    // }
+    const existingUser = await User.findOne({
+      $or: [{ email: data.email }, { phone: data.phone }],
+    });
+
+    if (existingUser) {
+      throw new AppError('User with this email or phone already exists', 400);
+    }
 
     const user = await User.create({
       email: data.email,
@@ -53,6 +53,15 @@ export class AuthService {
         userId: user._id,
       });
     } else if (data.role === 'doctor') {
+      // Validate and mark SLMC number as used
+      if (data.slmcRegistrationNo) {
+        const slmcRecord = await SlmcRegistry.findOne({ slmcNo: data.slmcRegistrationNo.toUpperCase() });
+        if (slmcRecord && !slmcRecord.isUsed) {
+          slmcRecord.isUsed = true;
+          await slmcRecord.save();
+        }
+      }
+
       await Doctor.create({
         userId: user._id,
         slmcRegistrationNo: data.slmcRegistrationNo,
@@ -79,14 +88,18 @@ export class AuthService {
     user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
     await user.save({ validateBeforeSave: false });
 
-    // Log OTP to console for development (replace with SMS provider in production)
-    logger.info(`📱 OTP for ${user.phone}: ${otp}`);
-    console.log(`\n========================================`);
-    console.log(`  📱 OTP for ${user.phone}: ${otp}`);
-    console.log(`========================================\n`);
+    // In production, send OTP via SMS (Twilio/similar). In dev, log for debugging.
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(`OTP for ${user.phone}: ${otp}`);
+    }
 
-    const userObj = user.toObject();
-    delete (userObj as any).password;
+    const userObj: any = user.toObject();
+    delete userObj.password;
+
+    // Attach verificationStatus for doctors
+    if (data.role === 'doctor') {
+      userObj.verificationStatus = 'pending';
+    }
 
     return {
       user: userObj,
@@ -121,8 +134,16 @@ export class AuthService {
     user.refreshToken = refreshTokenValue;
     await user.save({ validateBeforeSave: false });
 
-    const userObj = user.toObject();
-    delete (userObj as any).password;
+    const userObj: any = user.toObject();
+    delete userObj.password;
+
+    // Attach doctor verificationStatus so frontend can gate access
+    if (user.role === 'doctor') {
+      const doctor = await Doctor.findOne({ userId: user._id }).select('verificationStatus');
+      if (doctor) {
+        userObj.verificationStatus = doctor.verificationStatus;
+      }
+    }
 
     return {
       user: userObj,
@@ -198,10 +219,10 @@ export class AuthService {
     user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
-    logger.info(`📱 Password Reset OTP for ${emailOrPhone}: ${otp}`);
-    console.log(`\n========================================`);
-    console.log(`  🔑 Reset OTP for ${emailOrPhone}: ${otp}`);
-    console.log(`========================================\n`);
+    // In production, send OTP via SMS/email. In dev, log for debugging.
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(`Password Reset OTP for ${emailOrPhone}: ${otp}`);
+    }
 
     return { message: 'OTP sent successfully' };
   }
@@ -209,17 +230,31 @@ export class AuthService {
   static async resetPassword(emailOrPhone: string, otp: string, newPassword: string) {
     const user = await User.findOne({
       $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
-    });
+    }).select('+otp +otpExpiresAt');
 
     if (!user) {
       throw new AppError('User not found', 404);
     }
 
-    if (otp.length !== 6) {
-      throw new AppError('Invalid OTP', 400);
+    if (!user.otp || !user.otpExpiresAt) {
+      throw new AppError('No OTP was generated. Please request a new one.', 400);
     }
 
+    if (new Date() > user.otpExpiresAt) {
+      user.otp = undefined;
+      user.otpExpiresAt = undefined;
+      await user.save({ validateBeforeSave: false });
+      throw new AppError('OTP has expired. Please request a new one.', 400);
+    }
+
+    if (user.otp !== otp) {
+      throw new AppError('Invalid OTP. Please try again.', 400);
+    }
+
+    // OTP verified — reset password and clear OTP
     user.password = newPassword;
+    user.otp = undefined;
+    user.otpExpiresAt = undefined;
     await user.save();
 
     return { message: 'Password reset successfully' };
