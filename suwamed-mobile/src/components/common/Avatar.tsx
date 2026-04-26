@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import { colors, spacing } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 type AvatarSize = 'small' | 'medium' | 'large' | 'xlarge';
 
@@ -42,7 +42,7 @@ const getInitials = (name: string): string => {
   return name.substring(0, 2).toUpperCase();
 };
 
-const getColorFromName = (name: string): string => {
+const getColorFromName = (name: string, colors: ThemeColors): string => {
   const avatarColors = [
     colors.primary,
     colors.secondary,
@@ -66,6 +66,8 @@ const Avatar: React.FC<AvatarProps> = ({
   isOnline = false,
   style,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const dimension = sizeMap[size];
   const fontSize = fontSizeMap[size];
   const statusDotSize = statusDotSizeMap[size];
@@ -96,7 +98,7 @@ const Avatar: React.FC<AvatarProps> = ({
               width: dimension,
               height: dimension,
               borderRadius: dimension / 2,
-              backgroundColor: name ? getColorFromName(name) : colors.textDisabled,
+              backgroundColor: name ? getColorFromName(name, colors) : colors.textDisabled,
             },
           ]}
         >
@@ -123,7 +125,7 @@ const Avatar: React.FC<AvatarProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   image: {
     resizeMode: 'cover',
   },

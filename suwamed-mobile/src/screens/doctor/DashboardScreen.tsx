@@ -18,12 +18,14 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
 import * as doctorApi from '../../api/doctor.api';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
-
+import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 const { width } = Dimensions.get('window');
 
 
 const DashboardScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const { t } = useTranslation();
     const { user } = useAuthStore();
     const navigation = useNavigation<any>();
@@ -221,7 +223,7 @@ const DashboardScreen: React.FC = () => {
 
 const STAT_CARD_WIDTH = (width - spacing.xl * 2 - spacing.md) / 2;
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     scrollContent: { paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: 100 },
 

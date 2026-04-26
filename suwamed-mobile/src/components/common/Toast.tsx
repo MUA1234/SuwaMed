@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useCallback, useRef, useEff
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, spacing, borderRadius, typography, shadows } from '../../config/theme';
+import { spacing, borderRadius, typography, shadows } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -24,19 +25,21 @@ const ToastContext = createContext<ToastContextType>({
 
 export const useToast = () => useContext(ToastContext);
 
-const TOAST_CONFIG: Record<ToastType, { icon: string; bg: string; accent: string; iconColor: string }> = {
-  success: { icon: 'check-circle', bg: '#ECFDF5', accent: '#10B981', iconColor: '#059669' },
-  error: { icon: 'alert-circle', bg: '#FEF2F2', accent: '#EF4444', iconColor: '#DC2626' },
-  warning: { icon: 'alert', bg: '#FFFBEB', accent: '#F59E0B', iconColor: '#D97706' },
-  info: { icon: 'information', bg: '#EFF6FF', accent: '#3B82F6', iconColor: '#2563EB' },
-};
+const getToastConfig = (colors: ThemeColors): Record<ToastType, { icon: string; bg: string; accent: string; iconColor: string }> => ({
+  success: { icon: 'check-circle', bg: colors.successLight, accent: colors.success, iconColor: colors.success },
+  error: { icon: 'alert-circle', bg: colors.errorLight, accent: colors.error, iconColor: colors.error },
+  warning: { icon: 'alert', bg: colors.warningLight, accent: colors.warning, iconColor: colors.warning },
+  info: { icon: 'information', bg: colors.infoLight, accent: colors.info, iconColor: colors.info },
+});
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ToastItem: React.FC<{ toast: ToastMessage; onDismiss: (id: number) => void }> = ({ toast, onDismiss }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const translateY = useRef(new Animated.Value(-80)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const config = TOAST_CONFIG[toast.type];
+  const config = getToastConfig(colors)[toast.type];
 
   useEffect(() => {
     Animated.parallel([
@@ -78,6 +81,8 @@ const ToastItem: React.FC<{ toast: ToastMessage; onDismiss: (id: number) => void
 };
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const idCounter = useRef(0);
   const insets = useSafeAreaInsets();
@@ -103,7 +108,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     position: 'absolute',
     left: spacing.lg,

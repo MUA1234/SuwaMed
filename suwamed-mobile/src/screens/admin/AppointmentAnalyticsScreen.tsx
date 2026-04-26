@@ -6,7 +6,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getAppointmentAnalytics } from '../../api/admin.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
@@ -25,6 +26,8 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; icon: string }
 };
 
 const AppointmentAnalyticsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
@@ -156,7 +159,7 @@ const AppointmentAnalyticsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

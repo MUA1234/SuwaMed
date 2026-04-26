@@ -14,7 +14,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as appointmentApi from '../../api/appointment.api';
-import { colors, spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { AppointmentCardSkeleton, SkeletonList } from '../../components/common/Skeleton';
 
 type TabKey = 'upcoming' | 'past' | 'cancelled';
@@ -34,6 +35,8 @@ const getStatusLabel = (t: any): Record<string, string> => ({
 });
 
 const MyAppointmentsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<TabKey>('upcoming');
@@ -190,7 +193,7 @@ const MyAppointmentsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: { paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.md },
     heading: { fontSize: 22, fontWeight: '700', color: colors.textPrimary, letterSpacing: -0.3 },

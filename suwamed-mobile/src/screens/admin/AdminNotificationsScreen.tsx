@@ -8,8 +8,8 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as notificationApi from '../../api/notification.api';
 import { useNotificationStore } from '../../store/notificationStore';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type FilterTab = 'all' | 'unread' | 'read';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -18,14 +18,6 @@ const TYPE_ICONS: Record<string, string> = {
     lab_report: 'flask',
     general: 'bell',
     emergency: 'alert',
-};
-
-const TYPE_COLORS: Record<string, string> = {
-    appointment: colors.primary,
-    prescription: '#8B5CF6',
-    lab_report: colors.success,
-    general: colors.textSecondary,
-    emergency: colors.error,
 };
 
 const getTimeAgo = (dateStr: string): string => {
@@ -43,6 +35,15 @@ const getTimeAgo = (dateStr: string): string => {
 };
 
 const AdminNotificationsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const TYPE_COLORS: Record<string, string> = {
+    appointment: colors.primary,
+    prescription: '#8B5CF6',
+    lab_report: colors.success,
+    general: colors.textSecondary,
+    emergency: colors.error,
+  };
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const {
@@ -214,7 +215,7 @@ const AdminNotificationsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

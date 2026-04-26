@@ -8,7 +8,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 interface BottomSheetProps {
   visible: boolean;
@@ -27,6 +28,8 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   children,
   height = 50,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const sheetHeight = (screenHeight * height) / 100;
 
   return (
@@ -59,14 +62,14 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.overlay,
   },
   sheet: {
     backgroundColor: colors.surface,

@@ -14,8 +14,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as appointmentApi from '../../api/appointment.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 const statusStylesBase: Record<string, { color: string; bg: string }> = {
     confirmed: { color: '#10B981', bg: '#ECFDF5' },
     pending: { color: '#F59E0B', bg: '#FFFBEB' },
@@ -26,6 +26,8 @@ const statusStylesBase: Record<string, { color: string; bg: string }> = {
 };
 
 const AppointmentDetailScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const { t } = useTranslation();
@@ -340,7 +342,7 @@ const AppointmentDetailScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

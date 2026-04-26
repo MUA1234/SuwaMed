@@ -7,8 +7,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import client from '../../api/client';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 const languages = [
     { key: 'en', label: 'English', flag: '🇬🇧' },
     { key: 'si', label: 'සිංහල', flag: '🇱🇰' },
@@ -33,6 +33,8 @@ const commonSymptoms = [
 ];
 
 const SymptomCheckerScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const [selectedLang, setSelectedLang] = useState('en');
@@ -228,7 +230,7 @@ const SymptomCheckerScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: { paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.md },
     heading: { ...typography.h2, color: colors.textPrimary },

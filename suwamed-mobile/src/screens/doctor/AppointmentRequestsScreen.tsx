@@ -15,9 +15,11 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import * as appointmentApi from '../../api/appointment.api';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 const AppointmentRequestsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const [appointments, setAppointments] = useState<any[]>([]);
@@ -227,7 +229,7 @@ const AppointmentRequestsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

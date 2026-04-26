@@ -20,8 +20,8 @@ import * as appointmentApi from '../../api/appointment.api';
 import * as healthTipApi from '../../api/healthTip.api';
 import { getDoctors } from '../../api/doctor.api';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
-
+import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 const { width } = Dimensions.get('window');
 
 const SPEC_META: Record<string, { icon: string; color: string; gradient: [string, string] }> = {
@@ -39,6 +39,8 @@ const DEFAULT_SPEC_META = { icon: 'stethoscope', color: '#64748B', gradient: ['#
 
 
 const HomeScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const { t } = useTranslation();
     const { user } = useAuthStore();
     const navigation = useNavigation<any>();
@@ -273,7 +275,7 @@ const HomeScreen: React.FC = () => {
 
 const CARD_WIDTH = (width - spacing.xl * 2 - spacing.md) / 2;
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     scrollContent: { paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: 100 },
 

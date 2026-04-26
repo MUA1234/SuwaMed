@@ -8,7 +8,8 @@ import {
   StyleProp,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 interface SearchBarProps {
   value: string;
@@ -29,6 +30,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   autoFocus = false,
   style,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const internalRef = useRef(value);
 
@@ -101,7 +104,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

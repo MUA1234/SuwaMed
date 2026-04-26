@@ -17,13 +17,15 @@ import { useTranslation } from 'react-i18next';
 import { AuthStackParamList } from '../../types/navigation.types';
 import Button from '../../components/common/Button';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher';
-import { colors, spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
-
+import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type WelcomeNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Welcome'>;
 
 const { width, height } = Dimensions.get('window');
 
 const WelcomeScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const navigation = useNavigation<WelcomeNavigationProp>();
   const { t } = useTranslation();
 
@@ -159,7 +161,7 @@ const WelcomeScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

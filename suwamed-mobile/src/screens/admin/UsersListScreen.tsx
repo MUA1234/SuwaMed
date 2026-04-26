@@ -6,12 +6,15 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as adminApi from '../../api/admin.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 const AVATAR_COLORS = ['#1A73E8', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#DC2626'];
 
 const UsersListScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [users, setUsers] = useState<any[]>([]);
@@ -137,7 +140,7 @@ const UsersListScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.md },
     heading: { ...typography.h2, color: colors.textPrimary },

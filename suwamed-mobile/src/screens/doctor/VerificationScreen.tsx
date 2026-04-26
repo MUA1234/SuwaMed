@@ -12,7 +12,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as doctorApi from '../../api/doctor.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { pickImage, takePhoto } from '../../utils/permissions';
 
@@ -23,38 +24,40 @@ const DOC_TYPES: { key: string; label: string; icon: string }[] = [
     { key: 'other', label: 'Other Document', icon: 'file-document' },
 ];
 
-const statusConfig: Record<string, { icon: string; bg: string; color: string; title: string; subtitle: string }> = {
+const getStatusConfig = (colors: ThemeColors): Record<string, { icon: string; bg: string; color: string; title: string; subtitle: string }> => ({
     pending: {
         icon: 'timer-sand',
-        bg: '#FFFBEB',
-        color: '#F59E0B',
+        bg: colors.warningLight,
+        color: colors.warning,
         title: 'Verification Pending',
         subtitle: 'Your application is being reviewed. This typically takes 1-3 business days.',
     },
     under_review: {
         icon: 'magnify',
-        bg: '#EBF5FF',
+        bg: colors.primaryLight,
         color: colors.primary,
         title: 'Under Review',
         subtitle: 'Our team is currently reviewing your documents and credentials.',
     },
     verified: {
         icon: 'shield-check',
-        bg: '#ECFDF5',
+        bg: colors.successLight,
         color: colors.success,
         title: 'Verified Doctor',
         subtitle: 'Your account is fully verified. Patients can now book consultations with you.',
     },
     rejected: {
         icon: 'close-circle',
-        bg: '#FEF2F2',
+        bg: colors.errorLight,
         color: colors.error,
         title: 'Not Verified',
         subtitle: 'Your application was not approved. Please contact support for more information.',
     },
-};
+});
 
 const VerificationScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation();
     const { t } = useTranslation();
     const [doctor, setDoctor] = useState<any>(null);
@@ -150,6 +153,7 @@ const VerificationScreen: React.FC = () => {
     }
 
     const status = doctor?.verificationStatus || 'pending';
+    const statusConfig = getStatusConfig(colors);
     const config = statusConfig[status] || statusConfig.pending;
     const slmcNumber = doctor?.slmcRegistrationNumber || 'N/A';
     const verifiedDate = doctor?.verifiedAt
@@ -271,7 +275,7 @@ const VerificationScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

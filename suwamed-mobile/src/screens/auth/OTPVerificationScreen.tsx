@@ -15,12 +15,14 @@ import { useTranslation } from 'react-i18next';
 import { AuthStackParamList } from '../../types/navigation.types';
 import Button from '../../components/common/Button';
 import * as authApi from '../../api/auth.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type OTPNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OTPVerification'>;
 type OTPRouteProp = RouteProp<AuthStackParamList, 'OTPVerification'>;
 
 const OTPVerificationScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const navigation = useNavigation<OTPNavigationProp>();
   const route = useRoute<OTPRouteProp>();
   const { t } = useTranslation();
@@ -215,7 +217,7 @@ const OTPVerificationScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

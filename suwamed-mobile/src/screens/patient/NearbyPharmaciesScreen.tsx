@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 const PHARMACIES = [
@@ -23,13 +24,16 @@ const PHARMACIES = [
     { name: 'Lanka Hospitals Pharmacy', areas: 'Colombo', phone: '+94 11 553 0000', type: 'Hospital Pharmacy' },
 ];
 
-const typeConfig: Record<string, { color: string; bg: string }> = {
-    Chain: { color: colors.primary, bg: '#EBF5FF' },
-    'Hospital Pharmacy': { color: '#8B5CF6', bg: '#F5F3FF' },
-    Government: { color: colors.success, bg: '#ECFDF5' },
-};
+const getTypeConfig = (colors: ThemeColors): Record<string, { color: string; bg: string }> => ({
+    Chain: { color: colors.primary, bg: colors.primaryLight },
+    'Hospital Pharmacy': { color: '#8B5CF6', bg: colors.infoLight },
+    Government: { color: colors.success, bg: colors.successLight },
+});
 
 const NearbyPharmaciesScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const typeConfig = getTypeConfig(colors);
     const navigation = useNavigation();
     const { t } = useTranslation();
 
@@ -99,7 +103,7 @@ const NearbyPharmaciesScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

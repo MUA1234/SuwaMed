@@ -11,7 +11,8 @@ import {
   Animated,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, shadows } from '../../config/theme';
+import { spacing, borderRadius, shadows } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 interface InputProps {
   label?: string;
@@ -50,6 +51,8 @@ const Input: React.FC<InputProps> = ({
   editable = true,
   style,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const [isFocused, setIsFocused] = useState(false);
   const borderAnim = useRef(new Animated.Value(0)).current;
 
@@ -148,7 +151,7 @@ const Input: React.FC<InputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   wrapper: {
     marginBottom: spacing.lg + 2,
   },
@@ -173,10 +176,10 @@ const styles = StyleSheet.create({
   },
   inputFocused: {
     ...shadows.sm,
-    backgroundColor: '#FAFBFF',
+    backgroundColor: colors.surface,
   },
   inputError: {
-    backgroundColor: '#FFF5F5',
+    backgroundColor: colors.errorLight,
     borderColor: colors.error,
   },
   input: {

@@ -12,7 +12,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as patientApi from '../../api/patient.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 interface Plan {
@@ -25,7 +26,7 @@ interface Plan {
     icon: string;
 }
 
-const PLANS: Plan[] = [
+const getPlans = (colors: ThemeColors): Plan[] => [
     {
         key: 'free',
         name: 'Free',
@@ -71,6 +72,9 @@ const PLANS: Plan[] = [
 ];
 
 const SubscriptionScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const PLANS = getPlans(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [currentPlan, setCurrentPlan] = useState<string>('free');
@@ -213,7 +217,7 @@ const SubscriptionScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

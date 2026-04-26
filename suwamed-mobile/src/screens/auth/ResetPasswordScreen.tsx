@@ -19,8 +19,8 @@ import { AuthStackParamList } from '../../types/navigation.types';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { resetPassword } from '../../api/auth.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type ResetPasswordNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ResetPassword'>;
 type ResetPasswordRouteProp = RouteProp<AuthStackParamList, 'ResetPassword'>;
 
@@ -44,7 +44,7 @@ const getPasswordStrength = (password: string): PasswordStrength => {
   return 'weak';
 };
 
-const getStrengthColor = (strength: PasswordStrength): string => {
+const getStrengthColor = (strength: PasswordStrength, colors: ThemeColors): string => {
   switch (strength) {
     case 'weak':
       return colors.error;
@@ -78,6 +78,8 @@ const getStrengthLabel = (strength: PasswordStrength): string => {
 };
 
 const ResetPasswordScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const navigation = useNavigation<ResetPasswordNavigationProp>();
   const route = useRoute<ResetPasswordRouteProp>();
   const { t } = useTranslation();
@@ -246,8 +248,8 @@ const ResetPasswordScreen: React.FC = () => {
                   style={[
                     styles.strengthBarFill,
                     {
-                      width: getStrengthWidth(passwordStrength),
-                      backgroundColor: getStrengthColor(passwordStrength),
+                      width: getStrengthWidth(passwordStrength) as any,
+                      backgroundColor: getStrengthColor(passwordStrength, colors),
                     },
                   ]}
                 />
@@ -255,7 +257,7 @@ const ResetPasswordScreen: React.FC = () => {
               <Text
                 style={[
                   styles.strengthLabel,
-                  { color: getStrengthColor(passwordStrength) },
+                  { color: getStrengthColor(passwordStrength, colors) },
                 ]}
               >
                 {getStrengthLabel(passwordStrength)}
@@ -293,7 +295,7 @@ const ResetPasswordScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

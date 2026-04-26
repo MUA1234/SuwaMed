@@ -13,19 +13,20 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as notificationApi from '../../api/notification.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 type FilterTab = 'all' | 'unread';
 
-const getNotifIcon = (type: string): { icon: string; color: string; bg: string } => {
+const getNotifIcon = (type: string, colors: ThemeColors): { icon: string; color: string; bg: string } => {
     switch (type) {
-        case 'appointment': return { icon: 'calendar-check', color: colors.primary, bg: '#EBF5FF' };
-        case 'prescription': return { icon: 'prescription', color: colors.success, bg: '#ECFDF5' };
-        case 'payment': return { icon: 'cash', color: '#F59E0B', bg: '#FFFBEB' };
-        case 'review': return { icon: 'star', color: '#F59E0B', bg: '#FFFBEB' };
-        case 'system': return { icon: 'cog', color: '#6B7280', bg: '#F3F4F6' };
-        default: return { icon: 'bell', color: colors.primary, bg: '#EBF5FF' };
+        case 'appointment': return { icon: 'calendar-check', color: colors.primary, bg: colors.primaryLight };
+        case 'prescription': return { icon: 'prescription', color: colors.success, bg: colors.successLight };
+        case 'payment': return { icon: 'cash', color: colors.warning, bg: colors.warningLight };
+        case 'review': return { icon: 'star', color: colors.warning, bg: colors.warningLight };
+        case 'system': return { icon: 'cog', color: colors.textSecondary, bg: colors.borderLight };
+        default: return { icon: 'bell', color: colors.primary, bg: colors.primaryLight };
     }
 };
 
@@ -41,6 +42,8 @@ const timeAgo = (dateStr: string): string => {
 };
 
 const NotificationsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [notifications, setNotifications] = useState<any[]>([]);
@@ -168,7 +171,7 @@ const NotificationsScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
                 renderItem={({ item }) => {
-                    const notifIcon = getNotifIcon(item.type);
+                    const notifIcon = getNotifIcon(item.type, colors);
                     const timeStr = item.createdAt ? timeAgo(item.createdAt) : '';
 
                     return (
@@ -210,7 +213,7 @@ const NotificationsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import BottomSheet from './BottomSheet';
 
 interface LanguageSwitcherProps {
@@ -29,6 +30,8 @@ const languages: LanguageOption[] = [
 
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ style }) => {
   const { i18n } = useTranslation();
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const [visible, setVisible] = useState(false);
 
   const currentLanguage =
@@ -89,7 +92,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ style }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',

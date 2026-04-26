@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'default';
 type BadgeSize = 'small' | 'medium';
@@ -11,20 +12,21 @@ interface BadgeProps {
   size?: BadgeSize;
 }
 
-const variantColors: Record<BadgeVariant, { bg: string; text: string }> = {
-  success: { bg: '#D1FAE5', text: colors.success },
-  warning: { bg: '#FEF3C7', text: '#92400E' },
-  error: { bg: '#FEE2E2', text: colors.error },
-  info: { bg: '#DBEAFE', text: colors.info },
+const getVariantColors = (colors: ThemeColors): Record<BadgeVariant, { bg: string; text: string }> => ({
+  success: { bg: colors.successLight, text: colors.success },
+  warning: { bg: colors.warningLight, text: colors.warning },
+  error: { bg: colors.errorLight, text: colors.error },
+  info: { bg: colors.infoLight, text: colors.info },
   default: { bg: colors.background, text: colors.textSecondary },
-};
+});
 
 const Badge: React.FC<BadgeProps> = ({
   label,
   variant = 'default',
   size = 'medium',
 }) => {
-  const colorScheme = variantColors[variant];
+  const { theme: colors } = useTheme();
+  const colorScheme = getVariantColors(colors)[variant];
   const isSmall = size === 'small';
 
   return (

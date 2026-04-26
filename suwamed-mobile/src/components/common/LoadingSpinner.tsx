@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { colors, spacing } from '../../config/theme';
+import { spacing } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 interface LoadingSpinnerProps {
   fullScreen?: boolean;
@@ -13,6 +14,8 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   message,
   size = 'large',
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   if (fullScreen) {
     return (
       <View style={styles.fullScreen} accessibilityRole="progressbar" accessibilityLabel={message || 'Loading'}>
@@ -32,7 +35,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   fullScreen: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',

@@ -14,7 +14,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as doctorApi from '../../api/doctor.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { pickImage, takePhoto } from '../../utils/permissions';
@@ -22,6 +23,8 @@ import { pickImage, takePhoto } from '../../utils/permissions';
 const LANGUAGES = ['English', 'Sinhala', 'Tamil'];
 
 const EditProfileScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation();
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
@@ -356,7 +359,7 @@ const EditProfileScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

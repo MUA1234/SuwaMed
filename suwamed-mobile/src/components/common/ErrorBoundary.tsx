@@ -1,7 +1,8 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import Button from './Button';
 
 interface ErrorBoundaryProps {
@@ -12,6 +13,32 @@ interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
+
+const ErrorFallback: React.FC<{ error: Error | null; onReset: () => void }> = ({ error, onReset }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  return (
+    <View style={styles.container}>
+      <View style={styles.illustrationPlaceholder}>
+        <MaterialCommunityIcons
+          name="alert-circle-outline"
+          size={80}
+          color={colors.error}
+        />
+      </View>
+      <Text style={styles.title}>Something went wrong</Text>
+      <Text style={styles.message}>
+        {error?.message || 'An unexpected error occurred.'}
+      </Text>
+      <Button
+        title="Try Again"
+        onPress={onReset}
+        variant="primary"
+        icon="refresh"
+      />
+    </View>
+  );
+};
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -31,34 +58,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <View style={styles.container}>
-          <View style={styles.illustrationPlaceholder}>
-            <MaterialCommunityIcons
-              name="alert-circle-outline"
-              size={80}
-              color={colors.error}
-            />
-          </View>
-          <Text style={styles.title}>Something went wrong</Text>
-          <Text style={styles.message}>
-            {this.state.error?.message || 'An unexpected error occurred.'}
-          </Text>
-          <Button
-            title="Try Again"
-            onPress={this.handleReset}
-            variant="primary"
-            icon="refresh"
-          />
-        </View>
-      );
+      return <ErrorFallback error={this.state.error} onReset={this.handleReset} />;
     }
 
     return this.props.children;
   }
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
@@ -70,7 +77,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#FEE2E2',
+    backgroundColor: colors.errorLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xxl,

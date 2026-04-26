@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing } from '../../config/theme';
+import { spacing } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 interface StarRatingProps {
   rating: number;
@@ -20,8 +21,11 @@ const StarRating: React.FC<StarRatingProps> = ({
   interactive = false,
   onRatingChange,
   showLabel = false,
-  color = colors.accent,
+  color,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const resolvedColor = color ?? colors.accent;
   const getStarIcon = (index: number) => {
     const starPosition = index + 1;
     if (rating >= starPosition) {
@@ -61,7 +65,7 @@ const StarRating: React.FC<StarRatingProps> = ({
                 <MaterialCommunityIcons
                   name={iconName}
                   size={size}
-                  color={color}
+                  color={resolvedColor}
                 />
               </Pressable>
             );
@@ -71,7 +75,7 @@ const StarRating: React.FC<StarRatingProps> = ({
               key={index}
               name={iconName}
               size={size}
-              color={color}
+              color={resolvedColor}
               style={styles.star}
             />
           );
@@ -86,7 +90,7 @@ const StarRating: React.FC<StarRatingProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

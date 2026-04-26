@@ -16,7 +16,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { colors, spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { DoctorCardSkeleton, SkeletonList } from '../../components/common/Skeleton';
 import * as doctorApi from '../../api/doctor.api';
 
@@ -60,6 +61,8 @@ const getAvatarGradient = (name: string) => {
 };
 
 const StarRating: React.FC<{ rating: number; size?: number }> = ({ rating, size = 13 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     return (
         <View style={{ flexDirection: 'row', gap: 1 }}>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -75,6 +78,8 @@ const StarRating: React.FC<{ rating: number; size?: number }> = ({ rating, size 
 };
 
 const DoctorSearchScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const [doctors, setDoctors] = useState<any[]>([]);
@@ -317,7 +322,7 @@ const DoctorSearchScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,

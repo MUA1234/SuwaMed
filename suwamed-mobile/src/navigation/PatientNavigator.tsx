@@ -3,7 +3,8 @@ import { Platform, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { colors, shadows } from '../config/theme';
+import { shadows } from '../config/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Real screens — Tab roots
 import HomeScreen from '../screens/patient/HomeScreen';
@@ -111,7 +112,7 @@ const ProfileStackNavigator = () => (
   </ProfileStack.Navigator>
 );
 
-const TabIcon = ({ name, color, focused }: { name: string; color: string; focused: boolean }) => (
+const TabIcon = ({ name, color, focused, indicatorColor }: { name: string; color: string; focused: boolean; indicatorColor: string }) => (
   <View style={{ alignItems: 'center', justifyContent: 'center' }}>
     {focused && (
       <View
@@ -121,7 +122,7 @@ const TabIcon = ({ name, color, focused }: { name: string; color: string; focuse
           width: 24,
           height: 3,
           borderRadius: 2,
-          backgroundColor: colors.primary,
+          backgroundColor: indicatorColor,
         }}
       />
     )}
@@ -130,6 +131,7 @@ const TabIcon = ({ name, color, focused }: { name: string; color: string; focuse
 );
 
 const PatientNavigator = () => {
+  const { theme: colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -145,6 +147,7 @@ const PatientNavigator = () => {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopWidth: 0,
+          borderTopColor: colors.border,
           height: Platform.OS === 'ios' ? 88 : 66,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
           paddingTop: 8,
@@ -157,7 +160,7 @@ const PatientNavigator = () => {
         component={HomeStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'home' : 'home-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'home' : 'home-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -166,7 +169,7 @@ const PatientNavigator = () => {
         component={AppointmentsStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'calendar-clock' : 'calendar-clock-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'calendar-clock' : 'calendar-clock-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -176,7 +179,7 @@ const PatientNavigator = () => {
         options={{
           tabBarLabel: 'Symptoms',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name="stethoscope" color={color} focused={focused} />
+            <TabIcon name="stethoscope" color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -185,7 +188,7 @@ const PatientNavigator = () => {
         component={RecordsStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'folder-heart' : 'folder-heart-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'folder-heart' : 'folder-heart-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -194,7 +197,7 @@ const PatientNavigator = () => {
         component={ProfileStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'account-circle' : 'account-circle-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'account-circle' : 'account-circle-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />

@@ -16,8 +16,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { AuthStackParamList } from '../../types/navigation.types';
 import Button from '../../components/common/Button';
-import { colors, spacing, borderRadius, typography, shadows } from '../../config/theme';
-
+import { spacing, borderRadius, typography, shadows } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type OnboardingNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Onboarding'>;
 
 const { width } = Dimensions.get('window');
@@ -32,6 +32,8 @@ interface OnboardingPage {
 }
 
 const OnboardingScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const navigation = useNavigation<OnboardingNavigationProp>();
   const { t } = useTranslation();
 
@@ -177,7 +179,7 @@ const OnboardingScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

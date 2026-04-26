@@ -14,7 +14,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as notificationApi from '../../api/notification.api';
 import { useNotificationStore } from '../../store/notificationStore';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 type FilterTab = 'all' | 'unread' | 'read';
@@ -41,15 +42,18 @@ const getTimeAgo = (dateStr: string): string => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-const TYPE_COLORS: Record<string, string> = {
+const getTypeColors = (colors: ThemeColors): Record<string, string> => ({
     appointment: colors.primary,
     prescription: '#8B5CF6',
     lab_report: colors.success,
     general: colors.textSecondary,
     emergency: colors.error,
-};
+});
 
 const NotificationsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const TYPE_COLORS = getTypeColors(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const { notifications, setNotifications, markAsRead, markAllAsRead, removeNotification, isLoading, setLoading } =
@@ -228,7 +232,7 @@ const NotificationsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

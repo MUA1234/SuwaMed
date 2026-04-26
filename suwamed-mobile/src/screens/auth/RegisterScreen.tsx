@@ -28,7 +28,8 @@ import client from '../../api/client';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { useToast } from '../../components/common/Toast';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { SRI_LANKAN_DISTRICTS, SPECIALIZATIONS } from '../../config/constants';
 
 type RegisterNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
@@ -92,6 +93,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 // --- Password Strength Indicator ---
 const PasswordStrengthBar: React.FC<{ password: string }> = ({ password }) => {
+  const { theme: colors } = useTheme();
+  const pswStyles = makePswStyles(colors);
   const strength = getPasswordStrength(password);
   const config = strengthConfig[strength];
   const barAnim = useRef(new Animated.Value(0)).current;
@@ -140,7 +143,7 @@ const PasswordStrengthBar: React.FC<{ password: string }> = ({ password }) => {
   );
 };
 
-const pswStyles = StyleSheet.create({
+const makePswStyles = (colors: ThemeColors) => StyleSheet.create({
   container: { marginTop: -spacing.sm, marginBottom: spacing.md },
   barTrack: { height: 4, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden', marginBottom: spacing.xs },
   barFill: { height: '100%', borderRadius: 2 },
@@ -155,6 +158,8 @@ const pswStyles = StyleSheet.create({
 //       MAIN SCREEN
 // =========================
 const RegisterScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const navigation = useNavigation<RegisterNavigationProp>();
   const route = useRoute<RegisterRouteProp>();
   const { t } = useTranslation();
@@ -875,7 +880,7 @@ const RegisterScreen: React.FC = () => {
 // =========================
 //         STYLES
 // =========================
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

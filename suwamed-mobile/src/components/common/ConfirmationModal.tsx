@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import Button from './Button';
 
 type ConfirmationVariant = 'danger' | 'warning' | 'info';
@@ -23,10 +24,12 @@ const variantButtonMap: Record<ConfirmationVariant, 'danger' | 'primary' | 'prim
   info: 'primary',
 };
 
-const variantColorMap: Record<ConfirmationVariant, string> = {
-  danger: colors.error,
-  warning: colors.warning,
-  info: colors.info,
+const getVariantColor = (variant: ConfirmationVariant, colors: ThemeColors): string => {
+  switch (variant) {
+    case 'danger': return colors.error;
+    case 'warning': return colors.warning;
+    case 'info': return colors.info;
+  }
 };
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -40,6 +43,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   variant = 'info',
   loading = false,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   return (
     <Modal
       visible={visible}
@@ -54,7 +59,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <View
             style={[
               styles.indicator,
-              { backgroundColor: variantColorMap[variant] },
+              { backgroundColor: getVariantColor(variant, colors) },
             ]}
           />
           <Text style={styles.title}>{title}</Text>
@@ -85,7 +90,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     alignItems: 'center',
@@ -94,7 +99,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.overlay,
   },
   dialog: {
     backgroundColor: colors.surface,

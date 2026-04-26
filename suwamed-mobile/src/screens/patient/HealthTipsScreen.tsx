@@ -12,7 +12,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as healthTipApi from '../../api/healthTip.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 type CategoryKey = 'all' | 'nutrition' | 'exercise' | 'mental_health' | 'disease_prevention' | 'first_aid';
@@ -49,6 +50,8 @@ const categoryLabels: Record<string, string> = {
 };
 
 const HealthTipsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [tips, setTips] = useState<any[]>([]);
@@ -156,7 +159,7 @@ const HealthTipsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

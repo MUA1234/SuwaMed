@@ -16,11 +16,13 @@ import { AuthStackParamList } from '../../types/navigation.types';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { forgotPassword } from '../../api/auth.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
-
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type ForgotPasswordNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
 const ForgotPasswordScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const navigation = useNavigation<ForgotPasswordNavigationProp>();
   const { t } = useTranslation();
 
@@ -128,7 +130,7 @@ const ForgotPasswordScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

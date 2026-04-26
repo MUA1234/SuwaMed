@@ -13,12 +13,15 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as doctorApi from '../../api/doctor.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
 const StarRow: React.FC<{ rating: number; size?: number }> = ({ rating, size = 16 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     return (
         <View style={{ flexDirection: 'row', gap: 2 }}>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -34,6 +37,8 @@ const StarRow: React.FC<{ rating: number; size?: number }> = ({ rating, size = 1
 };
 
 const ReviewsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [doctorId, setDoctorId] = useState<string | null>(null);
@@ -175,7 +180,7 @@ const ReviewsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

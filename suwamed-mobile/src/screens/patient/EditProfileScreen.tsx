@@ -17,12 +17,15 @@ import { useAuthStore } from '../../store/authStore';
 import { useToast } from '../../components/common/Toast';
 import * as patientApi from '../../api/patient.api';
 import client from '../../api/client';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { BLOOD_GROUPS, SRI_LANKAN_DISTRICTS, GENDER_OPTIONS } from '../../config/constants';
 import { pickImage, takePhoto } from '../../utils/permissions';
 
 const EditProfileScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { user, updateUser } = useAuthStore();
@@ -441,7 +444,7 @@ const EditProfileScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

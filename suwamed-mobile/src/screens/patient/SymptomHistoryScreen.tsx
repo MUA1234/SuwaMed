@@ -13,14 +13,15 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import client from '../../api/client';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
-const severityConfig: Record<string, { color: string; bg: string; label: string }> = {
-    mild: { color: colors.success, bg: '#ECFDF5', label: 'Mild' },
-    moderate: { color: colors.warning, bg: '#FFFBEB', label: 'Moderate' },
-    severe: { color: colors.error, bg: '#FEF2F2', label: 'Severe' },
-};
+const getSeverityConfig = (colors: ThemeColors): Record<string, { color: string; bg: string; label: string }> => ({
+    mild: { color: colors.success, bg: colors.successLight, label: 'Mild' },
+    moderate: { color: colors.warning, bg: colors.warningLight, label: 'Moderate' },
+    severe: { color: colors.error, bg: colors.errorLight, label: 'Severe' },
+});
 
 const getSymptomNames = (symptoms: any[]): string => {
     if (!symptoms || symptoms.length === 0) return 'No symptoms recorded';
@@ -30,6 +31,9 @@ const getSymptomNames = (symptoms: any[]): string => {
 };
 
 const SymptomHistoryScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const severityConfig = getSeverityConfig(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [history, setHistory] = useState<any[]>([]);
@@ -154,7 +158,7 @@ const SymptomHistoryScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
         flexDirection: 'row',

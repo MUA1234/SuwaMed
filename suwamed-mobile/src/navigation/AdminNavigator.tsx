@@ -3,7 +3,8 @@ import { Platform, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { colors, shadows } from '../config/theme';
+import { shadows } from '../config/theme';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Dashboard
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
@@ -85,7 +86,7 @@ const MoreStackNavigator = () => (
   </MoreStack.Navigator>
 );
 
-const TabIcon = ({ name, color, focused }: { name: string; color: string; focused: boolean }) => (
+const TabIcon = ({ name, color, focused, indicatorColor }: { name: string; color: string; focused: boolean; indicatorColor: string }) => (
   <View style={{ alignItems: 'center', justifyContent: 'center' }}>
     {focused && (
       <View
@@ -95,7 +96,7 @@ const TabIcon = ({ name, color, focused }: { name: string; color: string; focuse
           width: 24,
           height: 3,
           borderRadius: 2,
-          backgroundColor: colors.primary,
+          backgroundColor: indicatorColor,
         }}
       />
     )}
@@ -104,6 +105,7 @@ const TabIcon = ({ name, color, focused }: { name: string; color: string; focuse
 );
 
 const AdminNavigator = () => {
+  const { theme: colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -119,6 +121,7 @@ const AdminNavigator = () => {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopWidth: 0,
+          borderTopColor: colors.border,
           height: Platform.OS === 'ios' ? 88 : 66,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
           paddingTop: 8,
@@ -131,7 +134,7 @@ const AdminNavigator = () => {
         component={DashboardStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'view-dashboard' : 'view-dashboard-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'view-dashboard' : 'view-dashboard-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -140,7 +143,7 @@ const AdminNavigator = () => {
         component={UsersStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'account-multiple' : 'account-multiple-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'account-multiple' : 'account-multiple-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -150,7 +153,7 @@ const AdminNavigator = () => {
         options={{
           tabBarLabel: 'Manage',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'cog' : 'cog-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'cog' : 'cog-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -159,7 +162,7 @@ const AdminNavigator = () => {
         component={ReportsStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'chart-bar' : 'chart-bar'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'chart-bar' : 'chart-bar'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />
@@ -168,7 +171,7 @@ const AdminNavigator = () => {
         component={MoreStackNavigator}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={focused ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline'} color={color} focused={focused} />
+            <TabIcon name={focused ? 'dots-horizontal-circle' : 'dots-horizontal-circle-outline'} color={color} focused={focused} indicatorColor={colors.primary} />
           ),
         }}
       />

@@ -13,7 +13,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as healthRecordApi from '../../api/healthRecord.api';
-import { colors, spacing, borderRadius, typography } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
 type TabKey = 'all' | 'prescription' | 'lab_report' | 'imaging' | 'other';
@@ -28,6 +29,8 @@ const categoryIcons: Record<string, { icon: string; color: string }> = {
 };
 
 const HealthRecordsScreen: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<TabKey>('all');
@@ -141,7 +144,7 @@ const HealthRecordsScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.md },
     heading: { ...typography.h2, color: colors.textPrimary },

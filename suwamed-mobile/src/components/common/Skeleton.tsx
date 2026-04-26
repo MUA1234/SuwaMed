@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, ViewStyle, Animated } from 'react-native';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 // Simple shimmer skeleton replacing moti/skeleton (incompatible with React 19)
 
@@ -16,6 +17,7 @@ const ShimmerBox: React.FC<{ width?: number | string; height?: number; radius?: 
   height = 20,
   radius = borderRadius.sm,
 }) => {
+  const { theme: colors } = useTheme();
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const ShimmerBox: React.FC<{ width?: number | string; height?: number; radius?: 
         width: width as any,
         height,
         borderRadius: resolvedRadius,
-        backgroundColor: '#E1E9EE',
+        backgroundColor: colors.borderLight,
         opacity,
       }}
     />
@@ -57,71 +59,91 @@ export const SkeletonGroup: React.FC<{ show: boolean; children: React.ReactNode 
 
 // --- Pre-built skeleton layouts for common screens ---
 
-export const DoctorCardSkeleton: React.FC = () => (
-  <View style={skeletonStyles.doctorCard}>
-    <ShimmerBox radius="round" height={56} width={56} />
-    <View style={skeletonStyles.doctorCardContent}>
-      <ShimmerBox width="70%" height={18} />
-      <View style={skeletonStyles.gap} />
-      <ShimmerBox width="50%" height={14} />
-      <View style={skeletonStyles.gap} />
-      <ShimmerBox width="35%" height={14} />
-    </View>
-  </View>
-);
-
-export const AppointmentCardSkeleton: React.FC = () => (
-  <View style={skeletonStyles.appointmentCard}>
-    <View style={skeletonStyles.appointmentHeader}>
-      <ShimmerBox radius="round" height={44} width={44} />
-      <View style={skeletonStyles.appointmentHeaderText}>
-        <ShimmerBox width="60%" height={16} />
-        <View style={skeletonStyles.gapSm} />
-        <ShimmerBox width="40%" height={13} />
+export const DoctorCardSkeleton: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const skeletonStyles = makeSkeletonStyles(colors);
+  return (
+    <View style={skeletonStyles.doctorCard}>
+      <ShimmerBox radius="round" height={56} width={56} />
+      <View style={skeletonStyles.doctorCardContent}>
+        <ShimmerBox width="70%" height={18} />
+        <View style={skeletonStyles.gap} />
+        <ShimmerBox width="50%" height={14} />
+        <View style={skeletonStyles.gap} />
+        <ShimmerBox width="35%" height={14} />
       </View>
-      <ShimmerBox width={70} height={24} radius={borderRadius.full} />
     </View>
-    <View style={skeletonStyles.divider} />
-    <View style={skeletonStyles.appointmentFooter}>
-      <ShimmerBox width="30%" height={13} />
-      <ShimmerBox width="25%" height={13} />
+  );
+};
+
+export const AppointmentCardSkeleton: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const skeletonStyles = makeSkeletonStyles(colors);
+  return (
+    <View style={skeletonStyles.appointmentCard}>
+      <View style={skeletonStyles.appointmentHeader}>
+        <ShimmerBox radius="round" height={44} width={44} />
+        <View style={skeletonStyles.appointmentHeaderText}>
+          <ShimmerBox width="60%" height={16} />
+          <View style={skeletonStyles.gapSm} />
+          <ShimmerBox width="40%" height={13} />
+        </View>
+        <ShimmerBox width={70} height={24} radius={borderRadius.full} />
+      </View>
+      <View style={skeletonStyles.divider} />
+      <View style={skeletonStyles.appointmentFooter}>
+        <ShimmerBox width="30%" height={13} />
+        <ShimmerBox width="25%" height={13} />
+      </View>
     </View>
-  </View>
-);
+  );
+};
 
-export const StatCardSkeleton: React.FC = () => (
-  <View style={skeletonStyles.statCard}>
-    <ShimmerBox radius="round" height={40} width={40} />
-    <View style={skeletonStyles.gapSm} />
-    <ShimmerBox width="60%" height={22} />
-    <View style={skeletonStyles.gapSm} />
-    <ShimmerBox width="80%" height={13} />
-  </View>
-);
-
-export const ListItemSkeleton: React.FC = () => (
-  <View style={skeletonStyles.listItem}>
-    <ShimmerBox radius="round" height={44} width={44} />
-    <View style={skeletonStyles.listItemContent}>
-      <ShimmerBox width="65%" height={16} />
+export const StatCardSkeleton: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const skeletonStyles = makeSkeletonStyles(colors);
+  return (
+    <View style={skeletonStyles.statCard}>
+      <ShimmerBox radius="round" height={40} width={40} />
       <View style={skeletonStyles.gapSm} />
-      <ShimmerBox width="45%" height={13} />
-    </View>
-  </View>
-);
-
-export const HealthTipSkeleton: React.FC = () => (
-  <View style={skeletonStyles.healthTipCard}>
-    <ShimmerBox width="100%" height={140} radius={borderRadius.md} />
-    <View style={{ padding: spacing.lg }}>
-      <ShimmerBox width="30%" height={12} />
-      <View style={skeletonStyles.gap} />
-      <ShimmerBox width="90%" height={18} />
+      <ShimmerBox width="60%" height={22} />
       <View style={skeletonStyles.gapSm} />
-      <ShimmerBox width="70%" height={14} />
+      <ShimmerBox width="80%" height={13} />
     </View>
-  </View>
-);
+  );
+};
+
+export const ListItemSkeleton: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const skeletonStyles = makeSkeletonStyles(colors);
+  return (
+    <View style={skeletonStyles.listItem}>
+      <ShimmerBox radius="round" height={44} width={44} />
+      <View style={skeletonStyles.listItemContent}>
+        <ShimmerBox width="65%" height={16} />
+        <View style={skeletonStyles.gapSm} />
+        <ShimmerBox width="45%" height={13} />
+      </View>
+    </View>
+  );
+};
+
+export const HealthTipSkeleton: React.FC = () => {
+  const { theme: colors } = useTheme();
+  const skeletonStyles = makeSkeletonStyles(colors);
+  return (
+    <View style={skeletonStyles.healthTipCard}>
+      <ShimmerBox width="100%" height={140} radius={borderRadius.md} />
+      <View style={{ padding: spacing.lg }}>
+        <ShimmerBox width="30%" height={12} />
+        <View style={skeletonStyles.gap} />
+        <ShimmerBox width="90%" height={18} />
+        <View style={skeletonStyles.gapSm} />
+        <ShimmerBox width="70%" height={14} />
+      </View>
+    </View>
+  );
+};
 
 // --- Skeleton list renderer ---
 export const SkeletonList: React.FC<{
@@ -135,7 +157,7 @@ export const SkeletonList: React.FC<{
   </View>
 );
 
-const skeletonStyles = StyleSheet.create({
+const makeSkeletonStyles = (colors: ThemeColors) => StyleSheet.create({
   gap: { height: spacing.sm },
   gapSm: { height: spacing.xs },
   divider: {

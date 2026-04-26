@@ -7,7 +7,8 @@ import {
   StyleProp,
   Animated,
 } from 'react-native';
-import { colors, spacing, borderRadius, shadows } from '../../config/theme';
+import { spacing, borderRadius, shadows } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 type CardVariant = 'elevated' | 'outlined' | 'filled';
 
@@ -30,6 +31,8 @@ const Card: React.FC<CardProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const variantStyle: ViewStyle =
@@ -90,7 +93,7 @@ const Card: React.FC<CardProps> = ({
   return <View style={containerStyle}>{children}</View>;
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     backgroundColor: colors.surface,
     borderRadius: borderRadius.md,

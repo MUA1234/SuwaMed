@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import { colors, spacing } from '../../config/theme';
+import { spacing } from '../../config/theme';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface NetworkStatusProps {}
 
 const NetworkStatus: React.FC<NetworkStatusProps> = () => {
+  const { theme: colors } = useTheme();
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [showReconnected, setShowReconnected] = useState<boolean>(false);
   const slideAnim = useRef(new Animated.Value(-50)).current;

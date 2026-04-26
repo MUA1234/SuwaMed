@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius } from '../../config/theme';
+import { spacing, borderRadius } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import Button from './Button';
 
 interface EmptyStateProps {
@@ -20,16 +21,20 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   description,
   actionLabel,
   onAction,
-  iconColor = colors.textDisabled,
-  iconBgColor = colors.borderLight,
+  iconColor,
+  iconBgColor,
 }) => {
+  const { theme: colors } = useTheme();
+  const styles = makeStyles(colors);
+  const resolvedIconColor = iconColor ?? colors.textDisabled;
+  const resolvedIconBgColor = iconBgColor ?? colors.borderLight;
   return (
     <View style={styles.container} accessibilityRole="text" accessibilityLabel={`${title}. ${description}`}>
-      <View style={[styles.iconContainer, { backgroundColor: iconBgColor }]} importantForAccessibility="no-hide-descendants">
+      <View style={[styles.iconContainer, { backgroundColor: resolvedIconBgColor }]} importantForAccessibility="no-hide-descendants">
         <MaterialCommunityIcons
           name={icon as any}
           size={48}
-          color={iconColor}
+          color={resolvedIconColor}
           accessibilityElementsHidden
         />
       </View>
@@ -48,7 +53,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',

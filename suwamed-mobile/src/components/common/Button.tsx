@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, shadows, gradients } from '../../config/theme';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -41,6 +42,7 @@ const sizeStyles: Record<ButtonSize, { height: number; paddingH: number; fontSiz
 const getVariantStyles = (
   variant: ButtonVariant,
   disabled: boolean,
+  colors: ThemeColors,
 ): { container: ViewStyle; text: TextStyle; iconColor: string; useGradient: boolean; gradientColors: [string, string] } => {
   const base = {
     container: {} as ViewStyle,
@@ -111,8 +113,9 @@ const Button: React.FC<ButtonProps> = ({
   accessibilityLabel,
   accessibilityHint,
 }) => {
+  const { theme: colors } = useTheme();
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const variantStyles = getVariantStyles(variant, disabled || loading);
+  const variantStyles = getVariantStyles(variant, disabled || loading, colors);
   const sizeStyle = sizeStyles[size];
 
   const handlePressIn = () => {
