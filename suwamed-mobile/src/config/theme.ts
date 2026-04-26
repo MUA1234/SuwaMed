@@ -30,14 +30,16 @@ export const colors = {
 
 export const darkColors = {
   ...colors,
-  background: '#0F172A',
-  surface: '#1E293B',
+  // True-black (OLED) dark theme. Cards/surfaces are barely-lighter so they
+  // separate from the background without giving the page a navy-blue cast.
+  background: '#000000',
+  surface: '#0A0A0A',
+  card: '#0A0A0A',
   textPrimary: '#F1F5F9',
   textSecondary: '#94A3B8',
   textDisabled: '#475569',
-  card: '#1E293B',
-  border: '#334155',
-  borderLight: '#1E293B',
+  border: '#1F1F1F',
+  borderLight: '#0A0A0A',
   errorLight: '#3B1515',
   warningLight: '#3B2F0A',
   successLight: '#0D3B2E',
