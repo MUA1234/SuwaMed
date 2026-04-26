@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Appointment from '../models/Appointment.model';
 import Doctor from '../models/Doctor.model';
+import Payment from '../models/Payment.model';
 import { AppError } from '../utils/errorResponse';
 
 // GET /api/appointments — list appointments for the logged-in user
@@ -93,12 +94,38 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
 // PUT /api/appointments/:id/confirm
 export const confirmAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+        const transactionId = `CASH-${Date.now()}-${req.params.id.slice(-6)}`;
         const appointment = await Appointment.findByIdAndUpdate(
             req.params.id,
-            { status: 'confirmed', 'payment.status': 'completed', 'payment.paidAt': new Date() },
+            {
+                status: 'confirmed',
+                'payment.status': 'completed',
+                'payment.paidAt': new Date(),
+                'payment.transactionId': transactionId,
+            },
             { new: true }
         );
         if (!appointment) throw new AppError('Appointment not found', 404);
+
+        // Persist a Payment record so Payment History / invoices have data to render.
+        // Idempotent: if this appointment already has a completed payment, skip.
+        const alreadyPaid = await Payment.findOne({
+            appointmentId: appointment._id,
+            status: 'completed',
+        });
+        if (!alreadyPaid && appointment.payment?.amount) {
+            await Payment.create({
+                userId: appointment.patientId,
+                type: 'consultation',
+                amount: appointment.payment.amount,
+                currency: 'LKR',
+                status: 'completed',
+                gateway: 'cash',
+                transactionId,
+                appointmentId: appointment._id,
+            });
+        }
+
         res.status(200).json({ success: true, data: appointment });
     } catch (error) {
         next(error);

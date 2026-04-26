@@ -6,6 +6,7 @@ import Review from '../models/Review.model';
 import HealthRecord from '../models/HealthRecord.model';
 import { AppError } from '../utils/errorResponse';
 import { IAvailability } from '../models/Doctor.model';
+import { uploadToCloudinary } from '../services/upload.service';
 
 // GET /api/doctors — list doctors (with optional specialization filter)
 export const getDoctors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -232,6 +233,86 @@ export const getEarnings = async (req: Request, res: Response, next: NextFunctio
                 pendingWithdrawal: doctor.pendingWithdrawal,
                 monthlyEarnings: months,
                 recentTransactions: recentAppts,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST /api/doctors/profile/avatar — upload doctor avatar image to Cloudinary, store URL on User.
+export const uploadDoctorAvatar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const file = (req as any).file as Express.Multer.File | undefined;
+        if (!file) throw new AppError('avatar file is required', 400);
+        if (!file.mimetype.startsWith('image/')) throw new AppError('Avatar must be an image', 400);
+
+        const url = await uploadToCloudinary(file.buffer, `suwamed/avatars/${userId}`);
+        const user = await User.findByIdAndUpdate(userId, { avatar: url }, { new: true })
+            .select('-password -refreshToken');
+        if (!user) throw new AppError('User not found', 404);
+
+        res.status(200).json({ success: true, data: { avatar: url, user } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST /api/doctors/verification-documents — upload one or more verification documents
+// (image or PDF). Files are pushed to `Doctor.verificationDocuments` with the supplied
+// `type` per file (e.g. `slmc_certificate`, `degree`, `nic`). When new documents are
+// added we also flip `verificationStatus` from `pending` to `under_review` so admins
+// know there's something fresh to review.
+export const uploadDoctorVerificationDocuments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const doctor = await Doctor.findOne({ userId });
+        if (!doctor) throw new AppError('Doctor profile not found', 404);
+
+        const files = ((req as any).files as Express.Multer.File[] | undefined) || [];
+        if (files.length === 0) throw new AppError('At least one document is required', 400);
+
+        // `types` may arrive as: a single string (one file), an array (multiple), or
+        // a JSON-stringified array (some multipart clients). Pad out to the file count.
+        let types: string[] = [];
+        const rawTypes = req.body.types;
+        if (Array.isArray(rawTypes)) {
+            types = rawTypes.map((t: any) => String(t));
+        } else if (typeof rawTypes === 'string' && rawTypes.trim()) {
+            try {
+                const parsed = JSON.parse(rawTypes);
+                types = Array.isArray(parsed) ? parsed.map((t: any) => String(t)) : [rawTypes];
+            } catch {
+                types = [rawTypes];
+            }
+        }
+
+        const uploaded = await Promise.all(
+            files.map(async (file, idx) => {
+                const url = await uploadToCloudinary(
+                    file.buffer,
+                    `suwamed/verification/${userId}`,
+                );
+                return {
+                    type: types[idx] || 'other',
+                    url,
+                    uploadedAt: new Date(),
+                };
+            }),
+        );
+
+        doctor.verificationDocuments.push(...uploaded);
+        if (doctor.verificationStatus === 'pending') {
+            doctor.verificationStatus = 'under_review';
+        }
+        await doctor.save();
+
+        res.status(200).json({
+            success: true,
+            data: {
+                verificationDocuments: doctor.verificationDocuments,
+                verificationStatus: doctor.verificationStatus,
             },
         });
     } catch (error) {

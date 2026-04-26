@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import { AuthService } from '../services/auth.service';
+import { sendOtpEmail } from '../services/email.service';
 import logger from '../utils/logger';
 import {
   registerSchema,
@@ -106,9 +107,9 @@ export const resendOTP = async (req: Request, res: Response, next: NextFunction)
     user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
-    // In production, send OTP via SMS. In dev, log for debugging.
+    await sendOtpEmail(user.email, otp, 'Verify your SuwaMed account');
     if (process.env.NODE_ENV === 'development') {
-      logger.info(`Resent OTP for ${phone}: ${otp}`);
+      logger.info(`Resent OTP for ${phone} / ${user.email}: ${otp}`);
     }
 
     res.status(200).json({
@@ -249,6 +250,27 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
       success: true,
       message: 'User profile fetched successfully',
       data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as any).user!.id;
+    const { password } = req.body;
+
+    if (!password || typeof password !== 'string') {
+      throw new AppError('Password is required to confirm account deletion', 400);
+    }
+
+    const result = await AuthService.deleteAccount(userId, password);
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: null,
     });
   } catch (error) {
     next(error);

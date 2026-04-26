@@ -9,7 +9,15 @@ export const getHistory = async (req: Request, res: Response, next: NextFunction
         const userId = (req as any).user.id;
         const payments = await Payment.find({ userId })
             .sort({ createdAt: -1 })
-            .populate('appointmentId');
+            .populate({
+                path: 'appointmentId',
+                select: 'date type status doctorId',
+                populate: {
+                    path: 'doctorId',
+                    select: 'userId specialization',
+                    populate: { path: 'userId', select: 'firstName lastName avatar' },
+                },
+            });
         res.status(200).json({ success: true, data: payments });
     } catch (error) {
         next(error);

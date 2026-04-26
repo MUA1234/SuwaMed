@@ -33,6 +33,8 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  compareOtp(candidateOtp: string): Promise<boolean>;
+  compareRefreshToken(candidate: string): Promise<boolean>;
 }
 
 const addressSchema = new Schema(
@@ -99,7 +101,7 @@ const userSchema = new Schema<IUser>(
     isActive: { type: Boolean, default: true },
     fcmTokens: [{ type: String }],
     lastLogin: { type: Date },
-    refreshToken: { type: String },
+    refreshToken: { type: String, select: false },
     otp: { type: String, select: false },
     otpExpiresAt: { type: Date, select: false },
   },
@@ -110,15 +112,43 @@ userSchema.index({ email: 1 });
 userSchema.index({ phone: 1 });
 
 userSchema.pre('save', async function () {
-  if (!this.isModified('password')) return;
-  const salt = await bcrypt.genSalt(12);
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  // Hash OTP at rest. Use fewer rounds (8) than password — OTPs are short-lived
+  // (5-min expiry) and the rate-limited verify endpoint already blocks brute force.
+  // Skip when otp has been cleared (set to undefined after successful verify/expiry).
+  if (this.isModified('otp') && this.otp) {
+    const salt = await bcrypt.genSalt(8);
+    this.otp = await bcrypt.hash(this.otp, salt);
+  }
+  // Hash refresh token at rest so a DB read alone cannot impersonate the user.
+  // Skip on logout (token cleared to undefined).
+  if (this.isModified('refreshToken') && this.refreshToken) {
+    const salt = await bcrypt.genSalt(8);
+    this.refreshToken = await bcrypt.hash(this.refreshToken, salt);
+  }
 });
 
 userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.methods.compareOtp = async function (
+  candidateOtp: string
+): Promise<boolean> {
+  if (!this.otp) return false;
+  return bcrypt.compare(candidateOtp, this.otp);
+};
+
+userSchema.methods.compareRefreshToken = async function (
+  candidate: string
+): Promise<boolean> {
+  if (!this.refreshToken) return false;
+  return bcrypt.compare(candidate, this.refreshToken);
 };
 
 const User = mongoose.model<IUser>('User', userSchema);

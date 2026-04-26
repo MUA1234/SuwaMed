@@ -6,7 +6,7 @@ export interface IPayment extends Document {
   amount: number;
   currency: string;
   status: 'pending' | 'completed' | 'failed' | 'refunded';
-  gateway: 'payhere' | 'card' | 'bank_transfer';
+  gateway: 'payhere' | 'card' | 'bank_transfer' | 'cash';
   transactionId?: string;
   gatewayResponse?: any;
   appointmentId?: Types.ObjectId;
@@ -38,7 +38,7 @@ const paymentSchema = new Schema<IPayment>(
     },
     gateway: {
       type: String,
-      enum: ['payhere', 'card', 'bank_transfer'],
+      enum: ['payhere', 'card', 'bank_transfer', 'cash'],
     },
     transactionId: { type: String },
     gatewayResponse: { type: Schema.Types.Mixed },

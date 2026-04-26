@@ -1,11 +1,16 @@
+import bcrypt from 'bcryptjs';
 import User, { IUser } from '../models/User.model';
 import Patient from '../models/Patient.model';
 import Doctor from '../models/Doctor.model';
 import SlmcRegistry from '../models/SlmcRegistry.model';
+import HealthRecord from '../models/HealthRecord.model';
+import Notification from '../models/Notification.model';
+import SymptomCheck from '../models/SymptomCheck.model';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/tokenUtils';
 import { AppError } from '../utils/errorResponse';
 import { generateOTP } from '../utils/helpers';
 import logger from '../utils/logger';
+import { sendOtpEmail, sendPasswordResetEmail } from './email.service';
 
 export class AuthService {
   static async register(data: {
@@ -88,9 +93,13 @@ export class AuthService {
     user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
     await user.save({ validateBeforeSave: false });
 
-    // In production, send OTP via SMS (Twilio/similar). In dev, log for debugging.
+    // Deliver the OTP. Email is the primary channel — SMS would require Twilio +
+    // a paid phone-number lease and is out of scope for the launch. The email
+    // service is best-effort: if it fails or no provider is configured, we still
+    // surface the OTP in the dev console so onboarding doesn't break.
+    await sendOtpEmail(user.email, otp, 'Verify your SuwaMed account');
     if (process.env.NODE_ENV === 'development') {
-      logger.info(`OTP for ${user.phone}: ${otp}`);
+      logger.info(`OTP for ${user.phone} / ${user.email}: ${otp}`);
     }
 
     const userObj: any = user.toObject();
@@ -170,7 +179,8 @@ export class AuthService {
       throw new AppError('OTP has expired. Please request a new one.', 400);
     }
 
-    if (user.otp !== otp) {
+    const isMatch = await user.compareOtp(otp);
+    if (!isMatch) {
       throw new AppError('Invalid OTP. Please try again.', 400);
     }
 
@@ -186,9 +196,14 @@ export class AuthService {
   static async refreshToken(token: string) {
     const decoded = verifyRefreshToken(token);
 
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('+refreshToken');
 
-    if (!user || user.refreshToken !== token) {
+    if (!user) {
+      throw new AppError('Invalid refresh token', 401);
+    }
+
+    const isMatch = await user.compareRefreshToken(token);
+    if (!isMatch) {
       throw new AppError('Invalid refresh token', 401);
     }
 
@@ -219,9 +234,9 @@ export class AuthService {
     user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
-    // In production, send OTP via SMS/email. In dev, log for debugging.
+    await sendPasswordResetEmail(user.email, otp);
     if (process.env.NODE_ENV === 'development') {
-      logger.info(`Password Reset OTP for ${emailOrPhone}: ${otp}`);
+      logger.info(`Password Reset OTP for ${emailOrPhone} / ${user.email}: ${otp}`);
     }
 
     return { message: 'OTP sent successfully' };
@@ -247,7 +262,8 @@ export class AuthService {
       throw new AppError('OTP has expired. Please request a new one.', 400);
     }
 
-    if (user.otp !== otp) {
+    const isMatch = await user.compareOtp(otp);
+    if (!isMatch) {
       throw new AppError('Invalid OTP. Please try again.', 400);
     }
 
@@ -271,5 +287,63 @@ export class AuthService {
     await user.save({ validateBeforeSave: false });
 
     return { message: 'Logged out successfully' };
+  }
+
+  // Play Store / GDPR — users must be able to delete their account.
+  // We anonymize rather than hard-delete because Appointment / Payment / Prescription
+  // documents reference this user and are needed for the doctor's billing & medical
+  // record retention. The user document is kept but stripped of every identifier so
+  // the account can no longer be recognized or recovered.
+  static async deleteAccount(userId: string, password: string) {
+    const user = await User.findById(userId).select('+password');
+
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // Re-authenticate so a stolen access token cannot wipe an account.
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new AppError('Password is incorrect', 401);
+    }
+
+    // Hard-delete records that exist solely to serve this user.
+    if (user.role === 'patient') {
+      await Patient.deleteOne({ userId: user._id });
+      await HealthRecord.deleteMany({ patientId: user._id });
+      await SymptomCheck.deleteMany({ patientId: user._id });
+    } else if (user.role === 'doctor') {
+      await Doctor.deleteOne({ userId: user._id });
+    }
+    await Notification.deleteMany({ userId: user._id });
+
+    // Anonymize the user record. We keep `_id` so foreign keys in Appointments,
+    // Reviews, Payments and Prescriptions continue to resolve, but every PII field
+    // is wiped. A unique tombstone email/phone keeps the unique indexes happy and
+    // makes deleted accounts visible in the DB if support ever needs to audit one.
+    const tombstone = `deleted-${user._id.toString()}`;
+    user.email = `${tombstone}@deleted.suwamed.local`;
+    user.phone = `+0000000000${user._id.toString().slice(-6)}`;
+    user.firstName = 'Deleted';
+    user.lastName = 'User';
+    user.displayName = 'Deleted User';
+    user.avatar = undefined;
+    user.dateOfBirth = undefined;
+    user.gender = undefined;
+    user.address = undefined;
+    user.fcmTokens = [];
+    user.refreshToken = undefined;
+    user.otp = undefined;
+    user.otpExpiresAt = undefined;
+    user.isActive = false;
+    user.isEmailVerified = false;
+    user.isPhoneVerified = false;
+    // Reset the password to a random unguessable value so login is impossible.
+    user.password = await bcrypt.hash(`deleted-${Date.now()}-${Math.random()}`, 12);
+
+    await user.save({ validateBeforeSave: false });
+
+    logger.info(`Account deleted for user ${userId} (role=${user.role})`);
+    return { message: 'Account deleted successfully' };
   }
 }

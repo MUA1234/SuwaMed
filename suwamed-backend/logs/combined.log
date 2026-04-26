@@ -693,3 +693,9 @@
 2026-04-11 15:19:11 [INFO]: GET /api/doctors
 2026-04-11 15:19:18 [INFO]: GET /api/health-tips/admin/all
 2026-04-11 15:19:24 [INFO]: GET /api/admin/dashboard
+2026-04-13 19:31:54 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-02.e6vetwj.mongodb.net
+2026-04-13 19:31:54 [INFO]: Server running on port 5000
+2026-04-13 19:35:55 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-01.e6vetwj.mongodb.net
+2026-04-13 19:35:55 [INFO]: Server running on port 5000
+2026-04-13 22:41:28 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-00.e6vetwj.mongodb.net
+2026-04-13 22:41:28 [INFO]: Server running on port 5000

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { protect } from '../middleware/auth.middleware';
+import { uploadSingle, uploadMultiple } from '../middleware/upload.middleware';
 import {
   getDoctors,
   getDoctorById,
@@ -11,6 +12,8 @@ import {
   getDoctorReviews,
   getEarnings,
   updateDoctorProfile,
+  uploadDoctorAvatar,
+  uploadDoctorVerificationDocuments,
   setAvailability,
   getDoctorAvailability,
 } from '../controllers/doctor.controller';
@@ -24,6 +27,8 @@ router.get('/search', getDoctors);
 // Protected — must be before /:id routes
 router.get('/profile', protect, getDoctorProfile);
 router.put('/profile', protect, updateDoctorProfile);
+router.post('/profile/avatar', protect, uploadSingle('avatar'), uploadDoctorAvatar);
+router.post('/verification-documents', protect, uploadMultiple('documents', 5), uploadDoctorVerificationDocuments);
 router.get('/dashboard', protect, getDashboardStats);
 router.get('/patients', protect, getPatients);
 router.get('/patients/:id', protect, getPatientDetail);
