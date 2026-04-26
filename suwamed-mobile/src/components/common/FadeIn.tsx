@@ -1,0 +1,36 @@
+import React, { useEffect, useRef } from 'react';
+import { Animated, ViewStyle } from 'react-native';
+
+interface FadeInProps {
+  delay?: number;
+  duration?: number;
+  slideDistance?: number;
+  style?: ViewStyle;
+  children: React.ReactNode;
+}
+
+const FadeIn: React.FC<FadeInProps> = ({
+  delay = 0,
+  duration = 450,
+  slideDistance = 16,
+  style,
+  children,
+}) => {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(slideDistance)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration, delay, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration, delay, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[{ opacity, transform: [{ translateY }] }, style]}>
+      {children}
+    </Animated.View>
+  );
+};
+
+export default FadeIn;
