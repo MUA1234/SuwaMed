@@ -23,8 +23,13 @@ const logger = winston.createLogger({
         })
       ),
     }),
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    // Vercel runs from a read-only filesystem — file transports throw on cold start.
+    ...(process.env.VERCEL
+      ? []
+      : [
+          new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+          new winston.transports.File({ filename: 'logs/combined.log' }),
+        ]),
   ],
 });
 

@@ -14,8 +14,11 @@
     "preview": {
       "distribution": "internal",
       "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
-        "EXPO_PUBLIC_API_BASE": "https://staging.api.suwamed.lk"
+        "EXPO_PUBLIC_API_BASE": "http://172.20.10.5:5000"
       }
     },
     "production": {

@@ -699,3 +699,26 @@
 2026-04-13 19:35:55 [INFO]: Server running on port 5000
 2026-04-13 22:41:28 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-00.e6vetwj.mongodb.net
 2026-04-13 22:41:28 [INFO]: Server running on port 5000
+2026-05-03 21:19:20 [WARN]: [email] No email provider configured — OTP emails will be logged to console only
+2026-05-03 21:19:21 [WARN]: CORS: ALLOWED_ORIGINS is empty or "*" in production. Browser-origin requests will be rejected unless an explicit allowlist is configured. Native mobile clients (no Origin header) are not affected.
+2026-05-03 21:19:22 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-00.e6vetwj.mongodb.net
+2026-05-03 21:19:22 [INFO]: Server running on port 5000
+2026-05-03 21:26:18 [INFO]: GET /api/health
+2026-05-03 21:48:57 [INFO]: POST /api/auth/login
+2026-05-03 21:50:43 [INFO]: GET /api/auth/login
+2026-05-03 22:01:57 [WARN]: [email] No email provider configured — OTP emails will be logged to console only
+2026-05-03 22:01:58 [WARN]: CORS: ALLOWED_ORIGINS is empty or "*" in production. Browser-origin requests will be rejected unless an explicit allowlist is configured. Native mobile clients (no Origin header) are not affected.
+2026-05-03 22:02:00 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-02.e6vetwj.mongodb.net
+2026-05-03 22:02:00 [INFO]: Server running on port 5000
+2026-05-03 22:02:10 [WARN]: [email] No email provider configured — OTP emails will be logged to console only
+2026-05-03 22:02:11 [WARN]: CORS: ALLOWED_ORIGINS is empty or "*" in production. Browser-origin requests will be rejected unless an explicit allowlist is configured. Native mobile clients (no Origin header) are not affected.
+2026-05-03 22:02:13 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-02.e6vetwj.mongodb.net
+2026-05-03 22:02:13 [INFO]: Server running on port 5000
+2026-05-03 22:02:18 [WARN]: [email] No email provider configured — OTP emails will be logged to console only
+2026-05-03 22:02:19 [WARN]: CORS: ALLOWED_ORIGINS is empty or "*" in production. Browser-origin requests will be rejected unless an explicit allowlist is configured. Native mobile clients (no Origin header) are not affected.
+2026-05-03 22:02:20 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-02.e6vetwj.mongodb.net
+2026-05-03 22:02:20 [INFO]: Server running on port 5000
+2026-05-03 22:02:27 [WARN]: [email] No email provider configured — OTP emails will be logged to console only
+2026-05-03 22:02:27 [WARN]: CORS: ALLOWED_ORIGINS is empty or "*" in production. Browser-origin requests will be rejected unless an explicit allowlist is configured. Native mobile clients (no Origin header) are not affected.
+2026-05-03 22:02:29 [INFO]: MongoDB Connected: ac-vipew4d-shard-00-01.e6vetwj.mongodb.net
+2026-05-03 22:02:29 [INFO]: Server running on port 5000

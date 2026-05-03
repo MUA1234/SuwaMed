@@ -84,20 +84,24 @@ const startServer = async () => {
   });
 };
 
-startServer();
+// Only auto-start when invoked directly (npm run dev / npm start).
+// On Vercel the file is imported by the serverless handler — don't bind a port.
+if (require.main === module) {
+  startServer();
 
-process.on('unhandledRejection', (err: Error) => {
-  logger.error(`Unhandled Rejection: ${err.message}`);
-  server.close(() => {
-    process.exit(1);
+  process.on('unhandledRejection', (err: Error) => {
+    logger.error(`Unhandled Rejection: ${err.message}`);
+    server.close(() => {
+      process.exit(1);
+    });
   });
-});
 
-process.on('uncaughtException', (err: Error) => {
-  logger.error(`Uncaught Exception: ${err.message}`);
-  server.close(() => {
-    process.exit(1);
+  process.on('uncaughtException', (err: Error) => {
+    logger.error(`Uncaught Exception: ${err.message}`);
+    server.close(() => {
+      process.exit(1);
+    });
   });
-});
+}
 
 export default app;
