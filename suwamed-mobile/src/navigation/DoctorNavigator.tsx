@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { shadows } from '../config/theme';
 import { useTheme } from '../contexts/ThemeContext';
@@ -113,6 +114,8 @@ const TabIcon = ({ name, color, focused, indicatorColor }: { name: string; color
 
 const DoctorNavigator = () => {
   const { theme: colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const baseHeight = Platform.OS === 'ios' ? 60 : 56;
   return (
     <Tab.Navigator
       screenOptions={{
@@ -129,8 +132,8 @@ const DoctorNavigator = () => {
           backgroundColor: colors.surface,
           borderTopWidth: 0,
           borderTopColor: colors.border,
-          height: Platform.OS === 'ios' ? 88 : 66,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          height: baseHeight + insets.bottom,
+          paddingBottom: insets.bottom + 4,
           paddingTop: 8,
           ...shadows.lg,
         },
