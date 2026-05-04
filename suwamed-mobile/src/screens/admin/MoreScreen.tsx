@@ -9,24 +9,33 @@ import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useAuthStore } from '../../store/authStore';
 import { useTranslation } from 'react-i18next';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
+
+interface MenuItem {
+    label: string;
+    icon: string;
+    screen: string | null;
+    alert?: string;
+    variant: IconWrapVariant;
+}
 
 const MoreScreen: React.FC = () => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
-  const menuSections = [
+  const menuSections: Array<{ title: string; items: MenuItem[] }> = [
     {
       title: 'Account',
       items: [
-        { label: 'Admin Profile', icon: 'account-circle-outline', screen: 'AdminProfileScreen', color: colors.primary },
-        { label: 'Notifications', icon: 'bell-outline', screen: 'AdminNotificationsScreen', color: '#8B5CF6' },
-        { label: 'Settings', icon: 'cog-outline', screen: 'AdminSettingsScreen', color: colors.textSecondary },
+        { label: 'Admin Profile', icon: 'account-circle-outline', screen: 'AdminProfileScreen', variant: 'tinted' },
+        { label: 'Notifications', icon: 'bell-outline', screen: 'AdminNotificationsScreen', variant: 'tinted' },
+        { label: 'Settings', icon: 'cog-outline', screen: 'AdminSettingsScreen', variant: 'tinted' },
       ],
     },
     {
       title: 'System',
       items: [
-        { label: 'System Logs', icon: 'file-document-outline', screen: null, alert: 'Coming soon', color: '#10B981' },
-        { label: 'Help & Documentation', icon: 'help-circle-outline', screen: null, alert: 'Coming soon', color: '#F59E0B' },
+        { label: 'System Logs', icon: 'file-document-outline', screen: null, alert: 'Coming soon', variant: 'tinted' },
+        { label: 'Help & Documentation', icon: 'help-circle-outline', screen: null, alert: 'Coming soon', variant: 'tinted' },
       ],
     },
   ];
@@ -105,13 +114,7 @@ const MoreScreen: React.FC = () => {
                                         activeOpacity={0.7}
                                         onPress={() => handlePress(item)}
                                     >
-                                        <View style={[styles.menuIcon, { backgroundColor: item.color + '15' }]}>
-                                            <MaterialCommunityIcons
-                                                name={item.icon as any}
-                                                size={20}
-                                                color={item.color}
-                                            />
-                                        </View>
+                                        <IconWrap name={item.icon} variant={item.variant} size="sm" />
                                         <Text style={styles.menuLabel}>{item.label}</Text>
                                         <MaterialCommunityIcons
                                             name="chevron-right"
@@ -176,7 +179,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         alignItems: 'center',
         gap: 3,
         marginTop: spacing.xs,
-        backgroundColor: colors.primary + '12',
+        backgroundColor: colors.primaryLight,
         paddingHorizontal: spacing.sm,
         paddingVertical: 2,
         borderRadius: 10,
@@ -207,13 +210,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         paddingVertical: spacing.md,
         gap: spacing.md,
     },
-    menuIcon: {
-        width: 38,
-        height: 38,
-        borderRadius: borderRadius.sm,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     menuLabel: { flex: 1, ...typography.body, fontWeight: '500', color: colors.textPrimary },
     divider: { height: 1, backgroundColor: colors.border, marginHorizontal: spacing.lg },
     logoutBtn: {
@@ -221,11 +217,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: spacing.sm,
-        backgroundColor: colors.error + '12',
+        backgroundColor: colors.surface,
         borderRadius: borderRadius.lg,
         paddingVertical: spacing.lg,
         borderWidth: 1,
-        borderColor: colors.error + '30',
+        borderColor: colors.border,
     },
     logoutText: { ...typography.body, fontWeight: '700', color: colors.error },
 });

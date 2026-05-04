@@ -152,7 +152,7 @@ const DoctorVerificationScreen: React.FC = () => {
 
                 {doctor.verificationStatus !== 'pending' && (
                     <View style={[styles.statusBanner, {
-                        backgroundColor: doctor.verificationStatus === 'verified' ? '#ECFDF5' : '#FEF2F2'
+                        backgroundColor: doctor.verificationStatus === 'verified' ? colors.successLight : colors.errorLight
                     }]}>
                         <MaterialCommunityIcons
                             name={doctor.verificationStatus === 'verified' ? 'check-circle' : 'close-circle'}
@@ -178,7 +178,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     title: { flex: 1, ...typography.h3, color: colors.textPrimary, textAlign: 'center' },
     scroll: { paddingHorizontal: spacing.xl, paddingBottom: 100 },
     profileCard: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.xxl, marginBottom: spacing.lg, borderWidth: 1, borderColor: colors.border },
-    avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#10B981', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
+    avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
     avatarText: { color: '#fff', fontWeight: '700', fontSize: 28 },
     name: { ...typography.h3, color: colors.textPrimary },
     email: { ...typography.body, color: colors.textSecondary, marginTop: 2 },
@@ -197,7 +197,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     actionSection: { gap: spacing.md, marginBottom: spacing.xxl },
     approveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.success, borderRadius: borderRadius.md, paddingVertical: spacing.lg, gap: spacing.sm },
     approveBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
-    rejectBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEF2F2', borderRadius: borderRadius.md, paddingVertical: spacing.lg, borderWidth: 1, borderColor: '#FECACA', gap: spacing.sm },
+    rejectBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.errorLight, borderRadius: borderRadius.md, paddingVertical: spacing.lg, borderWidth: 1, borderColor: colors.error + '33', gap: spacing.sm },
     rejectBtnText: { color: colors.error, fontWeight: '700', fontSize: 16 },
     statusBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: borderRadius.md, padding: spacing.lg, gap: spacing.sm, marginBottom: spacing.xxl },
     statusText: { ...typography.body, fontWeight: '700' },

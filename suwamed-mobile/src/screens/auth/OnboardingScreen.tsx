@@ -16,7 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { AuthStackParamList } from '../../types/navigation.types';
 import Button from '../../components/common/Button';
-import { spacing, borderRadius, typography, shadows } from '../../config/theme';
+import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 type OnboardingNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Onboarding'>;
 
@@ -28,7 +28,6 @@ interface OnboardingPage {
   title: string;
   description: string;
   gradient: [string, string];
-  iconBg: string;
 }
 
 const OnboardingScreen: React.FC = () => {
@@ -37,38 +36,35 @@ const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation<OnboardingNavigationProp>();
   const { t } = useTranslation();
 
+  // All four pages share the same hero teal gradient — the icon glyph is the differentiator.
   const pages: OnboardingPage[] = [
     {
       id: '1',
       icon: 'doctor',
       title: t('onboarding.page1Title'),
       description: t('onboarding.page1Desc'),
-      gradient: ['#2563EB', '#1D4ED8'],
-      iconBg: '#DBEAFE',
+      gradient: gradients.hero,
     },
     {
       id: '2',
       icon: 'stethoscope',
       title: t('onboarding.page2Title'),
       description: t('onboarding.page2Desc'),
-      gradient: ['#0D9488', '#0F766E'],
-      iconBg: '#CCFBF1',
+      gradient: gradients.hero,
     },
     {
       id: '3',
       icon: 'video',
       title: t('onboarding.page3Title'),
       description: t('onboarding.page3Desc'),
-      gradient: ['#F97316', '#EA580C'],
-      iconBg: '#FFF7ED',
+      gradient: gradients.hero,
     },
     {
       id: '4',
       icon: 'file-document-multiple',
       title: t('onboarding.page4Title'),
       description: t('onboarding.page4Desc'),
-      gradient: ['#8B5CF6', '#7C3AED'],
-      iconBg: '#F5F3FF',
+      gradient: gradients.hero,
     },
   ];
   const flatListRef = useRef<FlatList<OnboardingPage>>(null);
@@ -99,7 +95,7 @@ const OnboardingScreen: React.FC = () => {
   const renderPage = ({ item }: { item: OnboardingPage }) => (
     <View style={styles.page}>
       <View style={styles.iconSection}>
-        <View style={[styles.iconOuterRing, { borderColor: item.gradient[0] + '15' }]}>
+        <View style={styles.iconOuterRing}>
           <LinearGradient
             colors={item.gradient}
             start={{ x: 0, y: 0 }}
@@ -232,6 +228,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     height: width * 0.56,
     borderRadius: width * 0.28,
     borderWidth: 2,
+    borderColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
   },

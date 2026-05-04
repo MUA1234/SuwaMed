@@ -96,7 +96,7 @@ const ReviewDoctorScreen: React.FC = () => {
                                 <MaterialCommunityIcons
                                     name={star <= rating ? 'star' : 'star-outline'}
                                     size={44}
-                                    color={star <= rating ? '#F59E0B' : colors.textDisabled}
+                                    color={star <= rating ? colors.warning : colors.textDisabled}
                                 />
                             </TouchableOpacity>
                         ))}
@@ -195,7 +195,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
@@ -204,7 +204,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     doctorName: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
     doctorSpec: { ...typography.bodySmall, color: colors.textSecondary, marginTop: 2 },
     consultedBadge: {
-        backgroundColor: '#ECFDF5',
+        backgroundColor: colors.successLight,
         paddingHorizontal: spacing.sm,
         paddingVertical: 3,
         borderRadius: 8,
@@ -221,7 +221,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     ratingPrompt: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.xl },
     starsRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
-    ratingLabel: { ...typography.body, fontWeight: '600', color: '#F59E0B' },
+    ratingLabel: { ...typography.body, fontWeight: '600', color: colors.warning },
     anonymousRow: {
         flexDirection: 'row',
         alignItems: 'center',

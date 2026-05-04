@@ -87,7 +87,7 @@ const AppointmentRequestsScreen: React.FC = () => {
     const getInitials = (first: string = '', last: string = '') =>
         `${first[0] || ''}${last[0] || ''}`.toUpperCase();
 
-    const avatarColors = ['#1A73E8', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#EF4444'];
+    const avatarColors = [colors.primary, colors.secondary, colors.success, colors.warning, colors.primaryDark, colors.error];
 
     const renderItem = ({ item, index }: { item: any; index: number }) => {
         const patient = item.patientId;
@@ -102,7 +102,7 @@ const AppointmentRequestsScreen: React.FC = () => {
         const timeStr = item.startTime || 'N/A';
         const typeLabel = item.type === 'video' ? 'Video' : item.type === 'chat' ? 'Chat' : 'Follow-up';
         const typeIcon = item.type === 'video' ? 'video' : item.type === 'chat' ? 'chat' : 'calendar-refresh';
-        const typeColor = item.type === 'video' ? colors.primary : item.type === 'chat' ? colors.success : '#F59E0B';
+        const typeColor = item.type === 'video' ? colors.primary : item.type === 'chat' ? colors.success : colors.warning;
         const fee = item.doctorId?.consultationFee || item.fee || 0;
 
         const isConfirmLoading = actionLoading === item._id + '_confirm';

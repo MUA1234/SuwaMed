@@ -9,25 +9,24 @@ import {
     ActivityIndicator,
     RefreshControl,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as appointmentApi from '../../api/appointment.api';
-import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { AppointmentCardSkeleton, SkeletonList } from '../../components/common/Skeleton';
 
 type TabKey = 'upcoming' | 'past' | 'cancelled';
 
-const statusStyles: Record<string, { color: string; bg: string }> = {
-    confirmed: { color: '#10B981', bg: '#ECFDF5' },
-    pending: { color: '#F59E0B', bg: '#FFFBEB' },
-    completed: { color: '#64748B', bg: '#F1F5F9' },
-    cancelled: { color: '#EF4444', bg: '#FEF2F2' },
-    in_progress: { color: '#2563EB', bg: '#EFF6FF' },
-    no_show: { color: '#64748B', bg: '#F1F5F9' },
-};
+const getStatusStyles = (colors: ThemeColors): Record<string, { color: string; bg: string }> => ({
+    confirmed:   { color: colors.success,        bg: colors.successLight },
+    pending:     { color: colors.warning,        bg: colors.warningLight },
+    completed:   { color: colors.textSecondary,  bg: colors.borderLight },
+    cancelled:   { color: colors.error,          bg: colors.errorLight },
+    in_progress: { color: colors.primary,        bg: colors.primaryLight },
+    no_show:     { color: colors.textSecondary,  bg: colors.borderLight },
+});
 
 const getStatusLabel = (t: any): Record<string, string> => ({
     confirmed: t('common.confirmed'), pending: t('common.pending'), completed: t('common.completed'),
@@ -75,6 +74,8 @@ const MyAppointmentsScreen: React.FC = () => {
         { key: 'cancelled', label: t('common.cancelled'), icon: 'close-circle-outline' },
     ];
 
+    const statusStyles = getStatusStyles(colors);
+
     const renderAppointment = ({ item }: { item: any }) => {
         const sStyle = statusStyles[item.status] || statusStyles.pending;
         const doctorUser = item.doctorId?.userId;
@@ -87,9 +88,9 @@ const MyAppointmentsScreen: React.FC = () => {
         return (
             <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={() => navigation.navigate('AppointmentDetailScreen', { appointmentId: item._id })}>
                 <View style={styles.cardHeader}>
-                    <LinearGradient colors={gradients.primary} style={styles.docAvatar}>
+                    <View style={styles.docAvatar}>
                         <Text style={styles.docAvatarText}>{initials}</Text>
-                    </LinearGradient>
+                    </View>
                     <View style={styles.docInfo}>
                         <Text style={styles.docName} numberOfLines={1}>{doctorName}</Text>
                         <Text style={styles.docSpec}>{specialty}</Text>
@@ -115,10 +116,8 @@ const MyAppointmentsScreen: React.FC = () => {
                 </View>
                 {item.status === 'confirmed' && activeTab === 'upcoming' && (
                     <TouchableOpacity style={styles.joinBtn} activeOpacity={0.8} onPress={() => navigation.navigate('AppointmentDetailScreen', { appointmentId: item._id })}>
-                        <LinearGradient colors={gradients.primary} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.joinGradient}>
-                            <MaterialCommunityIcons name="video-outline" size={18} color="#fff" />
-                            <Text style={styles.joinText}>{t('doctor.joinConsultation')}</Text>
-                        </LinearGradient>
+                        <MaterialCommunityIcons name="video-outline" size={18} color="#fff" />
+                        <Text style={styles.joinText}>{t('doctor.joinConsultation')}</Text>
                     </TouchableOpacity>
                 )}
                 {item.status === 'completed' && (
@@ -150,21 +149,14 @@ const MyAppointmentsScreen: React.FC = () => {
                 {tabs.map((tab) => {
                     const isActive = activeTab === tab.key;
                     const count = getFiltered(tab.key).length;
-                    return isActive ? (
-                        <LinearGradient
+                    return (
+                        <TouchableOpacity
                             key={tab.key}
-                            colors={gradients.primary}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={styles.tabGradient}
+                            style={[styles.tab, isActive && styles.tabActive]}
+                            onPress={() => setActiveTab(tab.key)}
+                            activeOpacity={0.7}
                         >
-                            <TouchableOpacity onPress={() => setActiveTab(tab.key)} activeOpacity={0.8} style={styles.tabInner}>
-                                <Text style={styles.tabTextActive}>{tab.label} ({count})</Text>
-                            </TouchableOpacity>
-                        </LinearGradient>
-                    ) : (
-                        <TouchableOpacity key={tab.key} style={styles.tab} onPress={() => setActiveTab(tab.key)} activeOpacity={0.7}>
-                            <Text style={styles.tabText}>{tab.label} ({count})</Text>
+                            <Text style={[styles.tabText, isActive && styles.tabTextActive]}>{tab.label} ({count})</Text>
                         </TouchableOpacity>
                     );
                 })}
@@ -200,16 +192,15 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
 
     // Tabs
     tabs: { flexDirection: 'row', paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.sm },
-    tab: { flex: 1, paddingVertical: spacing.sm + 1, borderRadius: borderRadius.full, backgroundColor: colors.surface, alignItems: 'center', ...shadows.sm },
-    tabGradient: { flex: 1, borderRadius: borderRadius.full, ...shadows.md },
-    tabInner: { paddingVertical: spacing.sm + 1, alignItems: 'center' },
+    tab: { flex: 1, paddingVertical: spacing.sm + 1, borderRadius: borderRadius.full, backgroundColor: colors.surface, alignItems: 'center', borderWidth: 1, borderColor: colors.border },
+    tabActive: { backgroundColor: colors.primary, borderColor: colors.primary },
     tabText: { ...typography.caption, fontWeight: '600', color: colors.textSecondary },
-    tabTextActive: { ...typography.caption, color: '#fff', fontWeight: '700' },
+    tabTextActive: { color: '#fff', fontWeight: '700' },
 
     // Card
-    card: { backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.lg, marginBottom: spacing.md, ...shadows.sm },
+    card: { backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
     cardHeader: { flexDirection: 'row', alignItems: 'center' },
-    docAvatar: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    docAvatar: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md, backgroundColor: colors.primary },
     docAvatarText: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
     docInfo: { flex: 1 },
     docName: { ...typography.body, fontWeight: '600', color: colors.textPrimary },
@@ -222,8 +213,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     detailText: { ...typography.caption, color: colors.textSecondary, fontWeight: '500' },
 
     // Actions
-    joinBtn: { marginTop: spacing.md, borderRadius: borderRadius.sm, overflow: 'hidden' },
-    joinGradient: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.sm + 2, gap: spacing.xs },
+    joinBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, marginTop: spacing.md, borderRadius: borderRadius.sm, paddingVertical: spacing.sm + 2, gap: spacing.xs },
     joinText: { color: '#fff', fontWeight: '700', fontSize: 14 },
     reviewBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primaryLight, borderRadius: borderRadius.sm, paddingVertical: spacing.sm + 1, marginTop: spacing.md, gap: spacing.xs },
     reviewText: { color: colors.primary, fontWeight: '600', fontSize: 13 },

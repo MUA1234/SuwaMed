@@ -25,9 +25,9 @@ const PHARMACIES = [
 ];
 
 const getTypeConfig = (colors: ThemeColors): Record<string, { color: string; bg: string }> => ({
-    Chain: { color: colors.primary, bg: colors.primaryLight },
-    'Hospital Pharmacy': { color: '#8B5CF6', bg: colors.infoLight },
-    Government: { color: colors.success, bg: colors.successLight },
+    Chain:               { color: colors.primary,   bg: colors.primaryLight },
+    'Hospital Pharmacy': { color: colors.secondary, bg: colors.secondaryLight },
+    Government:          { color: colors.success,   bg: colors.successLight },
 });
 
 const NearbyPharmaciesScreen: React.FC = () => {
@@ -118,13 +118,13 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     infoBanner: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         padding: spacing.md,
         marginBottom: spacing.lg,
         gap: spacing.sm,
         borderWidth: 1,
-        borderColor: '#BFDBFE',
+        borderColor: colors.border,
     },
     infoBannerText: { ...typography.bodySmall, color: colors.primary, fontWeight: '500', flex: 1 },
     card: {
@@ -140,7 +140,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 16,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
@@ -158,7 +158,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.sm,
         paddingVertical: spacing.sm,
         gap: spacing.xs,

@@ -9,20 +9,26 @@ import { getAppointmentAnalytics } from '../../api/admin.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-    pending:    { label: 'Pending',     color: '#F59E0B', icon: 'clock-outline' },
-    confirmed:  { label: 'Confirmed',  color: '#1A73E8', icon: 'calendar-check' },
-    in_progress:{ label: 'In Progress',color: '#8B5CF6', icon: 'progress-clock' },
-    completed:  { label: 'Completed',  color: '#10B981', icon: 'check-circle-outline' },
-    cancelled:  { label: 'Cancelled',  color: '#DC2626', icon: 'close-circle-outline' },
-    no_show:    { label: 'No Show',    color: '#6B7280', icon: 'account-off-outline' },
-};
+interface StatusCfg { label: string; variant: IconWrapVariant; bar: keyof ThemeColors; icon: string }
+// Status carries real meaning, so we keep semantic variants — but only three:
+// warning (waiting), success (won), emergency (lost). Confirmed/in-progress sit in primary teal.
+const getStatusConfig = (): Record<string, StatusCfg> => ({
+    pending:    { label: 'Pending',     variant: 'warning',   bar: 'warning',  icon: 'clock-outline' },
+    confirmed:  { label: 'Confirmed',  variant: 'tinted',    bar: 'primary',   icon: 'calendar-check-outline' },
+    in_progress:{ label: 'In Progress',variant: 'tinted',    bar: 'primary',   icon: 'progress-clock' },
+    completed:  { label: 'Completed',  variant: 'success',   bar: 'success',   icon: 'check-circle-outline' },
+    cancelled:  { label: 'Cancelled',  variant: 'emergency', bar: 'error',     icon: 'close-circle-outline' },
+    no_show:    { label: 'No Show',    variant: 'outlined',  bar: 'textSecondary', icon: 'account-off-outline' },
+});
 
-const TYPE_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-    video:      { label: 'Video Call', color: '#1A73E8', icon: 'video-outline' },
-    chat:       { label: 'Chat',       color: '#10B981', icon: 'chat-outline' },
-    follow_up:  { label: 'Follow-up',  color: '#8B5CF6', icon: 'refresh' },
+interface TypeCfg { label: string; icon: string }
+// Type is just descriptive — single primary tint, no rainbow.
+const TYPE_CONFIG: Record<string, TypeCfg> = {
+    video:      { label: 'Video Call', icon: 'video-outline' },
+    chat:       { label: 'Chat',       icon: 'chat-outline' },
+    follow_up:  { label: 'Follow-up',  icon: 'refresh' },
 };
 
 const AppointmentAnalyticsScreen: React.FC = () => {
@@ -49,6 +55,7 @@ const AppointmentAnalyticsScreen: React.FC = () => {
     useFocusEffect(useCallback(() => { fetchData(); }, []));
     const onRefresh = () => { setRefreshing(true); fetchData(); };
 
+    const STATUS_CONFIG = getStatusConfig();
     const monthly: Array<{ month: string; count: number }> = data?.monthlyAppointments || [];
     const statusMap: Record<string, number> = data?.statusBreakdown || {};
     const typeMap: Record<string, number> = data?.typeBreakdown || {};
@@ -85,9 +92,9 @@ const AppointmentAnalyticsScreen: React.FC = () => {
                 contentContainerStyle={styles.scroll}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
             >
-                {/* Total summary */}
+                {/* Total summary — solid primary teal, the one place a "hero" surface appears */}
                 <View style={styles.totalCard}>
-                    <MaterialCommunityIcons name="calendar-month" size={36} color="rgba(255,255,255,0.8)" />
+                    <MaterialCommunityIcons name="calendar-month-outline" size={36} color="rgba(255,255,255,0.85)" />
                     <View style={{ marginLeft: spacing.lg }}>
                         <Text style={styles.totalLabel}>{t('admin.totalAppointments')}</Text>
                         <Text style={styles.totalNumber}>{totalAll.toLocaleString()}</Text>
@@ -115,41 +122,38 @@ const AppointmentAnalyticsScreen: React.FC = () => {
                     )}
                 </View>
 
-                {/* Status breakdown */}
+                {/* Status breakdown — bars stay color-coded for chart legibility, tiles use IconWrap variants */}
                 <Text style={styles.sectionTitle}>{t('admin.byStatus')}</Text>
                 <View style={styles.breakdownCard}>
                     {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
                         const count = statusMap[key] || 0;
                         const pct = totalAll > 0 ? Math.round((count / totalAll) * 100) : 0;
+                        const barColor = colors[cfg.bar] as string;
                         return (
                             <View key={key} style={styles.breakdownRow}>
-                                <View style={[styles.breakdownIcon, { backgroundColor: cfg.color + '18' }]}>
-                                    <MaterialCommunityIcons name={cfg.icon as any} size={18} color={cfg.color} />
-                                </View>
+                                <IconWrap name={cfg.icon} variant={cfg.variant} size="sm" />
                                 <Text style={styles.breakdownLabel}>{cfg.label}</Text>
                                 <View style={styles.breakdownBarWrap}>
-                                    <View style={[styles.breakdownBar, { width: `${pct}%` as any, backgroundColor: cfg.color }]} />
+                                    <View style={[styles.breakdownBar, { width: `${pct}%` as any, backgroundColor: barColor }]} />
                                 </View>
-                                <Text style={[styles.breakdownCount, { color: cfg.color }]}>{count}</Text>
+                                <Text style={[styles.breakdownCount, { color: barColor }]}>{count}</Text>
                             </View>
                         );
                     })}
                 </View>
 
-                {/* Type breakdown */}
+                {/* Type breakdown — one calm primary tile per type */}
                 <Text style={styles.sectionTitle}>{t('admin.byType')}</Text>
                 <View style={styles.typeRow}>
                     {Object.entries(TYPE_CONFIG).map(([key, cfg]) => {
                         const count = typeMap[key] || 0;
                         const pct = totalAll > 0 ? Math.round((count / totalAll) * 100) : 0;
                         return (
-                            <View key={key} style={[styles.typeCard, { borderColor: cfg.color + '40' }]}>
-                                <View style={[styles.typeIcon, { backgroundColor: cfg.color + '15' }]}>
-                                    <MaterialCommunityIcons name={cfg.icon as any} size={22} color={cfg.color} />
-                                </View>
+                            <View key={key} style={styles.typeCard}>
+                                <IconWrap name={cfg.icon} variant="tinted" size="md" />
                                 <Text style={styles.typeCount}>{count}</Text>
                                 <Text style={styles.typeLabel}>{cfg.label}</Text>
-                                <Text style={[styles.typePct, { color: cfg.color }]}>{pct}%</Text>
+                                <Text style={styles.typePct}>{pct}%</Text>
                             </View>
                         );
                     })}
@@ -209,9 +213,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         marginBottom: spacing.xxl,
     },
     breakdownRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-    breakdownIcon: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
     breakdownLabel: { width: 90, ...typography.bodySmall, color: colors.textPrimary, fontWeight: '500' },
-    breakdownBarWrap: { flex: 1, height: 8, backgroundColor: colors.border, borderRadius: 4, overflow: 'hidden' },
+    breakdownBarWrap: { flex: 1, height: 8, backgroundColor: colors.borderLight, borderRadius: 4, overflow: 'hidden' },
     breakdownBar: { height: 8, borderRadius: 4, minWidth: 4 },
     breakdownCount: { width: 30, ...typography.caption, fontWeight: '700', textAlign: 'right' },
     typeRow: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl },
@@ -221,12 +224,13 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         alignItems: 'center',
-        borderWidth: 1.5,
+        gap: spacing.xs,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
-    typeIcon: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-    typeCount: { fontSize: 22, fontWeight: '800', color: colors.textPrimary },
-    typeLabel: { ...typography.caption, color: colors.textSecondary, textAlign: 'center', marginTop: 2 },
-    typePct: { ...typography.caption, fontWeight: '700', marginTop: 4 },
+    typeCount: { fontSize: 22, fontWeight: '800', color: colors.textPrimary, marginTop: spacing.sm },
+    typeLabel: { ...typography.caption, color: colors.textSecondary, textAlign: 'center' },
+    typePct: { ...typography.caption, fontWeight: '700', color: colors.primary },
     emptyText: { ...typography.body, color: colors.textSecondary, textAlign: 'center', paddingVertical: spacing.lg },
 });
 

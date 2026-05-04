@@ -56,7 +56,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#FFFBEB',
+    backgroundColor: colors.warningLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xxl,
@@ -76,7 +76,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   infoCard: {
     flexDirection: 'row',
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primaryLight,
     borderRadius: borderRadius.md,
     padding: spacing.lg,
     gap: spacing.md,

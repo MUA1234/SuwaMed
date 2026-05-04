@@ -14,6 +14,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as healthTipApi from '../../api/healthTip.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap from '../../components/common/IconWrap';
 import { useTranslation } from 'react-i18next';
 
 type CategoryKey = 'all' | 'nutrition' | 'exercise' | 'mental_health' | 'disease_prevention' | 'first_aid';
@@ -27,15 +28,16 @@ const categoryFilters: { key: CategoryKey; label: string }[] = [
     { key: 'first_aid', label: 'First Aid' },
 ];
 
-const categoryColors: Record<string, string> = {
-    nutrition: '#10B981',
-    exercise: '#1A73E8',
-    mental_health: '#8B5CF6',
-    disease_prevention: '#F59E0B',
-    first_aid: '#DC2626',
-    maternal_health: '#EC4899',
-    child_health: '#F59E0B',
-    elderly_care: '#6B7280',
+// Each category has a distinct glyph; they all render in the same primary teal.
+const categoryIcons: Record<string, string> = {
+    nutrition: 'food-apple-outline',
+    exercise: 'run',
+    mental_health: 'meditation',
+    disease_prevention: 'shield-check-outline',
+    first_aid: 'medical-bag',
+    maternal_health: 'human-pregnant',
+    child_health: 'human-child',
+    elderly_care: 'human-cane',
 };
 
 const categoryLabels: Record<string, string> = {
@@ -77,7 +79,7 @@ const HealthTipsScreen: React.FC = () => {
     const onRefresh = () => { setRefreshing(true); fetchTips(); };
 
     const renderTip = ({ item }: { item: any }) => {
-        const catColor = categoryColors[item.category] || '#6B7280';
+        const catIcon = categoryIcons[item.category] || 'leaf';
         const catLabel = categoryLabels[item.category] || item.category;
         return (
             <TouchableOpacity
@@ -85,14 +87,12 @@ const HealthTipsScreen: React.FC = () => {
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate('HealthTipDetailScreen', { tip: item })}
             >
-                <View style={[styles.tipIconWrap, { backgroundColor: catColor + '15' }]}>
-                    <MaterialCommunityIcons name="lightbulb-outline" size={24} color={catColor} />
-                </View>
+                <IconWrap name={catIcon} variant="tinted" size="lg" />
                 <View style={styles.tipContent}>
                     <Text style={styles.tipTitle} numberOfLines={2}>{item.title}</Text>
                     <View style={styles.tipMeta}>
-                        <View style={[styles.categoryBadge, { backgroundColor: catColor + '18' }]}>
-                            <Text style={[styles.categoryBadgeText, { color: catColor }]}>{catLabel}</Text>
+                        <View style={styles.categoryBadge}>
+                            <Text style={styles.categoryBadgeText}>{catLabel}</Text>
                         </View>
                         <View style={styles.viewCountRow}>
                             <MaterialCommunityIcons name="eye-outline" size={12} color={colors.textDisabled} />
@@ -199,22 +199,21 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         marginBottom: spacing.md,
+        gap: spacing.md,
         borderWidth: 1,
         borderColor: colors.border,
-    },
-    tipIconWrap: {
-        width: 48,
-        height: 48,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: spacing.md,
     },
     tipContent: { flex: 1 },
     tipTitle: { ...typography.body, fontWeight: '600', color: colors.textPrimary, marginBottom: spacing.sm },
     tipMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-    categoryBadge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: 8 },
-    categoryBadgeText: { fontSize: 11, fontWeight: '600' },
+    categoryBadge: {
+        paddingHorizontal: spacing.sm,
+        paddingVertical: 2,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
+    categoryBadgeText: { fontSize: 11, fontWeight: '600', color: colors.textSecondary },
     viewCountRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
     viewCount: { ...typography.caption, color: colors.textDisabled },
     emptyState: { alignItems: 'center', paddingVertical: spacing.xxxl * 2 },

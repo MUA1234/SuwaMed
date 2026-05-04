@@ -26,12 +26,12 @@ const AppointmentDetailScreen: React.FC = () => {
     const { t } = useTranslation();
 
     const statusStyles: Record<string, { color: string; bg: string; label: string }> = {
-        pending: { color: '#F59E0B', bg: '#FFFBEB', label: t('common.pending') },
-        confirmed: { color: colors.primary, bg: '#EBF5FF', label: t('common.confirmed') },
-        in_progress: { color: '#8B5CF6', bg: '#F5F3FF', label: t('common.inProgress') },
-        completed: { color: colors.success, bg: '#ECFDF5', label: t('common.completed') },
-        cancelled: { color: colors.error, bg: '#FEF2F2', label: t('common.cancelled') },
-        no_show: { color: '#6B7280', bg: '#F3F4F6', label: t('doctor.noShow') },
+        pending:     { color: colors.warning,        bg: colors.warningLight, label: t('common.pending') },
+        confirmed:   { color: colors.primary,        bg: colors.primaryLight, label: t('common.confirmed') },
+        in_progress: { color: colors.primary,        bg: colors.primaryLight, label: t('common.inProgress') },
+        completed:   { color: colors.success,        bg: colors.successLight, label: t('common.completed') },
+        cancelled:   { color: colors.error,          bg: colors.errorLight,   label: t('common.cancelled') },
+        no_show:     { color: colors.textSecondary,  bg: colors.borderLight,  label: t('doctor.noShow') },
     };
 
     const [appointment, setAppointment] = useState<any>(null);
@@ -297,11 +297,11 @@ const AppointmentDetailScreen: React.FC = () => {
                             </View>
                             <View style={[
                                 styles.paymentStatusBadge,
-                                { backgroundColor: paymentStatus === 'completed' ? '#ECFDF5' : '#FFFBEB' }
+                                { backgroundColor: paymentStatus === 'completed' ? colors.successLight : colors.warningLight }
                             ]}>
                                 <Text style={[
                                     styles.paymentStatusText,
-                                    { color: paymentStatus === 'completed' ? colors.success : '#F59E0B' }
+                                    { color: paymentStatus === 'completed' ? colors.success : colors.warning }
                                 ]}>
                                     {paymentStatus === 'completed' ? 'Paid' : 'Pending'}
                                 </Text>
@@ -451,7 +451,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
@@ -466,7 +466,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 10,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
@@ -476,7 +476,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     infoDivider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginVertical: spacing.md },
     symptomsList: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
     symptomChip: {
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         paddingHorizontal: spacing.md,
         paddingVertical: 4,
         borderRadius: 12,
@@ -497,10 +497,10 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         gap: spacing.sm,
     },
     confirmBtn: { backgroundColor: colors.success },
-    cancelBtn: { borderWidth: 1.5, borderColor: colors.error, backgroundColor: '#FEF2F2' },
+    cancelBtn: { borderWidth: 1.5, borderColor: colors.error, backgroundColor: colors.errorLight },
     startBtn: { backgroundColor: colors.primary },
     endBtn: { backgroundColor: colors.error },
-    prescriptionBtn: { borderWidth: 1.5, borderColor: colors.primary, backgroundColor: '#EBF5FF' },
+    prescriptionBtn: { borderWidth: 1.5, borderColor: colors.primary, backgroundColor: colors.primaryLight },
     actionBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
     btnDisabled: { opacity: 0.6 },
     emptyWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },

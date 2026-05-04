@@ -16,23 +16,10 @@ import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import * as doctorApi from '../../api/doctor.api';
 
-const AVATAR_COLORS = [
-    '#1A73E8', '#00BFA5', '#FF6D00', '#8B5CF6', '#DC2626',
-    '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#0D47A1',
-];
-
 const getInitials = (firstName: string, lastName: string) =>
     `${(firstName || '').charAt(0)}${(lastName || '').charAt(0)}`.toUpperCase();
 
-const getAvatarColor = (name: string) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-};
-
-const StarRating: React.FC<{ rating: number; size?: number }> = ({ rating, size = 16 }) => (
+const StarRating: React.FC<{ rating: number; size?: number; color: string }> = ({ rating, size = 16, color }) => (
     <View style={{ flexDirection: 'row', gap: 2 }}>
         {[1, 2, 3, 4, 5].map((star) => (
             <MaterialCommunityIcons
@@ -45,7 +32,7 @@ const StarRating: React.FC<{ rating: number; size?: number }> = ({ rating, size 
                         : 'star-outline'
                 }
                 size={size}
-                color="#F59E0B"
+                color={color}
             />
         ))}
     </View>
@@ -120,7 +107,6 @@ const DoctorProfileScreen: React.FC = () => {
     const lastName = doctor.userId?.lastName || '';
     const fullName = `${firstName} ${lastName}`.trim();
     const initials = getInitials(firstName, lastName);
-    const avatarColor = getAvatarColor(fullName || doctorId);
     const specializations = Array.isArray(doctor.specialization)
         ? doctor.specialization.join(', ')
         : doctor.specialization || 'General Practitioner';
@@ -151,7 +137,7 @@ const DoctorProfileScreen: React.FC = () => {
             >
                 {/* Profile Hero */}
                 <View style={styles.profileHero}>
-                    <View style={[styles.largeAvatar, { backgroundColor: avatarColor }]}>
+                    <View style={styles.largeAvatar}>
                         <Text style={styles.largeAvatarText}>{initials}</Text>
                     </View>
                     <Text style={styles.doctorName}>Dr. {fullName}</Text>
@@ -181,7 +167,7 @@ const DoctorProfileScreen: React.FC = () => {
                 <View style={styles.statsCard}>
                     <View style={styles.statItem}>
                         <View style={styles.statIconWrap}>
-                            <MaterialCommunityIcons name="star" size={20} color="#F59E0B" />
+                            <MaterialCommunityIcons name="star" size={20} color={colors.secondary} />
                         </View>
                         <Text style={styles.statValue}>{rating.toFixed(1)}</Text>
                         <Text style={styles.statLabel}>{t('patient.rating')}</Text>
@@ -255,7 +241,7 @@ const DoctorProfileScreen: React.FC = () => {
                     <View style={styles.sectionHeaderRow}>
                         <Text style={styles.sectionTitle}>{t('doctor.patientReviews')}</Text>
                         <View style={styles.ratingBadge}>
-                            <MaterialCommunityIcons name="star" size={14} color="#F59E0B" />
+                            <MaterialCommunityIcons name="star" size={14} color={colors.secondary} />
                             <Text style={styles.ratingBadgeText}>
                                 {rating.toFixed(1)} · {ratingCount} reviews
                             </Text>
@@ -278,7 +264,7 @@ const DoctorProfileScreen: React.FC = () => {
                                                 ? `${review.patientId.userId.firstName} ${review.patientId.userId.lastName || ''}`
                                                 : 'Anonymous Patient'}
                                         </Text>
-                                        <StarRating rating={review.rating || 0} size={13} />
+                                        <StarRating rating={review.rating || 0} size={13} color={colors.secondary} />
                                     </View>
                                     <Text style={styles.reviewDate}>
                                         {review.createdAt
@@ -378,6 +364,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.lg,
+        backgroundColor: colors.primary,
     },
     largeAvatarText: {
         fontSize: 36,
@@ -413,7 +400,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     onlineBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ECFDF5',
+        backgroundColor: colors.successLight,
         borderRadius: borderRadius.xl,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs,
@@ -433,7 +420,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     offlineBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F3F4F6',
+        backgroundColor: colors.borderLight,
         borderRadius: borderRadius.xl,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs,
@@ -505,14 +492,14 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
-        backgroundColor: '#FFFBEB',
+        backgroundColor: colors.warningLight,
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xs,
         borderRadius: borderRadius.sm,
     },
     ratingBadgeText: {
         ...typography.caption,
-        color: '#92400E',
+        color: colors.warning,
         fontWeight: '600',
     },
     bioText: {
@@ -548,7 +535,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 5,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.xl,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs + 1,

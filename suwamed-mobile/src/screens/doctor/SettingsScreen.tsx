@@ -119,7 +119,7 @@ const SettingsScreen: React.FC = () => {
                 <Text style={s.sectionLabel}>{t('common.appPreferences')}</Text>
                 <View style={s.card}>
                     <TouchableOpacity style={s.row} activeOpacity={0.7} onPress={handleLanguageChange}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#1E3A5F' : '#EBF5FF' }]}>
+                        <View style={[s.iconWrap, { backgroundColor: colors.primaryLight }]}>
                             <MaterialCommunityIcons name="translate" size={20} color={colors.primary} />
                         </View>
                         <View style={s.rowContent}>
@@ -129,41 +129,41 @@ const SettingsScreen: React.FC = () => {
                         <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textDisabled} />
                     </TouchableOpacity>
                     <View style={[s.row, s.rowBorder]}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#2D2554' : '#F5F3FF' }]}>
-                            <MaterialCommunityIcons name="bell-outline" size={20} color="#8B5CF6" />
+                        <View style={[s.iconWrap, { backgroundColor: colors.primaryLight }]}>
+                            <MaterialCommunityIcons name="bell-outline" size={20} color={colors.primary} />
                         </View>
                         <View style={s.rowContent}><Text style={s.rowLabel}>{t('common.notifications')}</Text></View>
                         <Switch
                             value={notificationsEnabled}
                             onValueChange={toggleNotifications}
-                            trackColor={{ false: colors.border, true: lightColors.primary + '60' }}
-                            thumbColor={notificationsEnabled ? lightColors.primary : colors.textDisabled}
+                            trackColor={{ false: colors.border, true: colors.primary + '60' }}
+                            thumbColor={notificationsEnabled ? colors.primary : colors.textDisabled}
                         />
                     </View>
                     <View style={[s.row, s.rowBorder]}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#2D3748' : '#1A1A2E15' }]}>
-                            <MaterialCommunityIcons name={isDarkMode ? 'weather-sunny' : 'weather-night'} size={20} color={isDarkMode ? '#FCD34D' : '#1A1A2E'} />
+                        <View style={[s.iconWrap, { backgroundColor: colors.primaryLight }]}>
+                            <MaterialCommunityIcons name={isDarkMode ? 'weather-sunny' : 'weather-night'} size={20} color={colors.primary} />
                         </View>
                         <View style={s.rowContent}><Text style={s.rowLabel}>{t('common.darkMode')}</Text></View>
                         <Switch
                             value={isDarkMode}
                             onValueChange={toggleDarkMode}
-                            trackColor={{ false: colors.border, true: lightColors.primary + '60' }}
-                            thumbColor={isDarkMode ? lightColors.primary : colors.textDisabled}
+                            trackColor={{ false: colors.border, true: colors.primary + '60' }}
+                            thumbColor={isDarkMode ? colors.primary : colors.textDisabled}
                         />
                     </View>
                 </View>
                 <Text style={s.sectionLabel}>{t('common.account')}</Text>
                 <View style={s.card}>
                     <TouchableOpacity style={s.row} activeOpacity={0.7} onPress={openPasswordModal}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#0D3B2E' : '#ECFDF5' }]}>
-                            <MaterialCommunityIcons name="lock-outline" size={20} color={colors.success} />
+                        <View style={[s.iconWrap, { backgroundColor: colors.primaryLight }]}>
+                            <MaterialCommunityIcons name="lock-outline" size={20} color={colors.primary} />
                         </View>
                         <View style={s.rowContent}><Text style={s.rowLabel}>{t('auth.changePassword')}</Text></View>
                         <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textDisabled} />
                     </TouchableOpacity>
                     <TouchableOpacity style={[s.row, s.rowBorder]} activeOpacity={0.7} onPress={handleDeleteAccount}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#3B1515' : '#FEF2F2' }]}>
+                        <View style={[s.iconWrap, { backgroundColor: colors.errorLight }]}>
                             <MaterialCommunityIcons name="account-remove" size={20} color={colors.error} />
                         </View>
                         <View style={s.rowContent}>
@@ -179,7 +179,7 @@ const SettingsScreen: React.FC = () => {
                         activeOpacity={0.7}
                         onPress={() => navigation.navigate('Privacy')}
                     >
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#1E3A5F' : '#EBF5FF' }]}>
+                        <View style={[s.iconWrap, { backgroundColor: colors.primaryLight }]}>
                             <MaterialCommunityIcons name="shield-lock-outline" size={20} color={colors.primary} />
                         </View>
                         <View style={s.rowContent}><Text style={s.rowLabel}>{t('common.privacyPolicy')}</Text></View>
@@ -190,14 +190,14 @@ const SettingsScreen: React.FC = () => {
                         activeOpacity={0.7}
                         onPress={() => navigation.navigate('Terms')}
                     >
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#1E3A5F' : '#EBF5FF' }]}>
+                        <View style={[s.iconWrap, { backgroundColor: colors.primaryLight }]}>
                             <MaterialCommunityIcons name="file-document-outline" size={20} color={colors.primary} />
                         </View>
                         <View style={s.rowContent}><Text style={s.rowLabel}>{t('common.termsOfService')}</Text></View>
                         <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textDisabled} />
                     </TouchableOpacity>
                     <View style={[s.row, s.rowBorder]}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#0D3B2E' : '#ECFDF5' }]}>
+                        <View style={[s.iconWrap, { backgroundColor: colors.secondaryLight }]}>
                             <MaterialCommunityIcons name="information-outline" size={20} color={colors.secondary} />
                         </View>
                         <View style={s.rowContent}>

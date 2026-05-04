@@ -63,7 +63,7 @@ const PatientListScreen: React.FC = () => {
     ];
 
     const getInitials = (first: string, last: string) => `${first?.[0] || ''}${last?.[0] || ''}`;
-    const initialsColors = ['#1A73E8', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#EF4444'];
+    const initialsColors = [colors.primary, colors.secondary, colors.success, colors.warning, colors.primaryDark, colors.error];
 
     const getTimeAgo = (dateStr: string) => {
         if (!dateStr) return 'N/A';

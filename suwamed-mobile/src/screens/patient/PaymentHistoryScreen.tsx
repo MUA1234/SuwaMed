@@ -63,10 +63,10 @@ const PaymentHistoryScreen: React.FC = () => {
         .reduce((sum, p) => sum + (p.amount || 0), 0);
 
     const statusStyle = (status: string) => {
-        if (status === 'completed') return { color: colors.success, bg: '#ECFDF5' };
-        if (status === 'pending') return { color: colors.warning, bg: '#FFFBEB' };
-        if (status === 'failed') return { color: colors.error, bg: '#FEF2F2' };
-        return { color: colors.textSecondary, bg: '#F3F4F6' };
+        if (status === 'completed') return { color: colors.success, bg: colors.successLight };
+        if (status === 'pending') return { color: colors.warning, bg: colors.warningLight };
+        if (status === 'failed') return { color: colors.error, bg: colors.errorLight };
+        return { color: colors.textSecondary, bg: colors.borderLight };
     };
 
     const formatDate = (dateStr: string) => {
@@ -218,7 +218,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 44,
         height: 44,
         borderRadius: 14,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,

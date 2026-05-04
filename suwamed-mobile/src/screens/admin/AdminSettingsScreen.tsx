@@ -58,7 +58,7 @@ const AdminSettingsScreen: React.FC = () => {
                     <Text style={styles.sectionTitle}>{t('common.preferences')}</Text>
                     <View style={styles.card}>
                         <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={handleLanguageSelect}>
-                            <View style={[styles.rowIcon, { backgroundColor: '#EBF5FF' }]}>
+                            <View style={[styles.rowIcon, { backgroundColor: colors.primaryLight }]}>
                                 <MaterialCommunityIcons name="translate" size={20} color={colors.primary} />
                             </View>
                             <View style={styles.rowInfo}>
@@ -75,8 +75,8 @@ const AdminSettingsScreen: React.FC = () => {
                     <Text style={styles.sectionTitle}>{t('common.notifications')}</Text>
                     <View style={styles.card}>
                         <View style={styles.toggleRow}>
-                            <View style={[styles.rowIcon, { backgroundColor: '#F5F3FF' }]}>
-                                <MaterialCommunityIcons name="bell-outline" size={20} color="#8B5CF6" />
+                            <View style={[styles.rowIcon, { backgroundColor: colors.primaryLight }]}>
+                                <MaterialCommunityIcons name="bell-outline" size={20} color={colors.primary} />
                             </View>
                             <View style={styles.rowInfo}>
                                 <Text style={styles.rowLabel}>{t('admin.pushNotifications')}</Text>
@@ -88,7 +88,7 @@ const AdminSettingsScreen: React.FC = () => {
                                 value={notificationsEnabled}
                                 onValueChange={toggleNotifications}
                                 trackColor={{ false: colors.border, true: colors.primary + '60' }}
-                                thumbColor={notificationsEnabled ? colors.primary : '#ccc'}
+                                thumbColor={notificationsEnabled ? colors.primary : colors.textDisabled}
                             />
                         </View>
                     </View>
@@ -99,7 +99,7 @@ const AdminSettingsScreen: React.FC = () => {
                     <Text style={styles.sectionTitle}>{t('common.security')}</Text>
                     <View style={styles.card}>
                         <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={handleAccountSecurity}>
-                            <View style={[styles.rowIcon, { backgroundColor: '#FEF2F2' }]}>
+                            <View style={[styles.rowIcon, { backgroundColor: colors.errorLight }]}>
                                 <MaterialCommunityIcons name="lock-outline" size={20} color={colors.error} />
                             </View>
                             <View style={styles.rowInfo}>

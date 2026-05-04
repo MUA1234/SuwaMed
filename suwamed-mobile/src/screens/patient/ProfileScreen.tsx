@@ -15,8 +15,10 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
 import * as patientApi from '../../api/patient.api';
 import { useTranslation } from 'react-i18next';
-import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, typography, gradients } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
+
 const ProfileScreen: React.FC = () => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
@@ -49,37 +51,39 @@ const ProfileScreen: React.FC = () => {
     const patient = profile?.patient;
     const subPlan = patient?.subscription?.plan || 'free';
     const subLabel = subPlan === 'premium' ? 'Premium' : subPlan === 'basic' ? 'Basic' : 'Free';
-    const subColor = subPlan === 'premium' ? '#8B5CF6' : subPlan === 'basic' ? '#2563EB' : '#10B981';
+    // Subscription tier — accent for paid, success for free.
+    const subVariant: 'accent' | 'success' = subPlan === 'free' ? 'success' : 'accent';
 
-    const healthInfo = [
-        { label: t('patient.bloodGroup'), value: patient?.bloodGroup || t('patient.noData', 'N/A'), icon: 'water', color: '#EF4444' },
-        { label: t('patient.allergies'), value: patient?.allergies?.length ? patient.allergies.join(', ') : t('patient.none', 'None'), icon: 'alert-circle-outline', color: '#F59E0B' },
-        { label: t('patient.chronicConditions', 'Conditions'), value: patient?.chronicConditions?.length ? patient.chronicConditions[0] : t('patient.healthy', 'Healthy'), icon: 'heart-pulse', color: '#10B981' },
+    const healthInfo: Array<{ label: string; value: string; icon: string; variant: IconWrapVariant }> = [
+        { label: t('patient.bloodGroup'), value: patient?.bloodGroup || t('patient.noData', 'N/A'), icon: 'water-outline', variant: 'tinted' },
+        { label: t('patient.allergies'), value: patient?.allergies?.length ? patient.allergies.join(', ') : t('patient.none', 'None'), icon: 'alert-circle-outline', variant: 'warning' },
+        { label: t('patient.chronicConditions', 'Conditions'), value: patient?.chronicConditions?.length ? patient.chronicConditions[0] : t('patient.healthy', 'Healthy'), icon: 'heart-pulse', variant: 'success' },
     ];
 
-    const menuSections = [
+    type MenuItem = { icon: string; label: string; variant: IconWrapVariant; screen: string | null; subtitle?: string; badge?: string; badgeVariant?: 'accent' | 'success' };
+    const menuSections: Array<{ title: string; items: MenuItem[] }> = [
         {
             title: t('common.account'),
             items: [
-                { icon: 'account-edit-outline', label: t('patient.editProfile'), color: colors.primary, screen: 'EditProfileScreen' },
-                { icon: 'credit-card-outline', label: t('patient.subscription'), color: subColor, badge: subLabel, screen: 'SubscriptionScreen' },
-                { icon: 'receipt', label: t('patient.paymentHistory'), color: '#F59E0B', screen: 'PaymentHistoryScreen' },
+                { icon: 'account-edit-outline', label: t('patient.editProfile'), variant: 'tinted', screen: 'EditProfileScreen' },
+                { icon: 'crown-outline', label: t('patient.subscription'), variant: 'tinted', badge: subLabel, badgeVariant: subVariant, screen: 'SubscriptionScreen' },
+                { icon: 'receipt-text-outline', label: t('patient.paymentHistory'), variant: 'tinted', screen: 'PaymentHistoryScreen' },
             ],
         },
         {
             title: t('common.preferences'),
             items: [
-                { icon: 'bell-outline', label: t('common.notifications'), color: '#8B5CF6', screen: 'NotificationsScreen' },
-                { icon: 'cog-outline', label: t('common.settings'), color: '#64748B', screen: 'SettingsScreen' },
-                { icon: 'translate', label: t('common.language'), color: '#EC4899', subtitle: 'English', screen: 'SettingsScreen' },
+                { icon: 'bell-outline', label: t('common.notifications'), variant: 'tinted', screen: 'NotificationsScreen' },
+                { icon: 'cog-outline', label: t('common.settings'), variant: 'tinted', screen: 'SettingsScreen' },
+                { icon: 'translate', label: t('common.language'), variant: 'tinted', subtitle: 'English', screen: 'SettingsScreen' },
             ],
         },
         {
             title: t('patient.helpSupport', 'Support'),
             items: [
-                { icon: 'help-circle-outline', label: t('patient.helpCenter'), color: colors.primary, screen: 'HelpSupportScreen' },
-                { icon: 'file-document-outline', label: t('common.termsAndPrivacy'), color: '#64748B', screen: null },
-                { icon: 'information-outline', label: t('patient.aboutSuwaMed', 'About SuwaMed'), color: colors.secondary, screen: null },
+                { icon: 'help-circle-outline', label: t('patient.helpCenter'), variant: 'tinted', screen: 'HelpSupportScreen' },
+                { icon: 'file-document-outline', label: t('common.termsAndPrivacy'), variant: 'tinted', screen: null },
+                { icon: 'information-outline', label: t('patient.aboutSuwaMed', 'About SuwaMed'), variant: 'tinted', screen: null },
             ],
         },
     ];
@@ -97,7 +101,7 @@ const ProfileScreen: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                {/* Profile Header */}
+                {/* Profile Header — only place a hero gradient appears on this screen */}
                 <View style={styles.profileHeader}>
                     <LinearGradient
                         colors={gradients.hero}
@@ -115,9 +119,7 @@ const ProfileScreen: React.FC = () => {
                 <View style={styles.healthRow}>
                     {healthInfo.map((info, i) => (
                         <View key={i} style={styles.healthCard}>
-                            <View style={[styles.healthIconWrap, { backgroundColor: info.color + '15' }]}>
-                                <MaterialCommunityIcons name={info.icon as any} size={18} color={info.color} />
-                            </View>
+                            <IconWrap name={info.icon} variant={info.variant} size="sm" />
                             <Text style={styles.healthValue} numberOfLines={1}>{info.value}</Text>
                             <Text style={styles.healthLabel}>{info.label}</Text>
                         </View>
@@ -134,18 +136,16 @@ const ProfileScreen: React.FC = () => {
                                     key={iIdx}
                                     style={[styles.menuItem, iIdx < section.items.length - 1 && styles.menuItemBorder]}
                                     activeOpacity={0.6}
-                                    onPress={() => (item as any).screen ? navigation.navigate((item as any).screen) : null}
+                                    onPress={() => item.screen ? navigation.navigate(item.screen) : null}
                                 >
-                                    <View style={[styles.menuIconWrap, { backgroundColor: item.color + '12' }]}>
-                                        <MaterialCommunityIcons name={item.icon as any} size={20} color={item.color} />
-                                    </View>
+                                    <IconWrap name={item.icon} variant={item.variant} size="sm" />
                                     <View style={styles.menuItemContent}>
                                         <Text style={styles.menuItemLabel}>{item.label}</Text>
-                                        {(item as any).subtitle && <Text style={styles.menuItemSubtitle}>{(item as any).subtitle}</Text>}
+                                        {item.subtitle && <Text style={styles.menuItemSubtitle}>{item.subtitle}</Text>}
                                     </View>
-                                    {(item as any).badge && (
-                                        <View style={[styles.badge, { backgroundColor: item.color + '12' }]}>
-                                            <Text style={[styles.badgeText, { color: item.color }]}>{(item as any).badge}</Text>
+                                    {item.badge && (
+                                        <View style={[styles.badge, item.badgeVariant === 'accent' ? styles.badgeAccent : styles.badgeSuccess]}>
+                                            <Text style={[styles.badgeText, item.badgeVariant === 'accent' ? styles.badgeTextAccent : styles.badgeTextSuccess]}>{item.badge}</Text>
                                         </View>
                                     )}
                                     <MaterialCommunityIcons name="chevron-right" size={18} color={colors.textDisabled} />
@@ -178,7 +178,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.md,
-        ...shadows.lg,
     },
     avatarText: { fontSize: 30, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1 },
     name: { fontSize: 22, fontWeight: '700', color: colors.textPrimary, letterSpacing: -0.3 },
@@ -193,39 +192,42 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         marginBottom: spacing.xxl,
-        ...shadows.sm,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
-    healthCard: { alignItems: 'center', flex: 1 },
-    healthIconWrap: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.xs },
+    healthCard: { alignItems: 'center', flex: 1, gap: spacing.xs },
     healthValue: { ...typography.bodySmall, fontWeight: '700', color: colors.textPrimary, textAlign: 'center' },
     healthLabel: { ...typography.caption, color: colors.textSecondary, marginTop: 1 },
 
     // Menu
     menuSection: { paddingHorizontal: spacing.xl, marginBottom: spacing.lg },
     menuSectionTitle: { ...typography.label, color: colors.textSecondary, textTransform: 'uppercase', marginBottom: spacing.sm },
-    menuCard: { backgroundColor: colors.surface, borderRadius: borderRadius.lg, overflow: 'hidden', ...shadows.sm },
-    menuItem: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg },
+    menuCard: { backgroundColor: colors.surface, borderRadius: borderRadius.lg, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
+    menuItem: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, gap: spacing.md },
     menuItemBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.borderLight },
-    menuIconWrap: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     menuItemContent: { flex: 1 },
     menuItemLabel: { ...typography.body, fontWeight: '500', color: colors.textPrimary },
     menuItemSubtitle: { ...typography.caption, color: colors.textSecondary, marginTop: 1 },
-    badge: { paddingHorizontal: spacing.sm + 2, paddingVertical: 3, borderRadius: borderRadius.full, marginRight: spacing.sm },
+    badge: { paddingHorizontal: spacing.sm + 2, paddingVertical: 3, borderRadius: borderRadius.full },
+    badgeAccent: { backgroundColor: colors.secondaryLight },
+    badgeSuccess: { backgroundColor: colors.successLight },
     badgeText: { fontSize: 11, fontWeight: '700' },
+    badgeTextAccent: { color: colors.secondary },
+    badgeTextSuccess: { color: colors.success },
 
     // Logout
     logoutBtn: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: colors.errorLight,
+        backgroundColor: colors.surface,
         marginHorizontal: spacing.xl,
         paddingVertical: spacing.md + 2,
         borderRadius: borderRadius.md,
         gap: spacing.sm,
         marginBottom: spacing.lg,
         borderWidth: 1,
-        borderColor: '#FECACA',
+        borderColor: colors.border,
     },
     logoutText: { ...typography.body, fontWeight: '600', color: colors.error },
     version: { ...typography.caption, color: colors.textDisabled, textAlign: 'center', marginBottom: spacing.xxl },

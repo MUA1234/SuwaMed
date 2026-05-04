@@ -254,7 +254,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: spacing.xl,
     gap: spacing.sm,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.border,
   },
   errorBannerText: {
     ...typography.bodySmall,

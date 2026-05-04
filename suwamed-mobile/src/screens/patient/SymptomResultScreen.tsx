@@ -21,12 +21,6 @@ interface SymptomResult {
     suggestedSpecializations?: string[];
 }
 
-const severityConfig: Record<Severity, { color: string; bg: string; icon: string; label: string }> = {
-    mild: { color: '#10B981', bg: '#ECFDF5', icon: 'check-circle', label: 'Mild' },
-    moderate: { color: '#F59E0B', bg: '#FFFBEB', icon: 'alert-circle', label: 'Moderate' },
-    severe: { color: '#DC2626', bg: '#FEF2F2', icon: 'alert-octagon', label: 'Severe' },
-};
-
 const SymptomResultScreen: React.FC = () => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
@@ -34,6 +28,12 @@ const SymptomResultScreen: React.FC = () => {
     const route = useRoute<any>();
     const { t } = useTranslation();
     const { result, symptoms } = route.params as { result: SymptomResult; symptoms: string[] };
+
+    const severityConfig: Record<Severity, { color: string; bg: string; icon: string; label: string }> = {
+        mild: { color: colors.success, bg: colors.successLight, icon: 'check-circle', label: 'Mild' },
+        moderate: { color: colors.warning, bg: colors.warningLight, icon: 'alert-circle', label: 'Moderate' },
+        severe: { color: colors.error, bg: colors.errorLight, icon: 'alert-octagon', label: 'Severe' },
+    };
 
     const severity = result.severity || 'mild';
     const sevConfig = severityConfig[severity] || severityConfig.mild;
@@ -196,7 +196,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     symptomChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.xl,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs,
@@ -223,7 +223,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 22,
         height: 22,
         borderRadius: 11,
-        backgroundColor: '#ECFDF5',
+        backgroundColor: colors.successLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 1,
@@ -233,7 +233,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     specChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.sm,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
@@ -245,7 +245,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     warningBanner: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        backgroundColor: '#FEF2F2',
+        backgroundColor: colors.errorLight,
         borderRadius: borderRadius.md,
         padding: spacing.md,
         marginBottom: spacing.lg,

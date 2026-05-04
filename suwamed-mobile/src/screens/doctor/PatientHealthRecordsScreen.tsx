@@ -16,16 +16,17 @@ import client from '../../api/client';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import IconWrap from '../../components/common/IconWrap';
 
 type FilterKey = 'all' | 'lab_report' | 'prescription' | 'imaging' | 'vaccination';
 
-const categoryIcons: Record<string, { icon: string; color: string; label: string }> = {
-    lab_report: { icon: 'flask', color: '#3B82F6', label: 'Lab Report' },
-    prescription: { icon: 'pill', color: '#10B981', label: 'Prescription' },
-    imaging: { icon: 'radioactive', color: '#8B5CF6', label: 'Imaging' },
-    vaccination: { icon: 'needle', color: '#F59E0B', label: 'Vaccination' },
-    discharge_summary: { icon: 'hospital', color: '#EC4899', label: 'Discharge Summary' },
-    other: { icon: 'file-document', color: '#6B7280', label: 'Other' },
+const categoryIcons: Record<string, { icon: string; label: string }> = {
+    lab_report: { icon: 'flask-outline', label: 'Lab Report' },
+    prescription: { icon: 'pill', label: 'Prescription' },
+    imaging: { icon: 'radioactive', label: 'Imaging' },
+    vaccination: { icon: 'needle', label: 'Vaccination' },
+    discharge_summary: { icon: 'hospital-building', label: 'Discharge Summary' },
+    other: { icon: 'file-document-outline', label: 'Other' },
 };
 
 const FILTERS: { key: FilterKey; label: string }[] = [
@@ -130,9 +131,7 @@ const PatientHealthRecordsScreen: React.FC = () => {
                             : '';
                         return (
                             <View style={styles.recordCard}>
-                                <View style={[styles.recordIcon, { backgroundColor: cat.color + '15' }]}>
-                                    <MaterialCommunityIcons name={cat.icon as any} size={22} color={cat.color} />
-                                </View>
+                                <IconWrap name={cat.icon} variant="tinted" size="md" />
                                 <View style={styles.recordContent}>
                                     <Text style={styles.recordTitle}>{item.title}</Text>
                                     <Text style={styles.recordMeta}>
@@ -141,9 +140,9 @@ const PatientHealthRecordsScreen: React.FC = () => {
                                         {item.doctor ? ` · ${item.doctor}` : ''}
                                     </Text>
                                 </View>
-                                <View style={[styles.sharedBadge, { backgroundColor: item.isSharedWithDoctor ? '#ECFDF5' : '#F3F4F6' }]}>
+                                <View style={[styles.sharedBadge, item.isSharedWithDoctor ? styles.sharedBadgeOn : styles.sharedBadgeOff]}>
                                     <MaterialCommunityIcons
-                                        name={item.isSharedWithDoctor ? 'share-variant' : 'lock'}
+                                        name={item.isSharedWithDoctor ? 'share-variant' : 'lock-outline'}
                                         size={12}
                                         color={item.isSharedWithDoctor ? colors.success : colors.textDisabled}
                                     />
@@ -178,7 +177,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     infoBanner: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         marginHorizontal: spacing.xl,
         borderRadius: borderRadius.sm,
         paddingHorizontal: spacing.md,
@@ -186,7 +185,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         marginBottom: spacing.md,
         gap: spacing.xs,
         borderWidth: 1,
-        borderColor: '#BFDBFE',
+        borderColor: colors.border,
     },
     infoBannerText: { ...typography.caption, color: colors.primary, fontWeight: '500', flex: 1 },
     filtersRow: { paddingHorizontal: spacing.xl, gap: spacing.sm, marginBottom: spacing.md, paddingBottom: spacing.xs },
@@ -209,14 +208,16 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.md,
         padding: spacing.lg,
         marginBottom: spacing.sm,
+        gap: spacing.md,
         borderWidth: 1,
         borderColor: colors.border,
     },
-    recordIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     recordContent: { flex: 1 },
     recordTitle: { ...typography.body, fontWeight: '600', color: colors.textPrimary },
     recordMeta: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
-    sharedBadge: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.sm },
+    sharedBadge: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+    sharedBadgeOn: { backgroundColor: colors.successLight },
+    sharedBadgeOff: { backgroundColor: colors.borderLight },
     emptyState: { alignItems: 'center', paddingVertical: 80 },
     emptyTitle: { ...typography.h3, color: colors.textPrimary, marginTop: spacing.lg },
     emptySubtitle: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.sm },

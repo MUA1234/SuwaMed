@@ -44,7 +44,7 @@ const getTimeAgo = (dateStr: string): string => {
 
 const getTypeColors = (colors: ThemeColors): Record<string, string> => ({
     appointment: colors.primary,
-    prescription: '#8B5CF6',
+    prescription: colors.secondary,
     lab_report: colors.success,
     general: colors.textSecondary,
     emergency: colors.error,
@@ -276,7 +276,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.border,
     },
-    cardUnread: { borderColor: colors.primary + '40', backgroundColor: '#F0F7FF' },
+    cardUnread: { borderColor: colors.primary + '40', backgroundColor: colors.primaryLight },
     iconWrap: {
         width: 44,
         height: 44,

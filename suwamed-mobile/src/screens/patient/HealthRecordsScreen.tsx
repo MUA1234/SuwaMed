@@ -15,17 +15,18 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as healthRecordApi from '../../api/healthRecord.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap from '../../components/common/IconWrap';
 import { useTranslation } from 'react-i18next';
 
 type TabKey = 'all' | 'prescription' | 'lab_report' | 'imaging' | 'other';
 
-const categoryIcons: Record<string, { icon: string; color: string }> = {
-    prescription: { icon: 'prescription', color: '#1A73E8' },
-    lab_report: { icon: 'test-tube', color: '#DC2626' },
-    imaging: { icon: 'radiology-box', color: '#8B5CF6' },
-    vaccination: { icon: 'needle', color: '#10B981' },
-    discharge_summary: { icon: 'file-document', color: '#F59E0B' },
-    other: { icon: 'file-document', color: '#6B7280' },
+const categoryIcons: Record<string, string> = {
+    prescription: 'prescription',
+    lab_report: 'test-tube',
+    imaging: 'radiology-box',
+    vaccination: 'needle',
+    discharge_summary: 'file-document-outline',
+    other: 'file-document-outline',
 };
 
 const HealthRecordsScreen: React.FC = () => {
@@ -69,9 +70,9 @@ const HealthRecordsScreen: React.FC = () => {
     };
 
     const stats = [
-        { label: 'Prescriptions', value: categoryCounts.prescription, color: '#1A73E8', bg: '#EBF5FF' },
-        { label: 'Lab Reports', value: categoryCounts.lab_report, color: '#DC2626', bg: '#FEF2F2' },
-        { label: 'Other', value: categoryCounts.other, color: '#6B7280', bg: '#F3F4F6' },
+        { label: 'Prescriptions', value: categoryCounts.prescription },
+        { label: 'Lab Reports', value: categoryCounts.lab_report },
+        { label: 'Other', value: categoryCounts.other },
     ];
 
     if (loading) {
@@ -95,8 +96,8 @@ const HealthRecordsScreen: React.FC = () => {
 
             <View style={styles.statsRow}>
                 {stats.map((stat, i) => (
-                    <View key={i} style={[styles.statCard, { backgroundColor: stat.bg }]}>
-                        <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
+                    <View key={i} style={styles.statCard}>
+                        <Text style={styles.statValue}>{stat.value}</Text>
                         <Text style={styles.statLabel}>{stat.label}</Text>
                     </View>
                 ))}
@@ -118,13 +119,11 @@ const HealthRecordsScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
                 renderItem={({ item }) => {
-                    const cat = categoryIcons[item.category] || categoryIcons.other;
+                    const catIcon = categoryIcons[item.category] || categoryIcons.other;
                     const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
                     return (
                         <TouchableOpacity style={styles.recordCard} activeOpacity={0.7} onPress={() => navigation.navigate('RecordDetailScreen', { record: item })}>
-                            <View style={[styles.recordIcon, { backgroundColor: cat.color + '15' }]}>
-                                <MaterialCommunityIcons name={cat.icon as any} size={22} color={cat.color} />
-                            </View>
+                            <IconWrap name={catIcon} variant="tinted" size="md" />
                             <View style={styles.recordInfo}>
                                 <Text style={styles.recordTitle}>{item.title}</Text>
                                 <Text style={styles.recordDate}>{dateStr}{item.doctor ? ` · ${item.doctor}` : ''}</Text>
@@ -151,16 +150,15 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     uploadBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primary, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: borderRadius.xl, gap: spacing.xs },
     uploadText: { color: '#fff', fontSize: 13, fontWeight: '600' },
     statsRow: { flexDirection: 'row', paddingHorizontal: spacing.xl, gap: spacing.sm, marginBottom: spacing.lg },
-    statCard: { flex: 1, borderRadius: borderRadius.md, padding: spacing.md, alignItems: 'center' },
-    statValue: { fontSize: 22, fontWeight: '700' },
+    statCard: { flex: 1, borderRadius: borderRadius.md, padding: spacing.md, alignItems: 'center', backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+    statValue: { fontSize: 22, fontWeight: '700', color: colors.primary },
     statLabel: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
     tabsRow: { paddingHorizontal: spacing.xl, gap: spacing.sm, marginBottom: spacing.lg },
     tab: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.xl, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, gap: 4 },
     tabActive: { backgroundColor: colors.primary, borderColor: colors.primary },
     tabText: { ...typography.caption, fontWeight: '500', color: colors.textSecondary },
     tabTextActive: { color: '#fff', fontWeight: '600' },
-    recordCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
-    recordIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    recordCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, gap: spacing.md, borderWidth: 1, borderColor: colors.border },
     recordInfo: { flex: 1 },
     recordTitle: { ...typography.body, fontWeight: '600', color: colors.textPrimary },
     recordDate: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },

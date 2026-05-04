@@ -7,10 +7,10 @@ import {
     ScrollView,
     TouchableOpacity,
     Dimensions,
-    ActivityIndicator,
     RefreshControl,
 } from 'react-native';
 import FadeIn from '../../components/common/FadeIn';
+import IconWrap from '../../components/common/IconWrap';
 import { AppointmentCardSkeleton, DoctorCardSkeleton, SkeletonList } from '../../components/common/Skeleton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -24,19 +24,30 @@ import { spacing, borderRadius, typography, shadows, gradients } from '../../con
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 const { width } = Dimensions.get('window');
 
-const SPEC_META: Record<string, { icon: string; color: string; gradient: [string, string] }> = {
-    'General Practitioner': { icon: 'doctor', color: '#2563EB', gradient: ['#2563EB', '#1D4ED8'] },
-    'Cardiologist': { icon: 'heart-pulse', color: '#EF4444', gradient: ['#EF4444', '#DC2626'] },
-    'Dermatologist': { icon: 'hand-heart', color: '#EC4899', gradient: ['#EC4899', '#DB2777'] },
-    'Pediatrician': { icon: 'baby-face-outline', color: '#F59E0B', gradient: ['#F59E0B', '#D97706'] },
-    'Neurologist': { icon: 'brain', color: '#8B5CF6', gradient: ['#8B5CF6', '#7C3AED'] },
-    'Orthopedic Surgeon': { icon: 'bone', color: '#10B981', gradient: ['#10B981', '#059669'] },
-    'Gynecologist': { icon: 'human-female', color: '#F472B6', gradient: ['#F472B6', '#EC4899'] },
-    'Psychiatrist': { icon: 'head-cog-outline', color: '#6366F1', gradient: ['#6366F1', '#4F46E5'] },
+// Specialization → icon glyph only. All specializations render in the same primary
+// teal — distinction comes from the icon shape and the name, not from a rainbow tile.
+const SPEC_ICON: Record<string, string> = {
+    'General Practitioner': 'doctor',
+    'Cardiologist': 'heart-pulse',
+    'Dermatologist': 'hand-heart',
+    'Pediatrician': 'baby-face-outline',
+    'Neurologist': 'brain',
+    'Orthopedic Surgeon': 'bone',
+    'Gynecologist': 'human-female',
+    'Psychiatrist': 'head-cog-outline',
+    'Endocrinologist': 'diabetes',
+    'Gastroenterologist': 'stomach',
+    'Oncologist': 'ribbon',
+    'Ophthalmologist': 'eye-outline',
+    'Pulmonologist': 'lungs',
+    'Radiologist': 'radioactive',
+    'Urologist': 'water-outline',
+    'ENT Specialist': 'ear-hearing',
+    'Nephrologist': 'kidney',
+    'Rheumatologist': 'human',
+    'Allergist': 'flower',
+    'Anesthesiologist': 'needle',
 };
-
-const DEFAULT_SPEC_META = { icon: 'stethoscope', color: '#64748B', gradient: ['#64748B', '#475569'] as [string, string] };
-
 
 const HomeScreen: React.FC = () => {
   const { theme: colors } = useTheme();
@@ -48,7 +59,7 @@ const HomeScreen: React.FC = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [upcomingAppt, setUpcomingAppt] = useState<any>(null);
     const [healthTips, setHealthTips] = useState<any[]>([]);
-    const [specializations, setSpecializations] = useState<Array<{ name: string; icon: string; color: string; gradient: [string, string] }>>([]);
+    const [specializations, setSpecializations] = useState<Array<{ name: string; icon: string }>>([]);
 
     const fetchData = async () => {
         try {
@@ -69,7 +80,7 @@ const HomeScreen: React.FC = () => {
             }
             const specList = Array.from(specSet).slice(0, 8).map((name) => ({
                 name,
-                ...(SPEC_META[name] || DEFAULT_SPEC_META),
+                icon: SPEC_ICON[name] || 'stethoscope',
             }));
             setSpecializations(specList);
         } catch (err) {
@@ -90,11 +101,16 @@ const HomeScreen: React.FC = () => {
         return t('patient.goodEvening');
     };
 
-    const quickActions = [
-        { label: t('patient.findDoctors'), icon: 'magnify', color: '#2563EB', gradient: gradients.primary, onPress: () => navigation.navigate('DoctorSearchScreen') },
-        { label: t('patient.symptomChecker'), icon: 'stethoscope', color: '#10B981', gradient: gradients.secondary, onPress: () => navigation.navigate('SymptomCheck') },
-        { label: t('patient.healthRecords'), icon: 'folder-heart', color: '#8B5CF6', gradient: ['#8B5CF6', '#7C3AED'] as [string, string], onPress: () => navigation.navigate('Records') },
-        { label: t('patient.emergency'), icon: 'phone-alert', color: '#EF4444', gradient: ['#EF4444', '#DC2626'] as [string, string], onPress: () => navigation.navigate('EmergencyScreen') },
+    const quickActions: Array<{
+        label: string;
+        icon: string;
+        variant: 'tinted' | 'emergency';
+        onPress: () => void;
+    }> = [
+        { label: t('patient.findDoctors'), icon: 'magnify', variant: 'tinted', onPress: () => navigation.navigate('DoctorSearchScreen') },
+        { label: t('patient.symptomChecker'), icon: 'stethoscope', variant: 'tinted', onPress: () => navigation.navigate('SymptomCheck') },
+        { label: t('patient.healthRecords'), icon: 'folder-heart-outline', variant: 'tinted', onPress: () => navigation.navigate('Records') },
+        { label: t('patient.emergency'), icon: 'phone-alert', variant: 'emergency', onPress: () => navigation.navigate('EmergencyScreen') },
     ];
 
     const categoryMap: Record<string, string> = {
@@ -134,14 +150,12 @@ const HomeScreen: React.FC = () => {
                 {/* Search Bar */}
                 <FadeIn delay={50}>
                     <TouchableOpacity style={styles.searchBar} activeOpacity={0.7} onPress={() => navigation.navigate('DoctorSearchScreen')}>
-                        <View style={styles.searchIconWrap}>
-                            <MaterialCommunityIcons name="magnify" size={20} color={colors.primary} />
-                        </View>
+                        <MaterialCommunityIcons name="magnify" size={20} color={colors.textSecondary} />
                         <Text style={styles.searchText}>{t('patient.searchDoctors')}</Text>
                     </TouchableOpacity>
                 </FadeIn>
 
-                {/* Upcoming Appointment */}
+                {/* Upcoming Appointment — the only place a gradient appears, reserved for hero */}
                 {upcomingAppt && (
                     <FadeIn delay={100}>
                         <TouchableOpacity
@@ -193,26 +207,19 @@ const HomeScreen: React.FC = () => {
                     </FadeIn>
                 )}
 
-                {/* Quick Actions */}
+                {/* Quick Actions — flat cards, single accent variant per item, no rainbow */}
                 <FadeIn delay={150}>
                     <View style={styles.quickGrid}>
                         {quickActions.map((action, i) => (
                             <TouchableOpacity key={i} style={styles.quickCard} activeOpacity={0.7} onPress={action.onPress}>
-                                <LinearGradient
-                                    colors={action.gradient}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={styles.quickIconWrap}
-                                >
-                                    <MaterialCommunityIcons name={action.icon as any} size={22} color="#FFFFFF" />
-                                </LinearGradient>
+                                <IconWrap name={action.icon} variant={action.variant} size="lg" />
                                 <Text style={styles.quickLabel}>{action.label}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 </FadeIn>
 
-                {/* Specializations */}
+                {/* Specializations — outlined glyphs, all in primary teal */}
                 <FadeIn delay={200}>
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
@@ -221,17 +228,10 @@ const HomeScreen: React.FC = () => {
                                 <Text style={styles.seeAll}>{t('common.seeAll')}</Text>
                             </TouchableOpacity>
                         </View>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.md, paddingRight: spacing.md }}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.lg, paddingRight: spacing.md }}>
                             {specializations.map((spec, i) => (
                                 <TouchableOpacity key={i} style={styles.specCard} activeOpacity={0.7} onPress={() => navigation.navigate('DoctorSearchScreen', { specialization: spec.name })}>
-                                    <LinearGradient
-                                        colors={spec.gradient}
-                                        start={{ x: 0, y: 0 }}
-                                        end={{ x: 1, y: 1 }}
-                                        style={styles.specIcon}
-                                    >
-                                        <MaterialCommunityIcons name={spec.icon as any} size={22} color="#FFFFFF" />
-                                    </LinearGradient>
+                                    <IconWrap name={spec.icon} variant="outlined" size="lg" />
                                     <Text style={styles.specName} numberOfLines={2}>{spec.name}</Text>
                                 </TouchableOpacity>
                             ))}
@@ -256,9 +256,7 @@ const HomeScreen: React.FC = () => {
                         )}
                         {healthTips.map((tip: any) => (
                             <TouchableOpacity key={tip._id} style={styles.tipCard} activeOpacity={0.7} onPress={() => navigation.navigate('HealthTipDetailScreen', { tip })}>
-                                <View style={styles.tipIcon}>
-                                    <MaterialCommunityIcons name="lightbulb-on-outline" size={20} color="#F59E0B" />
-                                </View>
+                                <IconWrap name="leaf" variant="tinted" size="md" />
                                 <View style={styles.tipInfo}>
                                     <Text style={styles.tipTitle} numberOfLines={1}>{tip.title}</Text>
                                     <Text style={styles.tipMeta}>{categoryMap[tip.category] || tip.category} · {tip.viewCount} views</Text>
@@ -284,12 +282,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     headerLeft: {},
     greeting: { ...typography.bodySmall, color: colors.textSecondary, fontWeight: '500' },
     userName: { fontSize: 22, fontWeight: '700', color: colors.textPrimary, marginTop: 2, letterSpacing: -0.3 },
-    notifBtn: { width: 44, height: 44, borderRadius: borderRadius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', ...shadows.md },
+    notifBtn: { width: 44, height: 44, borderRadius: borderRadius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
     notifDot: { position: 'absolute', top: 10, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.error, borderWidth: 1.5, borderColor: colors.surface },
 
     // Search
-    searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md + 2, marginBottom: spacing.xl, gap: spacing.md, ...shadows.sm },
-    searchIconWrap: { width: 36, height: 36, borderRadius: borderRadius.xs, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center' },
+    searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md + 2, marginBottom: spacing.xl, gap: spacing.md, borderWidth: 1, borderColor: colors.border },
     searchText: { ...typography.body, color: colors.textDisabled },
 
     // Upcoming Card
@@ -310,9 +307,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
 
     // Quick Actions
     quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },
-    quickCard: { width: CARD_WIDTH, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, alignItems: 'center', ...shadows.sm },
-    quickIconWrap: { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-    quickLabel: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary },
+    quickCard: { width: CARD_WIDTH, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, alignItems: 'center', gap: spacing.md, borderWidth: 1, borderColor: colors.border },
+    quickLabel: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary, textAlign: 'center' },
 
     // Sections
     section: { marginBottom: spacing.xl },
@@ -321,13 +317,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     seeAll: { ...typography.bodySmall, color: colors.primary, fontWeight: '600' },
 
     // Specializations
-    specCard: { width: 80, alignItems: 'center' },
-    specIcon: { width: 52, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.xs, ...shadows.sm },
+    specCard: { width: 76, alignItems: 'center', gap: spacing.sm },
     specName: { ...typography.caption, color: colors.textPrimary, fontWeight: '500', textAlign: 'center', lineHeight: 15 },
 
     // Health Tips
-    tipCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, ...shadows.sm },
-    tipIcon: { width: 40, height: 40, borderRadius: borderRadius.sm, backgroundColor: colors.warningLight, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    tipCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.md + 2, marginBottom: spacing.sm, gap: spacing.md, borderWidth: 1, borderColor: colors.border },
     tipInfo: { flex: 1 },
     tipTitle: { ...typography.body, fontWeight: '600', color: colors.textPrimary },
     tipMeta: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },

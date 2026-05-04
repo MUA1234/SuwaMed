@@ -13,44 +13,43 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap from '../../components/common/IconWrap';
 import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
+// All entries render with the same calm primary tint — only the top "Call 119" banner
+// uses the crimson emergency color. Distinction comes from the icon glyphs, not bright tiles.
 const EMERGENCY_NUMBERS = [
-    { service: 'Police', number: '119', icon: 'police-badge', color: '#1A73E8' },
-    { service: 'Ambulance', number: '1990', icon: 'ambulance', color: '#DC2626' },
-    { service: 'Fire', number: '111', icon: 'fire-truck', color: '#F59E0B' },
-    { service: 'Disaster Mgmt', number: '117', icon: 'alert', color: '#8B5CF6' },
-    { service: 'Suwaseriya', number: '1990', icon: 'hospital', color: '#10B981' },
-    { service: 'Poison Control', number: '0112695112', icon: 'skull', color: '#6B7280' },
-    { service: 'Mental Health', number: '1926', icon: 'brain', color: '#EC4899' },
-    { service: 'Traffic Police', number: '0112433333', icon: 'car-emergency', color: '#F59E0B' },
+    { service: 'Police', number: '119', icon: 'police-badge' },
+    { service: 'Ambulance', number: '1990', icon: 'ambulance' },
+    { service: 'Fire', number: '111', icon: 'fire-truck' },
+    { service: 'Disaster Mgmt', number: '117', icon: 'alert-octagon-outline' },
+    { service: 'Suwaseriya', number: '1990', icon: 'hospital-building' },
+    { service: 'Poison Control', number: '0112695112', icon: 'flask-outline' },
+    { service: 'Mental Health', number: '1926', icon: 'brain' },
+    { service: 'Traffic Police', number: '0112433333', icon: 'car-emergency' },
 ];
 
 const FIRST_AID_TIPS = [
     {
         title: 'Heart Attack',
         icon: 'heart-pulse',
-        color: '#DC2626',
         steps: 'Call 1990 immediately. Help the person sit comfortably. Loosen tight clothing. If conscious and not allergic, give aspirin.',
     },
     {
         title: 'Stroke',
         icon: 'brain',
-        color: '#8B5CF6',
         steps: 'Note the time symptoms started. Call 1990. Keep person still and comfortable. Do not give food or water.',
     },
     {
         title: 'Choking',
-        icon: 'emoticon-sick',
-        color: '#F59E0B',
+        icon: 'emoticon-sick-outline',
         steps: 'Encourage coughing. Give 5 back blows. If ineffective, perform Heimlich maneuver. Call 1990 if unresponsive.',
     },
     {
         title: 'Burns',
         icon: 'fire',
-        color: '#EC4899',
         steps: 'Cool with running water for 20 minutes. Do not use ice. Cover with clean bandage. Seek medical attention.',
     },
 ];
@@ -78,7 +77,7 @@ const EmergencyScreen: React.FC = () => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
                     <MaterialCommunityIcons name="arrow-left" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: colors.error }]}>{t('patient.emergency')}</Text>
+                <Text style={[styles.headerTitle, { color: colors.emergency }]}>{t('patient.emergency')}</Text>
                 <View style={{ width: 40 }} />
             </View>
 
@@ -101,13 +100,11 @@ const EmergencyScreen: React.FC = () => {
                 <View style={styles.numbersGrid}>
                     {EMERGENCY_NUMBERS.map((item, index) => (
                         <View key={index} style={[styles.numberCard, { width: cardWidth }]}>
-                            <View style={[styles.numberIcon, { backgroundColor: item.color + '15' }]}>
-                                <MaterialCommunityIcons name={item.icon as any} size={22} color={item.color} />
-                            </View>
+                            <IconWrap name={item.icon} variant="tinted" size="md" />
                             <Text style={styles.serviceName}>{item.service}</Text>
                             <Text style={styles.serviceNumber}>{item.number}</Text>
                             <TouchableOpacity
-                                style={[styles.callBtn, { backgroundColor: item.color }]}
+                                style={styles.callBtn}
                                 onPress={() => Alert.alert(`Dialing ${item.number}...`, `Connecting to ${item.service}`)}
                                 activeOpacity={0.8}
                             >
@@ -129,9 +126,7 @@ const EmergencyScreen: React.FC = () => {
                                 onPress={() => setExpandedTip(isOpen ? null : index)}
                                 activeOpacity={0.7}
                             >
-                                <View style={[styles.tipIcon, { backgroundColor: tip.color + '15' }]}>
-                                    <MaterialCommunityIcons name={tip.icon as any} size={20} color={tip.color} />
-                                </View>
+                                <IconWrap name={tip.icon} variant="tinted" size="sm" />
                                 <Text style={styles.tipTitle}>{tip.title}</Text>
                                 <MaterialCommunityIcons
                                     name={isOpen ? 'chevron-up' : 'chevron-down'}
@@ -153,9 +148,7 @@ const EmergencyScreen: React.FC = () => {
                 <View style={styles.hospitalsCard}>
                     {MAJOR_HOSPITALS.map((hospital, index) => (
                         <View key={index} style={[styles.hospitalRow, index < MAJOR_HOSPITALS.length - 1 && styles.hospitalRowBorder]}>
-                            <View style={styles.hospitalIconWrap}>
-                                <MaterialCommunityIcons name="hospital-building" size={18} color={colors.primary} />
-                            </View>
+                            <IconWrap name="hospital-building" variant="tinted" size="sm" />
                             <View style={styles.hospitalInfo}>
                                 <Text style={styles.hospitalName}>{hospital.name}</Text>
                                 <Text style={styles.hospitalLocation}>{hospital.location}</Text>
@@ -183,7 +176,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     emergencyBanner: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.error,
+        backgroundColor: colors.emergency,
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         marginBottom: spacing.xl,
@@ -207,13 +200,13 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.md,
         padding: spacing.md,
         alignItems: 'center',
+        gap: spacing.sm,
         borderWidth: 1,
         borderColor: colors.border,
     },
-    numberIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-    serviceName: { fontSize: 12, fontWeight: '600', color: colors.textPrimary, textAlign: 'center', marginBottom: 2 },
-    serviceNumber: { fontSize: 14, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.sm },
-    callBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: 12, gap: 4 },
+    serviceName: { fontSize: 12, fontWeight: '600', color: colors.textPrimary, textAlign: 'center' },
+    serviceNumber: { fontSize: 14, fontWeight: '700', color: colors.textPrimary },
+    callBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: 12, gap: 4, backgroundColor: colors.primary },
     callBtnText: { color: '#fff', fontSize: 12, fontWeight: '600' },
     tipCard: {
         backgroundColor: colors.surface,
@@ -224,7 +217,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         overflow: 'hidden',
     },
     tipHeader: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg, gap: spacing.md },
-    tipIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     tipTitle: { flex: 1, ...typography.body, fontWeight: '600', color: colors.textPrimary },
     tipContent: { paddingHorizontal: spacing.lg, paddingBottom: spacing.lg, borderTopWidth: 1, borderTopColor: colors.border },
     tipSteps: { ...typography.body, color: colors.textSecondary, lineHeight: 24, paddingTop: spacing.md },
@@ -236,9 +228,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         overflow: 'hidden',
         marginBottom: spacing.xl,
     },
-    hospitalRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg },
+    hospitalRow: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg, gap: spacing.md },
     hospitalRowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-    hospitalIconWrap: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#EBF5FF', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     hospitalInfo: { flex: 1 },
     hospitalName: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary },
     hospitalLocation: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },

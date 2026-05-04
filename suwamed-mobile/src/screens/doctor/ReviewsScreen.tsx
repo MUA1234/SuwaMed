@@ -29,7 +29,7 @@ const StarRow: React.FC<{ rating: number; size?: number }> = ({ rating, size = 1
                     key={star}
                     name={star <= Math.round(rating) ? 'star' : 'star-outline'}
                     size={size}
-                    color="#F59E0B"
+                    color={colors.warning}
                 />
             ))}
         </View>
@@ -124,7 +124,7 @@ const ReviewsScreen: React.FC = () => {
                             {breakdownBars.map(({ star, count, pct }) => (
                                 <View key={star} style={styles.barRow}>
                                     <Text style={styles.barStarLabel}>{star}</Text>
-                                    <MaterialCommunityIcons name="star" size={10} color="#F59E0B" />
+                                    <MaterialCommunityIcons name="star" size={10} color={colors.warning} />
                                     <View style={styles.barTrack}>
                                         <View style={[styles.barFill, { width: `${pct}%` }]} />
                                     </View>
@@ -208,8 +208,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     summaryRight: { flex: 1, justifyContent: 'center', gap: spacing.xs },
     barRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
     barStarLabel: { fontSize: 12, color: colors.textSecondary, width: 10, textAlign: 'right' },
-    barTrack: { flex: 1, height: 6, backgroundColor: '#F3F4F6', borderRadius: 3, overflow: 'hidden' },
-    barFill: { height: '100%', backgroundColor: '#F59E0B', borderRadius: 3 },
+    barTrack: { flex: 1, height: 6, backgroundColor: colors.borderLight, borderRadius: 3, overflow: 'hidden' },
+    barFill: { height: '100%', backgroundColor: colors.warning, borderRadius: 3 },
     barCount: { fontSize: 11, color: colors.textSecondary, width: 20, textAlign: 'right' },
     reviewCard: {
         backgroundColor: colors.surface,
@@ -220,7 +220,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderColor: colors.border,
     },
     reviewHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
-    reviewAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#EBF5FF', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    reviewAvatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     reviewInitials: { fontSize: 14, fontWeight: '700', color: colors.primary },
     reviewMeta: { flex: 1 },
     reviewerName: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary },

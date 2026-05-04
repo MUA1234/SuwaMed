@@ -49,7 +49,7 @@ const getStrengthColor = (strength: PasswordStrength, colors: ThemeColors): stri
     case 'weak':
       return colors.error;
     case 'medium':
-      return '#F59E0B';
+      return colors.warning;
     case 'strong':
       return colors.success;
   }
@@ -325,7 +325,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorLight,
     borderRadius: borderRadius.sm,
     padding: spacing.md,
     marginBottom: spacing.xl,

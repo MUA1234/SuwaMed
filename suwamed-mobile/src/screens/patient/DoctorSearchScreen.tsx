@@ -12,11 +12,10 @@ import {
     ScrollView,
     Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { DoctorCardSkeleton, SkeletonList } from '../../components/common/Skeleton';
 import * as doctorApi from '../../api/doctor.api';
@@ -39,27 +38,6 @@ const getInitials = (firstName: string, lastName: string) => {
     return `${(firstName || '').charAt(0)}${(lastName || '').charAt(0)}`.toUpperCase();
 };
 
-const AVATAR_COLORS = [
-    ['#2563EB', '#1D4ED8'],
-    ['#0D9488', '#0F766E'],
-    ['#F97316', '#EA580C'],
-    ['#8B5CF6', '#7C3AED'],
-    ['#EF4444', '#DC2626'],
-    ['#10B981', '#059669'],
-    ['#F59E0B', '#D97706'],
-    ['#3B82F6', '#2563EB'],
-    ['#EC4899', '#DB2777'],
-    ['#6366F1', '#4F46E5'],
-];
-
-const getAvatarGradient = (name: string) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-};
-
 const StarRating: React.FC<{ rating: number; size?: number }> = ({ rating, size = 13 }) => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
@@ -70,7 +48,7 @@ const StarRating: React.FC<{ rating: number; size?: number }> = ({ rating, size 
                     key={star}
                     name={star <= Math.round(rating) ? 'star' : 'star-outline'}
                     size={size}
-                    color="#F59E0B"
+                    color={colors.secondary}
                 />
             ))}
         </View>
@@ -135,7 +113,6 @@ const DoctorSearchScreen: React.FC = () => {
         const lastName = item.userId?.lastName || '';
         const fullName = `${firstName} ${lastName}`.trim();
         const initials = getInitials(firstName, lastName);
-        const avatarGradient = getAvatarGradient(fullName || item._id);
         const specializations = Array.isArray(item.specialization)
             ? item.specialization.join(', ')
             : item.specialization || 'General Practitioner';
@@ -151,12 +128,9 @@ const DoctorSearchScreen: React.FC = () => {
                 onPress={() => navigation.navigate('DoctorProfileScreen', { doctorId: item._id, doctor: item })}
             >
                 <View style={styles.cardTop}>
-                    <LinearGradient
-                        colors={avatarGradient as any}
-                        style={styles.avatarCircle}
-                    >
+                    <View style={styles.avatarCircle}>
                         <Text style={styles.avatarText}>{initials}</Text>
-                    </LinearGradient>
+                    </View>
                     <View style={styles.doctorInfo}>
                         <View style={styles.nameRow}>
                             <Text style={styles.doctorName} numberOfLines={1}>
@@ -202,15 +176,10 @@ const DoctorSearchScreen: React.FC = () => {
                     </View>
                 </View>
 
-                <LinearGradient
-                    colors={gradients.primary}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.bookBtn}
-                >
+                <View style={styles.bookBtn}>
                     <Text style={styles.bookBtnText}>{t('patient.viewProfileAndBook')}</Text>
                     <MaterialCommunityIcons name="arrow-right" size={16} color="#fff" />
-                </LinearGradient>
+                </View>
             </TouchableOpacity>
         );
     };
@@ -228,9 +197,7 @@ const DoctorSearchScreen: React.FC = () => {
 
             {/* Search */}
             <View style={styles.searchBarWrap}>
-                <View style={styles.searchIconWrap}>
-                    <MaterialCommunityIcons name="magnify" size={18} color={colors.primary} />
-                </View>
+                <MaterialCommunityIcons name="magnify" size={20} color={colors.textSecondary} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder={t('patient.searchDoctors')}
@@ -255,29 +222,14 @@ const DoctorSearchScreen: React.FC = () => {
             >
                 {SPECIALIZATIONS.map((spec) => {
                     const isActive = selectedSpec === spec;
-                    return isActive ? (
-                        <LinearGradient
-                            key={spec}
-                            colors={gradients.primary}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={styles.filterChipGradient}
-                        >
-                            <TouchableOpacity
-                                activeOpacity={0.8}
-                                onPress={() => handleSpecSelect(spec)}
-                            >
-                                <Text style={styles.filterChipTextActive}>{spec}</Text>
-                            </TouchableOpacity>
-                        </LinearGradient>
-                    ) : (
+                    return (
                         <TouchableOpacity
                             key={spec}
-                            style={styles.filterChip}
+                            style={[styles.filterChip, isActive && styles.filterChipActive]}
                             activeOpacity={0.7}
                             onPress={() => handleSpecSelect(spec)}
                         >
-                            <Text style={styles.filterChipText}>{spec}</Text>
+                            <Text style={[styles.filterChipText, isActive && styles.filterChipTextActive]}>{spec}</Text>
                         </TouchableOpacity>
                     );
                 })}
@@ -344,7 +296,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
-        ...shadows.sm,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     headerTitle: {
         fontSize: 18,
@@ -360,19 +313,12 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         backgroundColor: colors.surface,
         borderRadius: borderRadius.md,
         paddingHorizontal: spacing.md,
-        paddingVertical: spacing.sm,
+        paddingVertical: spacing.sm + 2,
         marginHorizontal: spacing.xl,
         marginBottom: spacing.md,
         gap: spacing.sm,
-        ...shadows.sm,
-    },
-    searchIconWrap: {
-        width: 34,
-        height: 34,
-        borderRadius: borderRadius.xs,
-        backgroundColor: colors.primaryLight,
-        alignItems: 'center',
-        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     searchInput: {
         flex: 1,
@@ -393,12 +339,12 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         paddingVertical: spacing.sm + 1,
         borderRadius: borderRadius.full,
         backgroundColor: colors.surface,
-        ...shadows.sm,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
-    filterChipGradient: {
-        paddingHorizontal: spacing.lg,
-        paddingVertical: spacing.sm + 1,
-        borderRadius: borderRadius.full,
+    filterChipActive: {
+        backgroundColor: colors.primary,
+        borderColor: colors.primary,
     },
     filterChipText: {
         ...typography.bodySmall,
@@ -406,7 +352,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         fontWeight: '500',
     },
     filterChipTextActive: {
-        ...typography.bodySmall,
         color: '#fff',
         fontWeight: '600',
     },
@@ -441,7 +386,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         marginBottom: spacing.md,
-        ...shadows.sm,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     cardTop: {
         flexDirection: 'row',
@@ -454,6 +400,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
+        backgroundColor: colors.primary,
     },
     avatarText: {
         fontSize: 18,
@@ -546,6 +493,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderRadius: borderRadius.sm,
         paddingVertical: spacing.sm + 3,
         gap: spacing.xs,
+        backgroundColor: colors.primary,
     },
     bookBtnText: {
         ...typography.bodySmall,

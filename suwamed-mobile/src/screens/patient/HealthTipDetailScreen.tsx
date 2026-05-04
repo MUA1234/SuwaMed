@@ -11,17 +11,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap from '../../components/common/IconWrap';
 import { useTranslation } from 'react-i18next';
 
-const categoryColorMap: Record<string, string> = {
-    nutrition: '#10B981',
-    exercise: '#1A73E8',
-    mental_health: '#8B5CF6',
-    disease_prevention: '#F59E0B',
-    first_aid: '#DC2626',
-    maternal_health: '#EC4899',
-    child_health: '#F59E0B',
-    elderly_care: '#6B7280',
+const categoryIcons: Record<string, string> = {
+    nutrition: 'food-apple-outline',
+    exercise: 'run',
+    mental_health: 'meditation',
+    disease_prevention: 'shield-check-outline',
+    first_aid: 'medical-bag',
+    maternal_health: 'human-pregnant',
+    child_health: 'human-child',
+    elderly_care: 'human-cane',
 };
 
 const categoryLabels: Record<string, string> = {
@@ -43,7 +44,7 @@ const HealthTipDetailScreen: React.FC = () => {
     const route = useRoute<any>();
     const { tip } = route.params as { tip: { _id: string; title: string; content: string; category: string; viewCount: number; publishedAt: string } };
 
-    const catColor = categoryColorMap[tip.category] || '#6B7280';
+    const catIcon = categoryIcons[tip.category] || 'leaf';
     const catLabel = categoryLabels[tip.category] || tip.category;
 
     const formattedDate = tip.publishedAt
@@ -52,7 +53,7 @@ const HealthTipDetailScreen: React.FC = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.header, { borderBottomColor: catColor + '30' }]}>
+            <View style={styles.header}>
                 <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()} activeOpacity={0.7}>
                     <MaterialCommunityIcons name="arrow-left" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
@@ -61,12 +62,12 @@ const HealthTipDetailScreen: React.FC = () => {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                <View style={[styles.iconWrap, { backgroundColor: catColor + '15' }]}>
-                    <MaterialCommunityIcons name="lightbulb" size={48} color={catColor} />
+                <View style={styles.iconWrapHero}>
+                    <IconWrap name={catIcon} variant="tinted" size="xl" />
                 </View>
 
-                <View style={[styles.categoryBadge, { backgroundColor: catColor + '18' }]}>
-                    <Text style={[styles.categoryBadgeText, { color: catColor }]}>{catLabel}</Text>
+                <View style={styles.categoryBadge}>
+                    <Text style={styles.categoryBadgeText}>{catLabel}</Text>
                 </View>
 
                 <Text style={styles.title}>{tip.title}</Text>
@@ -84,13 +85,13 @@ const HealthTipDetailScreen: React.FC = () => {
                     </View>
                 </View>
 
-                <View style={[styles.divider, { backgroundColor: catColor + '25' }]} />
+                <View style={styles.divider} />
 
                 <Text style={styles.content}>{tip.content}</Text>
 
-                <View style={[styles.footerNote, { backgroundColor: catColor + '10', borderLeftColor: catColor }]}>
-                    <MaterialCommunityIcons name="information-outline" size={16} color={catColor} />
-                    <Text style={[styles.footerNoteText, { color: catColor }]}>
+                <View style={styles.footerNote}>
+                    <MaterialCommunityIcons name="information-outline" size={16} color={colors.primary} />
+                    <Text style={styles.footerNoteText}>
                         This health tip is for informational purposes only. Always consult a qualified healthcare professional for medical advice.
                     </Text>
                 </View>
@@ -108,7 +109,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         paddingHorizontal: spacing.xl,
         paddingTop: spacing.lg,
         paddingBottom: spacing.md,
-        borderBottomWidth: 1,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.border,
     },
     backBtn: {
         width: 40,
@@ -122,23 +124,17 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     headerTitle: { ...typography.h3, color: colors.textPrimary, flex: 1, textAlign: 'center' },
     scrollContent: { paddingHorizontal: spacing.xl, paddingTop: spacing.xxl, paddingBottom: 60 },
-    iconWrap: {
-        width: 88,
-        height: 88,
-        borderRadius: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        marginBottom: spacing.lg,
-    },
+    iconWrapHero: { alignSelf: 'center', marginBottom: spacing.lg },
     categoryBadge: {
         alignSelf: 'center',
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs,
         borderRadius: borderRadius.xl,
         marginBottom: spacing.lg,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
-    categoryBadgeText: { fontSize: 13, fontWeight: '600' },
+    categoryBadgeText: { fontSize: 13, fontWeight: '600', color: colors.textSecondary },
     title: {
         ...typography.h1,
         color: colors.textPrimary,
@@ -154,7 +150,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     metaItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
     metaText: { ...typography.caption, color: colors.textSecondary },
-    divider: { height: 1, marginBottom: spacing.xl },
+    divider: { height: StyleSheet.hairlineWidth, marginBottom: spacing.xl, backgroundColor: colors.border },
     content: {
         ...typography.body,
         color: colors.textPrimary,
@@ -168,8 +164,10 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         padding: spacing.md,
         borderRadius: borderRadius.md,
         borderLeftWidth: 3,
+        backgroundColor: colors.primaryLight,
+        borderLeftColor: colors.primary,
     },
-    footerNoteText: { ...typography.caption, flex: 1, lineHeight: 18 },
+    footerNoteText: { ...typography.caption, flex: 1, lineHeight: 18, color: colors.primary },
 });
 
 export default HealthTipDetailScreen;

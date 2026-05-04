@@ -202,7 +202,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   roleCardSelected: {
     borderColor: colors.primary,
-    backgroundColor: '#FAFBFF',
+    backgroundColor: colors.primaryLight,
     ...shadows.md,
   },
   cardHeader: {

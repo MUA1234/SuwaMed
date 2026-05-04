@@ -372,7 +372,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     headerTitle: { flex: 1, ...typography.h3, color: colors.textPrimary, textAlign: 'center' },
     scrollContent: { paddingHorizontal: spacing.xl, paddingBottom: 40 },
     avatarSection: { alignItems: 'center', paddingVertical: spacing.xxl },
-    avatar: { width: 88, height: 88, borderRadius: 44, backgroundColor: '#EBF5FF', alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: colors.primary + '30', overflow: 'hidden' },
+    avatar: { width: 88, height: 88, borderRadius: 44, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: colors.primary + '30', overflow: 'hidden' },
     avatarImage: { width: '100%', height: '100%', borderRadius: 44 },
     avatarOverlay: {
         ...StyleSheet.absoluteFillObject,

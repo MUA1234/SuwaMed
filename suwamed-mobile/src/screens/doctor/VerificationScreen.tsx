@@ -16,40 +16,54 @@ import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { pickImage, takePhoto } from '../../utils/permissions';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
 
 const DOC_TYPES: { key: string; label: string; icon: string }[] = [
-    { key: 'slmc_certificate', label: 'SLMC Certificate', icon: 'certificate' },
-    { key: 'degree', label: 'Medical Degree', icon: 'school' },
-    { key: 'nic', label: 'National ID (NIC)', icon: 'card-account-details' },
-    { key: 'other', label: 'Other Document', icon: 'file-document' },
+    { key: 'slmc_certificate', label: 'SLMC Certificate', icon: 'certificate-outline' },
+    { key: 'degree', label: 'Medical Degree', icon: 'school-outline' },
+    { key: 'nic', label: 'National ID (NIC)', icon: 'card-account-details-outline' },
+    { key: 'other', label: 'Other Document', icon: 'file-document-outline' },
 ];
 
-const getStatusConfig = (colors: ThemeColors): Record<string, { icon: string; bg: string; color: string; title: string; subtitle: string }> => ({
+interface StatusConfig {
+    icon: string;
+    variant: IconWrapVariant;
+    color: string;
+    bg: string;
+    title: string;
+    subtitle: string;
+}
+
+const getStatusConfig = (colors: ThemeColors): Record<string, StatusConfig> => ({
     pending: {
         icon: 'timer-sand',
-        bg: colors.warningLight,
+        variant: 'warning',
         color: colors.warning,
+        bg: colors.warningLight,
         title: 'Verification Pending',
         subtitle: 'Your application is being reviewed. This typically takes 1-3 business days.',
     },
     under_review: {
         icon: 'magnify',
-        bg: colors.primaryLight,
+        variant: 'tinted',
         color: colors.primary,
+        bg: colors.primaryLight,
         title: 'Under Review',
         subtitle: 'Our team is currently reviewing your documents and credentials.',
     },
     verified: {
-        icon: 'shield-check',
-        bg: colors.successLight,
+        icon: 'shield-check-outline',
+        variant: 'success',
         color: colors.success,
+        bg: colors.successLight,
         title: 'Verified Doctor',
         subtitle: 'Your account is fully verified. Patients can now book consultations with you.',
     },
     rejected: {
-        icon: 'close-circle',
-        bg: colors.errorLight,
+        icon: 'close-circle-outline',
+        variant: 'emergency',
         color: colors.error,
+        bg: colors.errorLight,
         title: 'Not Verified',
         subtitle: 'Your application was not approved. Please contact support for more information.',
     },
@@ -172,13 +186,11 @@ const VerificationScreen: React.FC = () => {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                <View style={[styles.statusCard, { backgroundColor: config.bg, borderColor: config.color + '30' }]}>
-                    <View style={[styles.statusIconWrap, { backgroundColor: config.color + '20' }]}>
-                        <MaterialCommunityIcons name={config.icon as any} size={48} color={config.color} />
-                    </View>
+                <View style={[styles.statusCard, { backgroundColor: config.bg, borderColor: colors.border }]}>
+                    <IconWrap name={config.icon} variant={config.variant} size="xl" />
                     <Text style={[styles.statusTitle, { color: config.color }]}>{config.title}</Text>
                     <Text style={styles.statusSubtitle}>{config.subtitle}</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: config.color + '15' }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: colors.surface }]}>
                         <View style={[styles.statusDot, { backgroundColor: config.color }]} />
                         <Text style={[styles.statusBadgeText, { color: config.color }]}>
                             {status.replace('_', ' ').toUpperCase()}
@@ -189,9 +201,7 @@ const VerificationScreen: React.FC = () => {
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>{t('doctor.registrationDetails')}</Text>
                     <View style={styles.infoRow}>
-                        <View style={styles.infoIconWrap}>
-                            <MaterialCommunityIcons name="card-account-details" size={18} color={colors.primary} />
-                        </View>
+                        <IconWrap name="card-account-details-outline" variant="outlined" size="sm" />
                         <View style={styles.infoContent}>
                             <Text style={styles.infoLabel}>{t('doctor.slmcRegistrationNumber')}</Text>
                             <Text style={styles.slmcNumber}>{slmcNumber}</Text>
@@ -199,9 +209,7 @@ const VerificationScreen: React.FC = () => {
                     </View>
                     {verifiedDate ? (
                         <View style={[styles.infoRow, { marginTop: spacing.md }]}>
-                            <View style={styles.infoIconWrap}>
-                                <MaterialCommunityIcons name="calendar-check" size={18} color={colors.success} />
-                            </View>
+                            <IconWrap name="calendar-check-outline" variant="success" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('doctor.verifiedOn')}</Text>
                                 <Text style={styles.infoValue}>{verifiedDate}</Text>
@@ -222,9 +230,7 @@ const VerificationScreen: React.FC = () => {
                                     key={index}
                                     style={[styles.docRow, index < documents.length - 1 && styles.docRowBorder]}
                                 >
-                                    <View style={styles.docIconWrap}>
-                                        <MaterialCommunityIcons name="file-document-outline" size={18} color={colors.primary} />
-                                    </View>
+                                    <IconWrap name="file-document-outline" variant="outlined" size="sm" />
                                     <View style={styles.docContent}>
                                         <Text style={styles.docType}>
                                             {doc.type
@@ -235,7 +241,7 @@ const VerificationScreen: React.FC = () => {
                                             <Text style={styles.docDate}>Uploaded {uploadedStr}</Text>
                                         ) : null}
                                     </View>
-                                    <MaterialCommunityIcons name="check-circle" size={18} color={colors.success} />
+                                    <MaterialCommunityIcons name="check-circle-outline" size={18} color={colors.success} />
                                 </View>
                             );
                         })}
@@ -295,8 +301,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         marginBottom: spacing.lg,
         borderWidth: 1,
     },
-    statusIconWrap: { width: 96, height: 96, borderRadius: 48, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
-    statusTitle: { fontSize: 22, fontWeight: '700', marginBottom: spacing.sm, textAlign: 'center' },
+    statusTitle: { fontSize: 22, fontWeight: '700', marginTop: spacing.lg, marginBottom: spacing.sm, textAlign: 'center' },
     statusSubtitle: { ...typography.body, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: spacing.lg },
     statusBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: borderRadius.xl, gap: spacing.xs },
     statusDot: { width: 8, height: 8, borderRadius: 4 },
@@ -310,15 +315,13 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderColor: colors.border,
     },
     cardTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.md },
-    infoRow: { flexDirection: 'row', alignItems: 'center' },
-    infoIconWrap: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#EBF5FF', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    infoRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
     infoContent: { flex: 1 },
     infoLabel: { ...typography.caption, color: colors.textSecondary },
     infoValue: { ...typography.body, fontWeight: '500', color: colors.textPrimary, marginTop: 2 },
     slmcNumber: { fontSize: 18, fontWeight: '700', color: colors.primary, marginTop: 2, letterSpacing: 1 },
-    docRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md },
+    docRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, gap: spacing.md },
     docRowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-    docIconWrap: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#EBF5FF', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     docContent: { flex: 1 },
     docType: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary },
     docDate: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
@@ -326,13 +329,13 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         paddingVertical: spacing.lg,
         gap: spacing.sm,
         marginTop: spacing.sm,
         borderWidth: 1,
-        borderColor: '#BFDBFE',
+        borderColor: colors.border,
     },
     supportBtnText: { ...typography.body, fontWeight: '600', color: colors.primary },
     uploadBtn: {

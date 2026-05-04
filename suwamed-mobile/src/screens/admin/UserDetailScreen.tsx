@@ -76,8 +76,8 @@ const UserDetailScreen: React.FC = () => {
 
     const user = userData?.user || {};
     const roleData = userData?.roleData || {};
-    const roleColors: Record<string, string> = { patient: '#1A73E8', doctor: '#10B981', admin: '#8B5CF6' };
-    const roleColor = roleColors[user.role] || '#6B7280';
+    const roleColors: Record<string, string> = { patient: colors.primary, doctor: colors.success, admin: colors.secondary };
+    const roleColor = roleColors[user.role] || colors.textSecondary;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -193,7 +193,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     actionRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
     verifyBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.success, borderRadius: borderRadius.md, paddingVertical: spacing.md, gap: spacing.xs },
     verifyBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
-    rejectBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEF2F2', borderRadius: borderRadius.md, paddingVertical: spacing.md, borderWidth: 1, borderColor: '#FECACA', gap: spacing.xs },
+    rejectBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.errorLight, borderRadius: borderRadius.md, paddingVertical: spacing.md, borderWidth: 1, borderColor: colors.error + '33', gap: spacing.xs },
     rejectBtnText: { color: colors.error, fontWeight: '600', fontSize: 14 },
 });
 

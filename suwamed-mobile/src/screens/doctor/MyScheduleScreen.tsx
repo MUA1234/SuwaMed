@@ -29,14 +29,14 @@ const generateDates = () => {
     return dates;
 };
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-    pending: { bg: '#FFFBEB', text: '#F59E0B', label: 'Pending' },
-    confirmed: { bg: '#EBF5FF', text: '#1A73E8', label: 'Upcoming' },
-    in_progress: { bg: '#FFFBEB', text: '#F59E0B', label: 'In Progress' },
-    completed: { bg: '#ECFDF5', text: '#10B981', label: 'Completed' },
-    cancelled: { bg: '#FEF2F2', text: '#DC2626', label: 'Cancelled' },
-    no_show: { bg: '#F3F4F6', text: '#6B7280', label: 'No Show' },
-};
+const getStatusColors = (colors: ThemeColors): Record<string, { bg: string; text: string; label: string }> => ({
+    pending:     { bg: colors.warningLight, text: colors.warning,        label: 'Pending' },
+    confirmed:   { bg: colors.primaryLight, text: colors.primary,        label: 'Upcoming' },
+    in_progress: { bg: colors.warningLight, text: colors.warning,        label: 'In Progress' },
+    completed:   { bg: colors.successLight, text: colors.success,        label: 'Completed' },
+    cancelled:   { bg: colors.errorLight,   text: colors.error,          label: 'Cancelled' },
+    no_show:     { bg: colors.borderLight,  text: colors.textSecondary,  label: 'No Show' },
+});
 
 const MyScheduleScreen: React.FC = () => {
   const { theme: colors } = useTheme();
@@ -122,6 +122,7 @@ const MyScheduleScreen: React.FC = () => {
                         </View>
                     )}
                     {appointments.map((appt: any, idx: number) => {
+                        const statusColors = getStatusColors(colors);
                         const ss = statusColors[appt.status] || statusColors.pending;
                         const patientName = appt.patientId ? `${appt.patientId.firstName} ${appt.patientId.lastName}` : 'Patient';
                         return (

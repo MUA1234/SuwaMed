@@ -15,25 +15,29 @@ import * as patientApi from '../../api/patient.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
 
+// Free → sage success, Basic → primary teal, Premium → warm sand accent.
+// Three meaningful tiers, three palette tokens, no rainbow.
+type PlanVariant = 'success' | 'tinted' | 'accent';
 interface Plan {
     key: string;
     name: string;
     price: string;
     priceLabel: string;
-    color: string;
+    variant: PlanVariant;
     features: string[];
     icon: string;
 }
 
-const getPlans = (colors: ThemeColors): Plan[] => [
+const PLANS: Plan[] = [
     {
         key: 'free',
         name: 'Free',
         price: 'LKR 0',
         priceLabel: '/month',
-        color: colors.success,
-        icon: 'star-outline',
+        variant: 'success',
+        icon: 'leaf-outline',
         features: [
             '2 consultations/month',
             'Basic health records',
@@ -45,8 +49,8 @@ const getPlans = (colors: ThemeColors): Plan[] => [
         name: 'Basic',
         price: 'LKR 990',
         priceLabel: '/month',
-        color: colors.primary,
-        icon: 'star-half-full',
+        variant: 'tinted',
+        icon: 'shield-star-outline',
         features: [
             '10 consultations/month',
             'Full health records',
@@ -59,8 +63,8 @@ const getPlans = (colors: ThemeColors): Plan[] => [
         name: 'Premium',
         price: 'LKR 2,490',
         priceLabel: '/month',
-        color: '#8B5CF6',
-        icon: 'star',
+        variant: 'accent',
+        icon: 'crown-outline',
         features: [
             'Unlimited consultations',
             'All features included',
@@ -71,10 +75,12 @@ const getPlans = (colors: ThemeColors): Plan[] => [
     },
 ];
 
+const variantColor = (colors: ThemeColors, v: PlanVariant) =>
+    v === 'success' ? colors.success : v === 'accent' ? colors.secondary : colors.primary;
+
 const SubscriptionScreen: React.FC = () => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
-  const PLANS = getPlans(colors);
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [currentPlan, setCurrentPlan] = useState<string>('free');
@@ -104,15 +110,7 @@ const SubscriptionScreen: React.FC = () => {
         );
     };
 
-    const planLabel = () => {
-        const plan = PLANS.find((p) => p.key === currentPlan);
-        return plan ? plan.name : 'Free';
-    };
-
-    const planColor = () => {
-        const plan = PLANS.find((p) => p.key === currentPlan);
-        return plan ? plan.color : colors.success;
-    };
+    const currentPlanData = PLANS.find((p) => p.key === currentPlan) || PLANS[0];
 
     if (loading) {
         return (
@@ -135,16 +133,12 @@ const SubscriptionScreen: React.FC = () => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                 {/* Current Plan Badge */}
                 <View style={styles.currentPlanBanner}>
-                    <View style={[styles.planIconCircle, { backgroundColor: planColor() + '20' }]}>
-                        <MaterialCommunityIcons
-                            name={PLANS.find((p) => p.key === currentPlan)?.icon as any || 'star-outline'}
-                            size={28}
-                            color={planColor()}
-                        />
-                    </View>
+                    <IconWrap name={currentPlanData.icon} variant={currentPlanData.variant} size="lg" />
                     <View>
                         <Text style={styles.currentPlanLabel}>{t('patient.currentPlan')}</Text>
-                        <Text style={[styles.currentPlanName, { color: planColor() }]}>{planLabel()}</Text>
+                        <Text style={[styles.currentPlanName, { color: variantColor(colors, currentPlanData.variant) }]}>
+                            {currentPlanData.name}
+                        </Text>
                     </View>
                 </View>
 
@@ -152,27 +146,26 @@ const SubscriptionScreen: React.FC = () => {
 
                 {PLANS.map((plan) => {
                     const isActive = plan.key === currentPlan;
+                    const tone = variantColor(colors, plan.variant);
                     return (
                         <View
                             key={plan.key}
                             style={[
                                 styles.planCard,
-                                isActive && { borderColor: plan.color, borderWidth: 2 },
+                                isActive && { borderColor: tone, borderWidth: 1.5 },
                             ]}
                         >
                             {isActive && (
-                                <View style={[styles.activeBadge, { backgroundColor: plan.color }]}>
+                                <View style={[styles.activeBadge, { backgroundColor: tone }]}>
                                     <Text style={styles.activeBadgeText}>{t('patient.currentPlan')}</Text>
                                 </View>
                             )}
                             <View style={styles.planHeader}>
-                                <View style={[styles.planIconSmall, { backgroundColor: plan.color + '15' }]}>
-                                    <MaterialCommunityIcons name={plan.icon as any} size={22} color={plan.color} />
-                                </View>
+                                <IconWrap name={plan.icon} variant={plan.variant} size="md" />
                                 <View style={styles.planTitleWrap}>
                                     <Text style={styles.planName}>{plan.name}</Text>
                                     <View style={styles.priceRow}>
-                                        <Text style={[styles.planPrice, { color: plan.color }]}>{plan.price}</Text>
+                                        <Text style={[styles.planPrice, { color: tone }]}>{plan.price}</Text>
                                         <Text style={styles.planPriceLabel}>{plan.priceLabel}</Text>
                                     </View>
                                 </View>
@@ -182,9 +175,9 @@ const SubscriptionScreen: React.FC = () => {
                                 {plan.features.map((feature, i) => (
                                     <View key={i} style={styles.featureRow}>
                                         <MaterialCommunityIcons
-                                            name="check-circle"
+                                            name="check-circle-outline"
                                             size={16}
-                                            color={plan.color}
+                                            color={tone}
                                         />
                                         <Text style={styles.featureText}>{feature}</Text>
                                     </View>
@@ -192,13 +185,13 @@ const SubscriptionScreen: React.FC = () => {
                             </View>
 
                             {isActive ? (
-                                <View style={[styles.currentBtn, { backgroundColor: plan.color + '15' }]}>
-                                    <MaterialCommunityIcons name="check" size={18} color={plan.color} />
-                                    <Text style={[styles.currentBtnText, { color: plan.color }]}>{t('patient.currentPlan')}</Text>
+                                <View style={[styles.currentBtn, { backgroundColor: colors.borderLight }]}>
+                                    <MaterialCommunityIcons name="check" size={18} color={tone} />
+                                    <Text style={[styles.currentBtnText, { color: tone }]}>{t('patient.currentPlan')}</Text>
                                 </View>
                             ) : (
                                 <TouchableOpacity
-                                    style={[styles.upgradeBtn, { backgroundColor: plan.color }]}
+                                    style={[styles.upgradeBtn, { backgroundColor: tone }]}
                                     onPress={() => handleUpgrade(plan)}
                                     activeOpacity={0.8}
                                 >
@@ -243,13 +236,6 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderColor: colors.border,
         gap: spacing.lg,
     },
-    planIconCircle: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     currentPlanLabel: { ...typography.caption, color: colors.textSecondary },
     currentPlanName: { ...typography.h2 },
     sectionTitle: {
@@ -278,15 +264,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderBottomLeftRadius: borderRadius.sm,
     },
     activeBadgeText: { ...typography.caption, color: '#fff', fontWeight: '700' },
-    planHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg },
-    planIconSmall: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: spacing.md,
-    },
+    planHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg, gap: spacing.md },
     planTitleWrap: { flex: 1 },
     planName: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
     priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 2 },

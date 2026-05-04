@@ -287,7 +287,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     patientCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         marginBottom: spacing.xl,
@@ -322,7 +322,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     medsSection: { marginBottom: spacing.lg },
     medsSectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
     medsSectionTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
-    addMedBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EBF5FF', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.sm, gap: spacing.xs },
+    addMedBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.sm, gap: spacing.xs },
     addMedText: { fontSize: 13, fontWeight: '600', color: colors.primary },
     medCard: {
         backgroundColor: colors.surface,

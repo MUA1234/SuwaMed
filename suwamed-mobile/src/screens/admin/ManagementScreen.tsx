@@ -7,51 +7,52 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import { colors as staticColors } from '../../config/theme';
 import { useTranslation } from 'react-i18next';
 
 const managementItems = [
     {
         title: 'Content Management',
         icon: 'book-open-variant',
-        color: '#1A73E8',
-        bg: '#EBF5FF',
+        color: staticColors.primary,
+        bg: staticColors.primaryLight,
         screen: 'SpecializationsScreen',
     },
     {
         title: 'Health Tips',
         icon: 'lightbulb-outline',
-        color: '#F59E0B',
-        bg: '#FFFBEB',
+        color: staticColors.warning,
+        bg: staticColors.warningLight,
         screen: 'HealthTipsManagementScreen',
     },
     {
         title: 'System Settings',
         icon: 'cog-outline',
-        color: '#8B5CF6',
-        bg: '#F5F3FF',
+        color: staticColors.secondary,
+        bg: staticColors.secondaryLight,
         screen: 'SystemSettingsScreen',
     },
     {
         title: 'Data Export',
         icon: 'download-outline',
-        color: '#10B981',
-        bg: '#ECFDF5',
+        color: staticColors.success,
+        bg: staticColors.successLight,
         screen: null,
         alert: 'Data export coming soon',
     },
     {
         title: 'Backup & Restore',
         icon: 'cloud-outline',
-        color: '#EC4899',
-        bg: '#FDF2F8',
+        color: staticColors.primary,
+        bg: staticColors.primaryLight,
         screen: null,
         alert: 'Coming soon',
     },
     {
         title: 'Support Tickets',
         icon: 'help-circle-outline',
-        color: '#DC2626',
-        bg: '#FEF2F2',
+        color: staticColors.error,
+        bg: staticColors.errorLight,
         screen: null,
         alert: 'Coming soon',
     },

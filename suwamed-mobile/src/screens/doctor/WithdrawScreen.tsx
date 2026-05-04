@@ -218,7 +218,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     noticeCard: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.sm,
         padding: spacing.md,
         marginBottom: spacing.xl,
@@ -256,7 +256,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         ...typography.body,
         fontWeight: '600',
         color: colors.textSecondary,
-        backgroundColor: '#F3F4F6',
+        backgroundColor: colors.borderLight,
         borderRightWidth: 1,
         borderRightColor: colors.border,
     },

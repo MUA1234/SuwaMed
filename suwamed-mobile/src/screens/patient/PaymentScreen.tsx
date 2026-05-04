@@ -14,11 +14,16 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import { colors as staticColors } from '../../config/theme';
 import * as appointmentApi from '../../api/appointment.api';
 
 const AVATAR_COLORS = [
-    '#1A73E8', '#00BFA5', '#FF6D00', '#8B5CF6', '#DC2626',
-    '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#0D47A1',
+    staticColors.primary,
+    staticColors.secondary,
+    staticColors.success,
+    staticColors.warning,
+    staticColors.primaryDark,
+    staticColors.error,
 ];
 
 const getInitials = (firstName: string, lastName: string) =>
@@ -342,7 +347,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 10,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -377,7 +382,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 14,
-        backgroundColor: '#ECFDF5',
+        backgroundColor: colors.successLight,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -435,7 +440,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-start',
         gap: spacing.sm,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         padding: spacing.md,
     },

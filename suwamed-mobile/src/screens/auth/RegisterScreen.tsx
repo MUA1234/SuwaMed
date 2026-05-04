@@ -53,13 +53,15 @@ const getPasswordStrength = (password: string): PasswordStrength => {
   return 'strong';
 };
 
-const strengthConfig: Record<PasswordStrength, { label: string; color: string; width: string; meetsMinimum: boolean }> = {
-  none: { label: '', color: 'transparent', width: '0%', meetsMinimum: false },
-  weak: { label: 'Weak', color: '#DC2626', width: '25%', meetsMinimum: false },
-  fair: { label: 'Fair', color: '#F59E0B', width: '50%', meetsMinimum: false },
-  good: { label: 'Good', color: '#3B82F6', width: '75%', meetsMinimum: true },
-  strong: { label: 'Strong', color: '#10B981', width: '100%', meetsMinimum: true },
-};
+// Strength colors are kept semantic (warning/success). Only the "weak" tier uses the
+// muted error coral — never the loud crimson reserved for true emergencies.
+const getStrengthConfig = (colors: ThemeColors): Record<PasswordStrength, { label: string; color: string; width: string; meetsMinimum: boolean }> => ({
+  none:   { label: '',       color: 'transparent',     width: '0%',   meetsMinimum: false },
+  weak:   { label: 'Weak',   color: colors.error,      width: '25%',  meetsMinimum: false },
+  fair:   { label: 'Fair',   color: colors.warning,    width: '50%',  meetsMinimum: false },
+  good:   { label: 'Good',   color: colors.primary,    width: '75%',  meetsMinimum: true },
+  strong: { label: 'Strong', color: colors.success,    width: '100%', meetsMinimum: true },
+});
 
 // --- Validation Schema ---
 const registerSchema = z
@@ -96,7 +98,7 @@ const PasswordStrengthBar: React.FC<{ password: string }> = ({ password }) => {
   const { theme: colors } = useTheme();
   const pswStyles = makePswStyles(colors);
   const strength = getPasswordStrength(password);
-  const config = strengthConfig[strength];
+  const config = getStrengthConfig(colors)[strength];
   const barAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -259,7 +261,7 @@ const RegisterScreen: React.FC = () => {
       return;
     }
 
-    if (!strengthConfig[passwordStrength].meetsMinimum) {
+    if (!getStrengthConfig(colors)[passwordStrength].meetsMinimum) {
       setErrorMessage('Your password is too weak. Please choose a stronger password.');
       return;
     }
@@ -906,7 +908,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#EBF5FF',
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
@@ -927,7 +929,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorLight,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.lg,
@@ -1003,7 +1005,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
     gap: spacing.xs,
   },
   flag: {
@@ -1049,7 +1051,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   genderChipSelected: {
     borderColor: colors.primary,
-    backgroundColor: '#EBF5FF',
+    backgroundColor: colors.primaryLight,
   },
   genderChipText: {
     ...typography.bodySmall,
@@ -1075,7 +1077,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     marginTop: spacing.sm,
   },
   readOnlyField: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.background,
     opacity: 0.8,
   },
   districtSection: {
@@ -1169,7 +1171,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     borderBottomColor: colors.border,
   },
   districtItemSelected: {
-    backgroundColor: '#EBF5FF',
+    backgroundColor: colors.primaryLight,
   },
   districtItemText: {
     ...typography.body,

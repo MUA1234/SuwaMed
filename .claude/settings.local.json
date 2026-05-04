@@ -10,7 +10,12 @@
       "Bash(mongosh:*)",
       "Bash(where:*)",
       "Bash(npx ts-node:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npx vercel *)",
+      "Bash(EXPO_PUBLIC_API_BASE=https://suwamed-backend.vercel.app npx expo export -p web)",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"https://suwamed-mobile.vercel.app/\" -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop; \"HTTP $\\($r.StatusCode\\), size=$\\($r.Content.Length\\), hasReact=$\\($r.Content -match '_expo/static/js'\\)\" } catch { \"ERROR: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(try { $r = curl.exe -s -o /dev/null -w \"%{http_code}\" -X OPTIONS \"https://suwamed-backend.vercel.app/api/auth/login\" -H \"Origin: https://suwamed-mobile.vercel.app\" -H \"Access-Control-Request-Method: POST\"; \"Preflight from web origin: HTTP $r\" } catch { \"ERROR: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(head -30)"
     ]
   }
 }

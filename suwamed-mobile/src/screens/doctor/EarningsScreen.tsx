@@ -81,8 +81,8 @@ const EarningsScreen: React.FC = () => {
                         <Text style={styles.mainAmount}>LKR {totalEarnings.toLocaleString()}</Text>
                         <View style={styles.mainRow}>
                             <View style={styles.mainStat}>
-                                <MaterialCommunityIcons name={Number(percentChange) >= 0 ? 'trending-up' : 'trending-down'} size={16} color={Number(percentChange) >= 0 ? '#10B981' : '#DC2626'} />
-                                <Text style={[styles.mainStatText, { color: Number(percentChange) >= 0 ? '#A7F3D0' : '#FCA5A5' }]}>
+                                <MaterialCommunityIcons name={Number(percentChange) >= 0 ? 'trending-up' : 'trending-down'} size={16} color="rgba(255,255,255,0.95)" />
+                                <Text style={[styles.mainStatText, { color: 'rgba(255,255,255,0.85)' }]}>
                                     {Number(percentChange) >= 0 ? '+' : ''}{percentChange}% from last month
                                 </Text>
                             </View>
@@ -95,7 +95,7 @@ const EarningsScreen: React.FC = () => {
                         </View>
                         <View style={[styles.subCard, styles.subCardRight]}>
                             <Text style={styles.subLabel}>{t('common.pending')}</Text>
-                            <Text style={[styles.subAmount, { color: '#F59E0B' }]}>LKR {pendingWithdrawal.toLocaleString()}</Text>
+                            <Text style={[styles.subAmount, { color: colors.warning }]}>LKR {pendingWithdrawal.toLocaleString()}</Text>
                         </View>
                     </View>
                 </View>
@@ -114,7 +114,7 @@ const EarningsScreen: React.FC = () => {
                         {monthlyEarnings.map((item: any, i: number) => (
                             <View key={i} style={styles.barWrap}>
                                 <View style={styles.barContainer}>
-                                    <View style={[styles.bar, { height: `${(item.amount / maxAmount) * 100}%`, backgroundColor: i === monthlyEarnings.length - 1 ? colors.primary : '#E0E7FF' }]} />
+                                    <View style={[styles.bar, { height: `${(item.amount / maxAmount) * 100}%`, backgroundColor: i === monthlyEarnings.length - 1 ? colors.primary : colors.primaryLight }]} />
                                 </View>
                                 <Text style={styles.barLabel}>{item.month}</Text>
                             </View>
@@ -145,7 +145,7 @@ const EarningsScreen: React.FC = () => {
                         return (
                             <View key={tx._id} style={styles.txCard}>
                                 <View style={styles.txIconWrap}>
-                                    <MaterialCommunityIcons name="cash-plus" size={20} color="#10B981" />
+                                    <MaterialCommunityIcons name="cash-plus" size={20} color={colors.success} />
                                 </View>
                                 <View style={styles.txInfo}>
                                     <Text style={styles.txPatient}>{patientName}</Text>
@@ -189,7 +189,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     barContainer: { height: 120, width: 28, justifyContent: 'flex-end', borderRadius: 6, overflow: 'hidden' },
     bar: { width: '100%', borderRadius: 6 },
     barLabel: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.xs },
-    withdrawBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#10B981', marginHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: borderRadius.md, gap: spacing.sm, marginBottom: spacing.xxl },
+    withdrawBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.success, marginHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: borderRadius.md, gap: spacing.sm, marginBottom: spacing.xxl },
     withdrawText: { color: '#fff', fontSize: 16, fontWeight: '600' },
     transSection: { paddingHorizontal: spacing.xl },
     transSectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
@@ -198,11 +198,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     emptyState: { alignItems: 'center', paddingVertical: spacing.xxl },
     emptyText: { ...typography.body, color: colors.textSecondary, marginTop: spacing.sm },
     txCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
-    txIconWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#ECFDF5', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    txIconWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.successLight, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     txInfo: { flex: 1 },
     txPatient: { ...typography.body, fontWeight: '600', color: colors.textPrimary },
     txType: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
-    txAmount: { ...typography.body, fontWeight: '700', color: '#10B981' },
+    txAmount: { ...typography.body, fontWeight: '700', color: colors.success },
 });
 
 export default EarningsScreen;

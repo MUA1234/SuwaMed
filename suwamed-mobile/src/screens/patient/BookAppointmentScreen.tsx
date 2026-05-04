@@ -53,21 +53,8 @@ const generateSlots = (
     return slots;
 };
 
-const AVATAR_COLORS = [
-    '#1A73E8', '#00BFA5', '#FF6D00', '#8B5CF6', '#DC2626',
-    '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#0D47A1',
-];
-
 const getInitials = (firstName: string, lastName: string) =>
     `${(firstName || '').charAt(0)}${(lastName || '').charAt(0)}`.toUpperCase();
-
-const getAvatarColor = (name: string) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-};
 
 const getDatesArray = (): Date[] => {
     const dates: Date[] = [];
@@ -130,7 +117,6 @@ const BookAppointmentScreen: React.FC = () => {
     const lastName = doctor?.userId?.lastName || '';
     const fullName = `${firstName} ${lastName}`.trim();
     const initials = getInitials(firstName, lastName);
-    const avatarColor = getAvatarColor(fullName || doctorId);
     const specializations = Array.isArray(doctor?.specialization)
         ? doctor.specialization.join(', ')
         : doctor?.specialization || 'General Practitioner';
@@ -179,7 +165,7 @@ const BookAppointmentScreen: React.FC = () => {
             >
                 {/* Doctor Mini Card */}
                 <View style={styles.doctorCard}>
-                    <View style={[styles.avatarCircle, { backgroundColor: avatarColor }]}>
+                    <View style={[styles.avatarCircle, { backgroundColor: colors.primary }]}>
                         <Text style={styles.avatarText}>{initials}</Text>
                     </View>
                     <View style={styles.doctorInfo}>

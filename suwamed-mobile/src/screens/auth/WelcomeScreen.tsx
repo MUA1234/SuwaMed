@@ -103,15 +103,15 @@ const WelcomeScreen: React.FC = () => {
               />
             </LinearGradient>
           </View>
-          {/* Floating decorative elements */}
+          {/* Floating decorative elements — single accent + primary, no rainbow */}
           <Animated.View style={[styles.floatingDot, styles.dotTopLeft]}>
-            <LinearGradient colors={['#F97316', '#FB923C']} style={styles.dotGradient} />
+            <LinearGradient colors={gradients.accent} style={styles.dotGradient} />
           </Animated.View>
           <Animated.View style={[styles.floatingDot, styles.dotTopRight]}>
-            <LinearGradient colors={['#8B5CF6', '#A78BFA']} style={styles.dotGradientSm} />
+            <LinearGradient colors={gradients.primary} style={styles.dotGradientSm} />
           </Animated.View>
           <Animated.View style={[styles.floatingDot, styles.dotBottomLeft]}>
-            <LinearGradient colors={['#10B981', '#34D399']} style={styles.dotGradientSm} />
+            <LinearGradient colors={gradients.success} style={styles.dotGradientSm} />
           </Animated.View>
           <Animated.View style={[styles.floatingDot, styles.dotBottomRight]}>
             <LinearGradient colors={gradients.primary} style={styles.dotGradientXs} />

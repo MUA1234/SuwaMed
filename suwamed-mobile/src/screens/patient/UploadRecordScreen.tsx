@@ -16,16 +16,19 @@ import { useNavigation } from '@react-navigation/native';
 import client from '../../api/client';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import { colors as staticColors } from '../../config/theme';
 import { useTranslation } from 'react-i18next';
 import { pickImage, takePhoto } from '../../utils/permissions';
 
+// Single restrained palette for category chips — selection state is what matters,
+// not category color. Selected chips fill primary; unselected stay neutral.
 const CATEGORIES = [
-    { key: 'lab_report', label: 'Lab Report', icon: 'flask', color: '#3B82F6' },
-    { key: 'prescription', label: 'Prescription', icon: 'pill', color: '#10B981' },
-    { key: 'imaging', label: 'Imaging', icon: 'radioactive', color: '#8B5CF6' },
-    { key: 'vaccination', label: 'Vaccination', icon: 'needle', color: '#F59E0B' },
-    { key: 'discharge_summary', label: 'Discharge Summary', icon: 'hospital', color: '#EC4899' },
-    { key: 'other', label: 'Other', icon: 'file-document', color: '#6B7280' },
+    { key: 'lab_report', label: 'Lab Report', icon: 'flask', color: staticColors.primary },
+    { key: 'prescription', label: 'Prescription', icon: 'pill', color: staticColors.primary },
+    { key: 'imaging', label: 'Imaging', icon: 'radioactive', color: staticColors.primary },
+    { key: 'vaccination', label: 'Vaccination', icon: 'needle', color: staticColors.primary },
+    { key: 'discharge_summary', label: 'Discharge Summary', icon: 'hospital', color: staticColors.primary },
+    { key: 'other', label: 'Other', icon: 'file-document', color: staticColors.primary },
 ];
 
 const UploadRecordScreen: React.FC = () => {

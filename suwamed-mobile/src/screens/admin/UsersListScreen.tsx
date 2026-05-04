@@ -8,9 +8,17 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import * as adminApi from '../../api/admin.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import { colors as staticColors } from '../../config/theme';
 import { useTranslation } from 'react-i18next';
 
-const AVATAR_COLORS = ['#1A73E8', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899', '#DC2626'];
+const AVATAR_COLORS = [
+    staticColors.primary,
+    staticColors.secondary,
+    staticColors.success,
+    staticColors.warning,
+    staticColors.primaryDark,
+    staticColors.error,
+];
 
 const UsersListScreen: React.FC = () => {
   const { theme: colors } = useTheme();
@@ -44,7 +52,7 @@ const UsersListScreen: React.FC = () => {
         `${first?.[0] || ''}${last?.[0] || ''}`.toUpperCase();
 
     const roleColors: Record<string, string> = {
-        patient: '#1A73E8', doctor: '#10B981', admin: '#8B5CF6',
+        patient: colors.primary, doctor: colors.success, admin: colors.secondary,
     };
 
     const renderUser = ({ item, index }: { item: any; index: number }) => (
@@ -60,8 +68,8 @@ const UsersListScreen: React.FC = () => {
                 <Text style={styles.name}>{item.firstName} {item.lastName}</Text>
                 <Text style={styles.contact}>{item.email || item.phone}</Text>
                 <View style={styles.metaRow}>
-                    <View style={[styles.roleBadge, { backgroundColor: (roleColors[item.role] || '#6B7280') + '15' }]}>
-                        <Text style={[styles.roleText, { color: roleColors[item.role] || '#6B7280' }]}>
+                    <View style={[styles.roleBadge, { backgroundColor: (roleColors[item.role] || colors.textSecondary) + '20' }]}>
+                        <Text style={[styles.roleText, { color: roleColors[item.role] || colors.textSecondary }]}>
                             {item.role}
                         </Text>
                     </View>

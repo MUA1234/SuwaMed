@@ -48,10 +48,10 @@ const DoctorProfileScreen: React.FC = () => {
     };
 
     const verifyStatusMap: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-        verified: { label: 'Verified', color: '#10B981', bg: '#ECFDF5', icon: 'check-decagram' },
-        pending: { label: 'Verification Pending', color: '#F59E0B', bg: '#FFFBEB', icon: 'clock-outline' },
-        under_review: { label: 'Under Review', color: '#2563EB', bg: '#EFF6FF', icon: 'magnify' },
-        rejected: { label: 'Rejected', color: '#EF4444', bg: '#FEF2F2', icon: 'close-circle' },
+        verified: { label: 'Verified', color: colors.success, bg: colors.successLight, icon: 'check-decagram' },
+        pending: { label: 'Verification Pending', color: colors.warning, bg: colors.warningLight, icon: 'clock-outline' },
+        under_review: { label: 'Under Review', color: colors.primary, bg: colors.primaryLight, icon: 'magnify' },
+        rejected: { label: 'Rejected', color: colors.error, bg: colors.errorLight, icon: 'close-circle' },
     };
 
     const vStatus = verifyStatusMap[profile?.verificationStatus || 'pending'];
@@ -59,8 +59,8 @@ const DoctorProfileScreen: React.FC = () => {
     const stats = [
         { label: 'Patients', value: String(profile?.totalConsultations ? Math.round(profile.totalConsultations * 0.37) : 0), icon: 'account-group', gradient: gradients.primary },
         { label: 'Consults', value: String(profile?.totalConsultations || 0), icon: 'stethoscope', gradient: gradients.secondary },
-        { label: 'Rating', value: profile?.rating?.average?.toFixed(1) || '0', icon: 'star', gradient: ['#F59E0B', '#D97706'] as [string, string] },
-        { label: 'Exp.', value: `${profile?.experience || 0}yr`, icon: 'briefcase-outline', gradient: ['#8B5CF6', '#7C3AED'] as [string, string] },
+        { label: 'Rating', value: profile?.rating?.average?.toFixed(1) || '0', icon: 'star', gradient: gradients.secondary },
+        { label: 'Exp.', value: `${profile?.experience || 0}yr`, icon: 'briefcase-outline', gradient: gradients.primary },
     ];
 
     const menuSections = [
@@ -68,23 +68,23 @@ const DoctorProfileScreen: React.FC = () => {
             title: 'Account',
             items: [
                 { icon: 'account-edit-outline', label: 'Edit Profile', color: colors.primary, onPress: () => navigation.navigate('EditProfileScreen') },
-                { icon: 'shield-check-outline', label: 'Verification', color: '#10B981', badge: vStatus?.label, onPress: () => navigation.navigate('VerificationScreen') },
-                { icon: 'star-outline', label: 'Reviews & Ratings', color: '#F59E0B', badge: profile?.rating?.count ? `${profile.rating.count} reviews` : undefined, onPress: () => navigation.navigate('ReviewsScreen') },
+                { icon: 'shield-check-outline', label: 'Verification', color: colors.success, badge: vStatus?.label, onPress: () => navigation.navigate('VerificationScreen') },
+                { icon: 'star-outline', label: 'Reviews & Ratings', color: colors.warning, badge: profile?.rating?.count ? `${profile.rating.count} reviews` : undefined, onPress: () => navigation.navigate('ReviewsScreen') },
             ],
         },
         {
             title: 'Preferences',
             items: [
-                { icon: 'bell-outline', label: 'Notifications', color: '#8B5CF6', onPress: () => navigation.navigate('NotificationsScreen') },
-                { icon: 'cog-outline', label: 'Settings', color: '#64748B', onPress: () => navigation.navigate('SettingsScreen') },
-                { icon: 'translate', label: 'Language', color: '#EC4899', subtitle: 'English', onPress: () => Alert.alert('Language', 'Language selection coming soon.') },
+                { icon: 'bell-outline', label: 'Notifications', color: colors.primary, onPress: () => navigation.navigate('NotificationsScreen') },
+                { icon: 'cog-outline', label: 'Settings', color: colors.textSecondary, onPress: () => navigation.navigate('SettingsScreen') },
+                { icon: 'translate', label: 'Language', color: colors.secondary, subtitle: 'English', onPress: () => Alert.alert('Language', 'Language selection coming soon.') },
             ],
         },
         {
             title: 'Support',
             items: [
                 { icon: 'help-circle-outline', label: 'Help Center', color: colors.primary, onPress: () => Alert.alert('Help Center', 'Please contact us at support@suwamed.lk') },
-                { icon: 'file-document-outline', label: 'Terms & Privacy', color: '#64748B', onPress: () => Alert.alert('Terms & Privacy', 'Available at suwamed.lk/legal') },
+                { icon: 'file-document-outline', label: 'Terms & Privacy', color: colors.textSecondary, onPress: () => Alert.alert('Terms & Privacy', 'Available at suwamed.lk/legal') },
                 { icon: 'information-outline', label: 'About SuwaMed', color: colors.secondary, onPress: () => Alert.alert('About SuwaMed', 'SuwaMed v1.0.0') },
             ],
         },
@@ -222,8 +222,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     menuItemContent: { flex: 1 },
     menuItemLabel: { ...typography.body, fontWeight: '500', color: colors.textPrimary },
     menuItemSubtitle: { ...typography.caption, color: colors.textSecondary, marginTop: 1 },
-    badge: { backgroundColor: '#FFFBEB', paddingHorizontal: spacing.sm + 2, paddingVertical: 3, borderRadius: borderRadius.full, marginRight: spacing.sm },
-    badgeText: { fontSize: 11, fontWeight: '700', color: '#F59E0B' },
+    badge: { backgroundColor: colors.warningLight, paddingHorizontal: spacing.sm + 2, paddingVertical: 3, borderRadius: borderRadius.full, marginRight: spacing.sm },
+    badgeText: { fontSize: 11, fontWeight: '700', color: colors.warning },
 
     // Logout
     logoutBtn: {
@@ -237,7 +237,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         gap: spacing.sm,
         marginBottom: spacing.lg,
         borderWidth: 1,
-        borderColor: '#FECACA',
+        borderColor: colors.error + '33',
     },
     logoutText: { ...typography.body, fontWeight: '600', color: colors.error },
     version: { ...typography.caption, color: colors.textDisabled, textAlign: 'center', marginBottom: spacing.xxl },

@@ -473,7 +473,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 3,

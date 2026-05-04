@@ -16,14 +16,16 @@ import { useTranslation } from 'react-i18next';
 import * as appointmentApi from '../../api/appointment.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
-const statusStylesBase: Record<string, { color: string; bg: string }> = {
-    confirmed: { color: '#10B981', bg: '#ECFDF5' },
-    pending: { color: '#F59E0B', bg: '#FFFBEB' },
-    completed: { color: '#6B7280', bg: '#F3F4F6' },
-    cancelled: { color: '#DC2626', bg: '#FEF2F2' },
-    in_progress: { color: '#1A73E8', bg: '#EBF5FF' },
-    no_show: { color: '#6B7280', bg: '#F3F4F6' },
-};
+import IconWrap from '../../components/common/IconWrap';
+
+const getStatusStyles = (colors: ThemeColors): Record<string, { color: string; bg: string }> => ({
+    confirmed:   { color: colors.success,        bg: colors.successLight },
+    pending:     { color: colors.warning,        bg: colors.warningLight },
+    completed:   { color: colors.textSecondary,  bg: colors.borderLight },
+    cancelled:   { color: colors.error,          bg: colors.errorLight },
+    in_progress: { color: colors.primary,        bg: colors.primaryLight },
+    no_show:     { color: colors.textSecondary,  bg: colors.borderLight },
+});
 
 const AppointmentDetailScreen: React.FC = () => {
   const { theme: colors } = useTheme();
@@ -158,6 +160,7 @@ const AppointmentDetailScreen: React.FC = () => {
         );
     }
 
+    const statusStylesBase = getStatusStyles(colors);
     const sStyle = statusStylesBase[appointment.status] || statusStylesBase.pending;
     const statusLabels: Record<string, string> = {
         confirmed: t('common.confirmed'), pending: t('common.pending'), completed: t('common.completed'),
@@ -220,9 +223,7 @@ const AppointmentDetailScreen: React.FC = () => {
                     <Text style={styles.cardLabel}>{t('patient.appointmentInfo')}</Text>
                     <View style={styles.infoGrid}>
                         <View style={styles.infoRow}>
-                            <View style={styles.infoIcon}>
-                                <MaterialCommunityIcons name="calendar" size={18} color={colors.primary} />
-                            </View>
+                            <IconWrap name="calendar-outline" variant="outlined" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('common.date')}</Text>
                                 <Text style={styles.infoValue}>{dateStr}</Text>
@@ -230,9 +231,7 @@ const AppointmentDetailScreen: React.FC = () => {
                         </View>
                         <View style={styles.infoDivider} />
                         <View style={styles.infoRow}>
-                            <View style={styles.infoIcon}>
-                                <MaterialCommunityIcons name="clock-outline" size={18} color={colors.primary} />
-                            </View>
+                            <IconWrap name="clock-outline" variant="outlined" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('common.time')}</Text>
                                 <Text style={styles.infoValue}>{appointment.startTime || 'N/A'}</Text>
@@ -240,9 +239,7 @@ const AppointmentDetailScreen: React.FC = () => {
                         </View>
                         <View style={styles.infoDivider} />
                         <View style={styles.infoRow}>
-                            <View style={styles.infoIcon}>
-                                <MaterialCommunityIcons name="timer-outline" size={18} color={colors.primary} />
-                            </View>
+                            <IconWrap name="timer-outline" variant="outlined" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('patient.duration')}</Text>
                                 <Text style={styles.infoValue}>{appointment.duration ? `${appointment.duration} minutes` : 'N/A'}</Text>
@@ -250,9 +247,7 @@ const AppointmentDetailScreen: React.FC = () => {
                         </View>
                         <View style={styles.infoDivider} />
                         <View style={styles.infoRow}>
-                            <View style={styles.infoIcon}>
-                                <MaterialCommunityIcons name={typeIcon as any} size={18} color={colors.primary} />
-                            </View>
+                            <IconWrap name={typeIcon} variant="outlined" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('patient.consultationType')}</Text>
                                 <Text style={styles.infoValue}>{typeLabel}</Text>
@@ -262,9 +257,7 @@ const AppointmentDetailScreen: React.FC = () => {
                             <>
                                 <View style={styles.infoDivider} />
                                 <View style={styles.infoRow}>
-                                    <View style={styles.infoIcon}>
-                                        <MaterialCommunityIcons name="text-box-outline" size={18} color={colors.primary} />
-                                    </View>
+                                    <IconWrap name="text-box-outline" variant="outlined" size="sm" />
                                     <View style={styles.infoContent}>
                                         <Text style={styles.infoLabel}>{t('patient.reasonForVisit')}</Text>
                                         <Text style={styles.infoValue}>{appointment.reason}</Text>
@@ -280,9 +273,7 @@ const AppointmentDetailScreen: React.FC = () => {
                     <Text style={styles.cardLabel}>{t('patient.payment')}</Text>
                     <View style={styles.infoGrid}>
                         <View style={styles.infoRow}>
-                            <View style={styles.infoIcon}>
-                                <MaterialCommunityIcons name="cash" size={18} color={colors.success} />
-                            </View>
+                            <IconWrap name="cash" variant="success" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('patient.amount')}</Text>
                                 <Text style={styles.infoValue}>
@@ -292,9 +283,7 @@ const AppointmentDetailScreen: React.FC = () => {
                         </View>
                         <View style={styles.infoDivider} />
                         <View style={styles.infoRow}>
-                            <View style={styles.infoIcon}>
-                                <MaterialCommunityIcons name="credit-card-outline" size={18} color={colors.success} />
-                            </View>
+                            <IconWrap name="credit-card-outline" variant="success" size="sm" />
                             <View style={styles.infoContent}>
                                 <Text style={styles.infoLabel}>{t('patient.paymentStatus')}</Text>
                                 <Text style={[styles.infoValue, { color: appointment.payment?.status === 'completed' ? colors.success : colors.warning }]}>
@@ -389,26 +378,19 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
+        borderWidth: 1,
+        borderColor: colors.primary,
     },
     doctorInfo: { flex: 1 },
     doctorName: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
     doctorSpec: { ...typography.bodySmall, color: colors.textSecondary, marginTop: 2 },
     doctorHospital: { ...typography.caption, color: colors.textDisabled, marginTop: 2 },
     infoGrid: {},
-    infoRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: spacing.sm },
-    infoIcon: {
-        width: 36,
-        height: 36,
-        borderRadius: 10,
-        backgroundColor: '#EBF5FF',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: spacing.md,
-    },
+    infoRow: { flexDirection: 'row', alignItems: 'flex-start', paddingVertical: spacing.sm, gap: spacing.md },
     infoContent: { flex: 1, justifyContent: 'center' },
     infoLabel: { ...typography.caption, color: colors.textSecondary },
     infoValue: { ...typography.body, fontWeight: '600', color: colors.textPrimary, marginTop: 1 },
@@ -428,7 +410,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         paddingVertical: spacing.lg,
         marginBottom: spacing.md,
@@ -441,7 +423,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FEF2F2',
+        backgroundColor: colors.surface,
         borderRadius: borderRadius.md,
         paddingVertical: spacing.lg,
         marginBottom: spacing.md,

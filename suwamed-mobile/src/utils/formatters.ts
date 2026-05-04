@@ -55,22 +55,28 @@ export const formatPaymentStatus = (status: string): string => {
   return statusMap[status] || capitalizeFirst(status);
 };
 
+import { colors } from '../config/theme';
+
+// Status colors map to the Calm Healing theme tokens.
+// This util can't use useTheme() (it's a pure function), so it pulls from the
+// static light-theme palette — colors here render on neutral backgrounds where
+// the light values stay legible in dark mode too.
 export const getStatusColor = (status: string): string => {
   const colorMap: Record<string, string> = {
-    pending: '#F59E0B',
-    confirmed: '#3B82F6',
-    in_progress: '#1A73E8',
-    completed: '#10B981',
-    cancelled: '#DC2626',
-    no_show: '#6B7280',
-    paid: '#10B981',
-    failed: '#DC2626',
-    refunded: '#F59E0B',
-    verified: '#10B981',
-    rejected: '#DC2626',
-    under_review: '#F59E0B',
+    pending: colors.warning,
+    confirmed: colors.primary,
+    in_progress: colors.primary,
+    completed: colors.success,
+    cancelled: colors.error,
+    no_show: colors.textSecondary,
+    paid: colors.success,
+    failed: colors.error,
+    refunded: colors.warning,
+    verified: colors.success,
+    rejected: colors.error,
+    under_review: colors.warning,
   };
-  return colorMap[status] || '#6B7280';
+  return colorMap[status] || colors.textSecondary;
 };
 
 export const formatSpecialization = (specialization: string): string => {

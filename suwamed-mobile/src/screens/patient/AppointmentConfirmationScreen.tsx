@@ -12,9 +12,15 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import { colors as staticColors } from '../../config/theme';
+
 const AVATAR_COLORS = [
-    '#1A73E8', '#00BFA5', '#FF6D00', '#8B5CF6', '#DC2626',
-    '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#0D47A1',
+    staticColors.primary,
+    staticColors.secondary,
+    staticColors.success,
+    staticColors.warning,
+    staticColors.primaryDark,
+    staticColors.error,
 ];
 
 const getInitials = (firstName: string, lastName: string) =>
@@ -144,7 +150,7 @@ const AppointmentConfirmationScreen: React.FC = () => {
 
                     {/* Detail Items */}
                     <View style={styles.detailItem}>
-                        <View style={[styles.detailIcon, { backgroundColor: '#EBF5FF' }]}>
+                        <View style={[styles.detailIcon, { backgroundColor: colors.primaryLight }]}>
                             <MaterialCommunityIcons name="calendar-check" size={18} color={colors.primary} />
                         </View>
                         <View>
@@ -154,7 +160,7 @@ const AppointmentConfirmationScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.detailItem}>
-                        <View style={[styles.detailIcon, { backgroundColor: '#ECFDF5' }]}>
+                        <View style={[styles.detailIcon, { backgroundColor: colors.successLight }]}>
                             <MaterialCommunityIcons name="clock-check-outline" size={18} color={colors.success} />
                         </View>
                         <View>
@@ -166,8 +172,8 @@ const AppointmentConfirmationScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.detailItem}>
-                        <View style={[styles.detailIcon, { backgroundColor: '#F5F3FF' }]}>
-                            <MaterialCommunityIcons name={typeIcon as any} size={18} color="#8B5CF6" />
+                        <View style={[styles.detailIcon, { backgroundColor: colors.primaryLight }]}>
+                            <MaterialCommunityIcons name={typeIcon as any} size={18} color={colors.primary} />
                         </View>
                         <View>
                             <Text style={styles.detailLabel}>{t('patient.consultationType')}</Text>
@@ -176,7 +182,7 @@ const AppointmentConfirmationScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.detailItem}>
-                        <View style={[styles.detailIcon, { backgroundColor: '#FFF7ED' }]}>
+                        <View style={[styles.detailIcon, { backgroundColor: colors.secondaryLight }]}>
                             <MaterialCommunityIcons name="cash" size={18} color={colors.accent} />
                         </View>
                         <View>
@@ -267,7 +273,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 120,
         height: 120,
         borderRadius: 60,
-        backgroundColor: 'rgba(16, 185, 129, 0.12)',
+        backgroundColor: colors.successLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.xl,
@@ -298,7 +304,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: spacing.sm,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         paddingHorizontal: spacing.lg,
         paddingVertical: spacing.sm,

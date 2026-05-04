@@ -10,6 +10,8 @@ import * as adminApi from '../../api/admin.api';
 import { useTranslation } from 'react-i18next';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap from '../../components/common/IconWrap';
+import type { IconWrapVariant } from '../../components/common/IconWrap';
 const AdminDashboardScreen: React.FC = () => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
@@ -35,18 +37,18 @@ const AdminDashboardScreen: React.FC = () => {
     useFocusEffect(useCallback(() => { fetchData(); }, []));
     const onRefresh = () => { setRefreshing(true); fetchData(); };
 
-    const statCards = stats ? [
-        { label: t('admin.totalUsers'), value: stats.totalUsers ?? 0, icon: 'account-group', color: '#1A73E8', bg: '#EBF5FF' },
-        { label: t('admin.doctors'), value: stats.totalDoctors ?? 0, icon: 'doctor', color: '#10B981', bg: '#ECFDF5' },
-        { label: t('admin.appointments'), value: stats.totalAppointments ?? 0, icon: 'calendar-check', color: '#8B5CF6', bg: '#F5F3FF' },
-        { label: t('admin.pendingReview'), value: stats.pendingVerifications ?? 0, icon: 'clock-alert', color: '#F59E0B', bg: '#FFFBEB' },
+    const statCards: Array<{ label: string; value: number; icon: string; variant: IconWrapVariant }> = stats ? [
+        { label: t('admin.totalUsers'), value: stats.totalUsers ?? 0, icon: 'account-group-outline', variant: 'tinted' },
+        { label: t('admin.doctors'), value: stats.totalDoctors ?? 0, icon: 'doctor', variant: 'tinted' },
+        { label: t('admin.appointments'), value: stats.totalAppointments ?? 0, icon: 'calendar-check-outline', variant: 'tinted' },
+        { label: t('admin.pendingReview'), value: stats.pendingVerifications ?? 0, icon: 'clock-alert-outline', variant: 'warning' },
     ] : [];
 
-    const menuItems = [
-        { label: t('admin.manageUsers'), icon: 'account-multiple', color: '#1A73E8', screen: 'Users' },
-        { label: t('admin.pendingDoctors'), icon: 'doctor', color: '#F59E0B', screen: 'Users', subscreen: 'PendingDoctorsScreen' },
-        { label: t('admin.reports'), icon: 'chart-bar', color: '#8B5CF6', screen: 'Reports' },
-        { label: t('admin.management'), icon: 'cog-outline', color: '#10B981', screen: 'Management' },
+    const menuItems: Array<{ label: string; icon: string; variant: IconWrapVariant; screen: string; subscreen?: string }> = [
+        { label: t('admin.manageUsers'), icon: 'account-multiple-outline', variant: 'tinted', screen: 'Users' },
+        { label: t('admin.pendingDoctors'), icon: 'account-clock-outline', variant: 'warning', screen: 'Users', subscreen: 'PendingDoctorsScreen' },
+        { label: t('admin.reports'), icon: 'chart-line', variant: 'tinted', screen: 'Reports' },
+        { label: t('admin.management'), icon: 'cog-outline', variant: 'accent', screen: 'Management' },
     ];
 
     if (loading) {
@@ -85,10 +87,8 @@ const AdminDashboardScreen: React.FC = () => {
 
                 <View style={styles.statsGrid}>
                     {statCards.map((card, i) => (
-                        <View key={i} style={[styles.statCard, { borderTopColor: card.color }]}>
-                            <View style={[styles.statIconWrap, { backgroundColor: card.bg }]}>
-                                <MaterialCommunityIcons name={card.icon as any} size={22} color={card.color} />
-                            </View>
+                        <View key={i} style={styles.statCard}>
+                            <IconWrap name={card.icon} variant={card.variant} size="md" />
                             <Text style={styles.statValue}>{card.value}</Text>
                             <Text style={styles.statLabel}>{card.label}</Text>
                         </View>
@@ -110,9 +110,7 @@ const AdminDashboardScreen: React.FC = () => {
                                 }
                             }}
                         >
-                            <View style={[styles.menuIcon, { backgroundColor: item.color + '15' }]}>
-                                <MaterialCommunityIcons name={item.icon as any} size={26} color={item.color} />
-                            </View>
+                            <IconWrap name={item.icon} variant={item.variant} size="lg" />
                             <Text style={styles.menuLabel}>{item.label}</Text>
                         </TouchableOpacity>
                     ))}
@@ -128,21 +126,19 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xxl },
     greeting: { ...typography.h2, color: colors.textPrimary },
     subtitle: { ...typography.body, color: colors.textSecondary, marginTop: 2 },
-    adminBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EBF5FF', paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.xl, gap: 4 },
+    adminBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.xl, gap: 4 },
     adminText: { ...typography.bodySmall, fontWeight: '600', color: colors.primary },
     revenueCard: { backgroundColor: colors.primary, borderRadius: borderRadius.lg, padding: spacing.xxl, marginBottom: spacing.xxl },
     revenueLabel: { ...typography.bodySmall, color: 'rgba(255,255,255,0.8)', marginBottom: spacing.xs },
     revenueAmount: { fontSize: 32, fontWeight: 'bold', color: '#fff', marginBottom: spacing.xs },
     revenueSubtitle: { ...typography.caption, color: 'rgba(255,255,255,0.7)' },
     statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xxl },
-    statCard: { width: '47%', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, borderTopWidth: 3, borderWidth: 1, borderColor: colors.border },
-    statIconWrap: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-    statValue: { ...typography.h2, color: colors.textPrimary },
-    statLabel: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
+    statCard: { width: '47%', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, gap: spacing.sm, borderWidth: 1, borderColor: colors.border },
+    statValue: { ...typography.h2, color: colors.textPrimary, marginTop: spacing.xs },
+    statLabel: { ...typography.caption, color: colors.textSecondary },
     sectionTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.lg },
     menuGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
-    menuCard: { width: '47%', backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.lg, alignItems: 'center', borderWidth: 1, borderColor: colors.border },
-    menuIcon: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
+    menuCard: { width: '47%', backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.lg, alignItems: 'center', gap: spacing.sm, borderWidth: 1, borderColor: colors.border },
     menuLabel: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary, textAlign: 'center' },
 });
 

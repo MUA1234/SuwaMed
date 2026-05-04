@@ -281,7 +281,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     infoCard: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         padding: spacing.md,
         marginBottom: spacing.lg,

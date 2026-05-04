@@ -186,7 +186,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorLight,
     borderRadius: borderRadius.sm,
     padding: spacing.md,
     marginBottom: spacing.xl,

@@ -12,6 +12,7 @@ import { useToast } from '../../components/common/Toast';
 import { changePassword, deleteAccount as deleteAccountApi } from '../../api/auth.api';
 import { colors as lightColors, spacing, borderRadius, typography } from '../../config/theme';
 import { useTranslation } from 'react-i18next';
+import IconWrap from '../../components/common/IconWrap';
 
 const SettingsScreen: React.FC = () => {
     const navigation = useNavigation<any>();
@@ -144,9 +145,7 @@ const SettingsScreen: React.FC = () => {
                 <Text style={s.sectionLabel}>{t('common.appPreferences')}</Text>
                 <View style={s.card}>
                     <TouchableOpacity style={s.row} activeOpacity={0.7} onPress={handleLanguageChange}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#1E3A5F' : '#EBF5FF' }]}>
-                            <MaterialCommunityIcons name="translate" size={20} color={colors.primary} />
-                        </View>
+                        <IconWrap name="translate" variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('common.language')}</Text>
                             <Text style={s.rowValue}>{languageLabels[language] || 'English'}</Text>
@@ -155,9 +154,7 @@ const SettingsScreen: React.FC = () => {
                     </TouchableOpacity>
 
                     <View style={[s.row, s.rowBorder]}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#2D2554' : '#F5F3FF' }]}>
-                            <MaterialCommunityIcons name="bell-outline" size={20} color="#8B5CF6" />
-                        </View>
+                        <IconWrap name="bell-outline" variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('common.notifications')}</Text>
                         </View>
@@ -170,9 +167,7 @@ const SettingsScreen: React.FC = () => {
                     </View>
 
                     <View style={[s.row, s.rowBorder]}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#2D3748' : '#1A1A2E15' }]}>
-                            <MaterialCommunityIcons name={isDarkMode ? 'weather-sunny' : 'weather-night'} size={20} color={isDarkMode ? '#FCD34D' : '#1A1A2E'} />
-                        </View>
+                        <IconWrap name={isDarkMode ? 'weather-sunny' : 'weather-night'} variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('common.darkMode')}</Text>
                         </View>
@@ -189,9 +184,7 @@ const SettingsScreen: React.FC = () => {
                 <Text style={s.sectionLabel}>{t('common.account')}</Text>
                 <View style={s.card}>
                     <TouchableOpacity style={s.row} activeOpacity={0.7} onPress={openPasswordModal}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#0D3B2E' : '#ECFDF5' }]}>
-                            <MaterialCommunityIcons name="lock-outline" size={20} color={colors.success} />
-                        </View>
+                        <IconWrap name="lock-outline" variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('auth.changePassword')}</Text>
                         </View>
@@ -199,9 +192,7 @@ const SettingsScreen: React.FC = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[s.row, s.rowBorder]} activeOpacity={0.7} onPress={handleDeleteAccount}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#3B1515' : '#FEF2F2' }]}>
-                            <MaterialCommunityIcons name="account-remove" size={20} color={colors.error} />
-                        </View>
+                        <IconWrap name="account-remove-outline" variant="emergency" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={[s.rowLabel, { color: colors.error }]}>{t('common.deleteAccount')}</Text>
                         </View>
@@ -217,9 +208,7 @@ const SettingsScreen: React.FC = () => {
                         activeOpacity={0.7}
                         onPress={() => navigation.navigate('Privacy')}
                     >
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#1E3A5F' : '#EBF5FF' }]}>
-                            <MaterialCommunityIcons name="shield-lock-outline" size={20} color={colors.primary} />
-                        </View>
+                        <IconWrap name="shield-lock-outline" variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('common.privacyPolicy')}</Text>
                         </View>
@@ -231,9 +220,7 @@ const SettingsScreen: React.FC = () => {
                         activeOpacity={0.7}
                         onPress={() => navigation.navigate('Terms')}
                     >
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#1E3A5F' : '#EBF5FF' }]}>
-                            <MaterialCommunityIcons name="file-document-outline" size={20} color={colors.primary} />
-                        </View>
+                        <IconWrap name="file-document-outline" variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('common.termsOfService')}</Text>
                         </View>
@@ -241,9 +228,7 @@ const SettingsScreen: React.FC = () => {
                     </TouchableOpacity>
 
                     <View style={[s.row, s.rowBorder]}>
-                        <View style={[s.iconWrap, { backgroundColor: isDarkMode ? '#0D3B2E' : '#ECFDF5' }]}>
-                            <MaterialCommunityIcons name="information-outline" size={20} color={colors.secondary} />
-                        </View>
+                        <IconWrap name="information-outline" variant="tinted" size="sm" />
                         <View style={s.rowContent}>
                             <Text style={s.rowLabel}>{t('common.appVersion')}</Text>
                             <Text style={s.rowValue}>v1.0.0</Text>
@@ -364,13 +349,12 @@ const getDynamicStyles = (colors: any) => StyleSheet.create({
     scroll: { paddingHorizontal: spacing.xl, paddingBottom: 100 },
     sectionLabel: { ...typography.bodySmall, fontWeight: '600', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: spacing.sm, marginTop: spacing.sm },
     card: { backgroundColor: colors.surface, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', marginBottom: spacing.lg },
-    row: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg },
+    row: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg, gap: spacing.md },
     rowBorder: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
-    iconWrap: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     rowContent: { flex: 1 },
     rowLabel: { ...typography.body, color: colors.textPrimary },
     rowValue: { ...typography.caption, color: colors.textSecondary },
-    logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.errorLight, paddingVertical: spacing.lg, borderRadius: borderRadius.md, gap: spacing.sm, marginBottom: spacing.xxl, borderWidth: 1, borderColor: colors.error + '30' },
+    logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, paddingVertical: spacing.lg, borderRadius: borderRadius.md, gap: spacing.sm, marginBottom: spacing.xxl, borderWidth: 1, borderColor: colors.border },
     logoutText: { ...typography.body, fontWeight: '600', color: colors.error },
     modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
     modalCard: { backgroundColor: colors.surface, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: spacing.xl, paddingBottom: spacing.xxl },

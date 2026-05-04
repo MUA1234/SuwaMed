@@ -15,6 +15,7 @@ import client from '../../api/client';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
 
 const calculateAge = (dob: string): string => {
     if (!dob) return 'N/A';
@@ -89,21 +90,22 @@ const PatientProfileScreen: React.FC = () => {
     const age = calculateAge(patient.dateOfBirth);
     const gender = patient.gender ? (patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1)) : 'N/A';
 
-    const healthData = [
-        { label: 'Blood Group', value: patient.bloodGroup || 'N/A', icon: 'water', color: '#DC2626' },
-        { label: 'Height', value: patient.height ? `${patient.height} cm` : 'N/A', icon: 'human-male-height', color: colors.primary },
-        { label: 'Weight', value: patient.weight ? `${patient.weight} kg` : 'N/A', icon: 'scale', color: '#8B5CF6' },
+    // Vitals → outlined teal. Risk flags (allergies, chronic conditions) → warning amber when present.
+    const healthData: Array<{ label: string; value: string; icon: string; variant: IconWrapVariant }> = [
+        { label: 'Blood Group', value: patient.bloodGroup || 'N/A', icon: 'water-outline', variant: 'outlined' },
+        { label: 'Height', value: patient.height ? `${patient.height} cm` : 'N/A', icon: 'human-male-height', variant: 'outlined' },
+        { label: 'Weight', value: patient.weight ? `${patient.weight} kg` : 'N/A', icon: 'scale-bathroom', variant: 'outlined' },
         {
             label: 'Allergies',
             value: patient.allergies?.length ? patient.allergies.join(', ') : 'None',
             icon: 'alert-circle-outline',
-            color: colors.warning,
+            variant: patient.allergies?.length ? 'warning' : 'outlined',
         },
         {
             label: 'Chronic Conditions',
             value: patient.chronicConditions?.length ? patient.chronicConditions.join(', ') : 'None',
             icon: 'heart-pulse',
-            color: colors.error,
+            variant: patient.chronicConditions?.length ? 'warning' : 'outlined',
         },
     ];
 
@@ -168,9 +170,7 @@ const PatientProfileScreen: React.FC = () => {
                     <Text style={styles.cardTitle}>{t('patient.healthInfo')}</Text>
                     {healthData.map((item, i) => (
                         <View key={i} style={[styles.healthRow, i < healthData.length - 1 && styles.healthRowBorder]}>
-                            <View style={[styles.healthIcon, { backgroundColor: item.color + '15' }]}>
-                                <MaterialCommunityIcons name={item.icon as any} size={18} color={item.color} />
-                            </View>
+                            <IconWrap name={item.icon} variant={item.variant} size="sm" />
                             <View style={styles.healthContent}>
                                 <Text style={styles.healthLabel}>{item.label}</Text>
                                 <Text style={styles.healthValue}>{item.value}</Text>
@@ -185,9 +185,7 @@ const PatientProfileScreen: React.FC = () => {
                         onPress={() => navigation.navigate('PatientHealthRecordsScreen', { patientId, patientName: fullName })}
                         activeOpacity={0.7}
                     >
-                        <View style={[styles.actionIcon, { backgroundColor: '#EBF5FF' }]}>
-                            <MaterialCommunityIcons name="folder-heart-outline" size={22} color={colors.primary} />
-                        </View>
+                        <IconWrap name="folder-heart-outline" variant="tinted" size="md" />
                         <Text style={styles.actionText}>{t('doctor.viewHealthRecords')}</Text>
                         <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textDisabled} />
                     </TouchableOpacity>
@@ -197,9 +195,7 @@ const PatientProfileScreen: React.FC = () => {
                         onPress={() => Alert.alert('Write Prescription', 'Please open a prescription from an active appointment.')}
                         activeOpacity={0.7}
                     >
-                        <View style={[styles.actionIcon, { backgroundColor: '#ECFDF5' }]}>
-                            <MaterialCommunityIcons name="prescription" size={22} color={colors.success} />
-                        </View>
+                        <IconWrap name="prescription" variant="tinted" size="md" />
                         <Text style={styles.actionText}>{t('doctor.writePrescription')}</Text>
                         <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textDisabled} />
                     </TouchableOpacity>
@@ -237,17 +233,17 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: spacing.md,
-        borderWidth: 3,
-        borderColor: colors.primary + '30',
+        borderWidth: 1.5,
+        borderColor: colors.primary,
     },
     initials: { fontSize: 28, fontWeight: '700', color: colors.primary },
     patientName: { ...typography.h2, color: colors.textPrimary, marginBottom: spacing.sm },
     tagRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
-    tag: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: 10, gap: 4 },
+    tag: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.borderLight, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: 10, gap: 4 },
     tagText: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
     contactRow: { gap: spacing.sm },
     contactItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
@@ -274,9 +270,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderColor: colors.border,
     },
     cardTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary, marginBottom: spacing.md },
-    healthRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md },
+    healthRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, gap: spacing.md },
     healthRowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
-    healthIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     healthContent: { flex: 1 },
     healthLabel: { ...typography.caption, color: colors.textSecondary },
     healthValue: { ...typography.bodySmall, fontWeight: '500', color: colors.textPrimary, marginTop: 2 },
@@ -288,8 +283,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         overflow: 'hidden',
         marginBottom: spacing.md,
     },
-    actionBtn: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg },
-    actionIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    actionBtn: { flexDirection: 'row', alignItems: 'center', padding: spacing.lg, gap: spacing.md },
     actionText: { flex: 1, ...typography.body, fontWeight: '500', color: colors.textPrimary },
     actionDivider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.border, marginLeft: spacing.lg + 40 + spacing.md },
 });

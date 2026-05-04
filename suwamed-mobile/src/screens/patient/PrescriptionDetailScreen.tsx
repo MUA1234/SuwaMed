@@ -141,7 +141,7 @@ const PrescriptionDetailScreen: React.FC = () => {
                 {(followUpDate || prescription.followUpInstructions) ? (
                     <View style={styles.followUpCard}>
                         <View style={styles.followUpHeader}>
-                            <MaterialCommunityIcons name="calendar-clock" size={20} color='#F59E0B' />
+                            <MaterialCommunityIcons name="calendar-clock" size={20} color={colors.warning} />
                             <Text style={styles.followUpTitle}>{t('patient.followUp')}</Text>
                         </View>
                         {followUpDate ? (
@@ -197,7 +197,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: spacing.md,
@@ -225,7 +225,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         gap: spacing.sm,
     },
     sectionTitle: { ...typography.h3, color: colors.textPrimary, flex: 1 },
-    medCountBadge: { backgroundColor: '#EBF5FF', paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: 12 },
+    medCountBadge: { backgroundColor: colors.primaryLight, paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: 12 },
     medCountText: { fontSize: 12, fontWeight: '700', color: colors.primary },
     medCard: {
         backgroundColor: colors.surface,
@@ -242,46 +242,46 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     medNumber: { color: '#fff', fontSize: 12, fontWeight: '700' },
     medName: { ...typography.body, fontWeight: '700', color: colors.textPrimary, flex: 1 },
     medDetails: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-    medDetail: { backgroundColor: '#F3F4F6', borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+    medDetail: { backgroundColor: colors.borderLight, borderRadius: borderRadius.sm, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
     medDetailLabel: { fontSize: 10, color: colors.textSecondary, fontWeight: '500' },
     medDetailValue: { fontSize: 13, color: colors.textPrimary, fontWeight: '600' },
     medInstructions: { flexDirection: 'row', alignItems: 'flex-start', marginTop: spacing.sm, gap: spacing.xs },
     medInstructionsText: { ...typography.caption, color: colors.textSecondary, flex: 1 },
     notesCard: {
-        backgroundColor: '#FFFBEB',
+        backgroundColor: colors.warningLight,
         borderRadius: borderRadius.md,
         padding: spacing.lg,
         marginTop: spacing.sm,
         marginBottom: spacing.md,
         borderWidth: 1,
-        borderColor: '#FDE68A',
+        borderColor: colors.warning + '33',
     },
-    notesTitle: { ...typography.bodySmall, fontWeight: '700', color: '#92400E', marginBottom: spacing.sm },
-    notesText: { ...typography.body, color: '#78350F', lineHeight: 22 },
+    notesTitle: { ...typography.bodySmall, fontWeight: '700', color: colors.warning, marginBottom: spacing.sm },
+    notesText: { ...typography.body, color: colors.textPrimary, lineHeight: 22 },
     followUpCard: {
-        backgroundColor: '#FFFBEB',
+        backgroundColor: colors.warningLight,
         borderRadius: borderRadius.md,
         padding: spacing.lg,
         marginBottom: spacing.md,
         borderWidth: 1,
-        borderColor: '#FDE68A',
+        borderColor: colors.warning + '33',
     },
     followUpHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.md },
-    followUpTitle: { ...typography.body, fontWeight: '700', color: '#92400E' },
+    followUpTitle: { ...typography.body, fontWeight: '700', color: colors.warning },
     followUpRow: { flexDirection: 'row', marginBottom: spacing.sm },
-    followUpLabel: { ...typography.bodySmall, color: '#92400E', width: 100, fontWeight: '600' },
-    followUpValue: { ...typography.bodySmall, color: '#78350F', flex: 1 },
+    followUpLabel: { ...typography.bodySmall, color: colors.warning, width: 100, fontWeight: '600' },
+    followUpValue: { ...typography.bodySmall, color: colors.textPrimary, flex: 1 },
     signatureBadge: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ECFDF5',
+        backgroundColor: colors.successLight,
         borderRadius: borderRadius.md,
         padding: spacing.md,
         gap: spacing.sm,
         marginTop: spacing.sm,
         borderWidth: 1,
-        borderColor: '#A7F3D0',
+        borderColor: colors.success + '33',
     },
     signatureText: { ...typography.bodySmall, fontWeight: '600', color: colors.success },
 });

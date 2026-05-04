@@ -254,7 +254,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.border,
     },
-    notifCardUnread: { borderColor: colors.primary + '40', backgroundColor: '#EBF5FF' + '50' },
+    notifCardUnread: { borderColor: colors.primary + '40', backgroundColor: colors.primaryLight + '50' },
     notifIcon: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     notifContent: { flex: 1 },
     notifTopRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },

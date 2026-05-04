@@ -11,15 +11,16 @@ import {
     RefreshControl,
 } from 'react-native';
 import FadeIn from '../../components/common/FadeIn';
+import IconWrap from '../../components/common/IconWrap';
 import { StatCardSkeleton, AppointmentCardSkeleton, SkeletonList } from '../../components/common/Skeleton';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
 import * as doctorApi from '../../api/doctor.api';
 import { useTranslation } from 'react-i18next';
-import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
+import { spacing, borderRadius, typography, shadows } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import type { IconWrapVariant } from '../../components/common/IconWrap';
 const { width } = Dimensions.get('window');
 
 
@@ -72,11 +73,11 @@ const DashboardScreen: React.FC = () => {
         );
     }
 
-    const statsCards = [
-        { label: t('doctor.todayAppts'), value: String(stats?.todayAppointmentsCount || 0), icon: 'calendar-check', gradient: gradients.primary },
-        { label: t('doctor.totalPatients'), value: String(stats?.totalPatients || 0), icon: 'account-group', gradient: gradients.secondary },
-        { label: t('doctor.todayEarnings'), value: `LKR ${((stats?.todayEarnings || 0) / 1000).toFixed(0)}K`, icon: 'cash', gradient: ['#F59E0B', '#D97706'] as [string, string] },
-        { label: t('doctor.rating'), value: stats?.rating?.average?.toFixed(1) || '0', icon: 'star', gradient: ['#8B5CF6', '#7C3AED'] as [string, string] },
+    const statsCards: Array<{ label: string; value: string; icon: string; variant: IconWrapVariant }> = [
+        { label: t('doctor.todayAppts'), value: String(stats?.todayAppointmentsCount || 0), icon: 'calendar-check-outline', variant: 'tinted' },
+        { label: t('doctor.totalPatients'), value: String(stats?.totalPatients || 0), icon: 'account-group-outline', variant: 'tinted' },
+        { label: t('doctor.todayEarnings'), value: `LKR ${((stats?.todayEarnings || 0) / 1000).toFixed(0)}K`, icon: 'cash-multiple', variant: 'accent' },
+        { label: t('doctor.rating'), value: stats?.rating?.average?.toFixed(1) || '0', icon: 'star-outline', variant: 'accent' },
     ];
 
     const todayAppointments = stats?.todayAppointments || [];
@@ -110,14 +111,7 @@ const DashboardScreen: React.FC = () => {
                     <View style={styles.statsGrid}>
                         {statsCards.map((stat, i) => (
                             <View key={i} style={styles.statCard}>
-                                <LinearGradient
-                                    colors={stat.gradient}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={styles.statIconWrap}
-                                >
-                                    <MaterialCommunityIcons name={stat.icon as any} size={18} color="#FFFFFF" />
-                                </LinearGradient>
+                                <IconWrap name={stat.icon} variant={stat.variant} size="md" />
                                 <Text style={styles.statValue}>{stat.value}</Text>
                                 <Text style={styles.statLabel}>{stat.label}</Text>
                             </View>
@@ -129,21 +123,15 @@ const DashboardScreen: React.FC = () => {
                 <FadeIn delay={150}>
                     <View style={styles.quickActions}>
                         <TouchableOpacity style={styles.quickAction} activeOpacity={0.7} onPress={() => navigation.navigate('AppointmentRequestsScreen')}>
-                            <LinearGradient colors={gradients.primary} style={styles.quickIconWrap}>
-                                <MaterialCommunityIcons name="video-outline" size={22} color="#FFFFFF" />
-                            </LinearGradient>
+                            <IconWrap name="video-outline" variant="tinted" size="md" />
                             <Text style={styles.quickText}>{t('doctor.requests')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.quickAction} activeOpacity={0.7} onPress={() => navigation.getParent()?.navigate('Schedule')}>
-                            <LinearGradient colors={gradients.secondary} style={styles.quickIconWrap}>
-                                <MaterialCommunityIcons name="calendar-edit" size={22} color="#FFFFFF" />
-                            </LinearGradient>
+                            <IconWrap name="calendar-edit-outline" variant="tinted" size="md" />
                             <Text style={styles.quickText}>{t('doctor.schedule')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.quickAction} activeOpacity={0.7} onPress={() => navigation.getParent()?.navigate('Patients')}>
-                            <LinearGradient colors={['#F59E0B', '#D97706']} style={styles.quickIconWrap}>
-                                <MaterialCommunityIcons name="account-group-outline" size={22} color="#FFFFFF" />
-                            </LinearGradient>
+                            <IconWrap name="account-group-outline" variant="tinted" size="md" />
                             <Text style={styles.quickText}>{t('doctor.patients')}</Text>
                         </TouchableOpacity>
                     </View>
@@ -231,20 +219,18 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xxl },
     greeting: { ...typography.bodySmall, color: colors.textSecondary, fontWeight: '500' },
     doctorName: { fontSize: 22, fontWeight: '700', color: colors.textPrimary, marginTop: 2, letterSpacing: -0.3 },
-    notifBtn: { width: 44, height: 44, borderRadius: borderRadius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', ...shadows.md },
+    notifBtn: { width: 44, height: 44, borderRadius: borderRadius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
     notifDot: { position: 'absolute', top: 10, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.error, borderWidth: 1.5, borderColor: colors.surface },
 
     // Stats
     statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },
-    statCard: { width: STAT_CARD_WIDTH, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, ...shadows.sm },
-    statIconWrap: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
-    statValue: { fontSize: 22, fontWeight: '800', color: colors.textPrimary, letterSpacing: -0.5, marginBottom: 1 },
+    statCard: { width: STAT_CARD_WIDTH, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, gap: spacing.sm, borderWidth: 1, borderColor: colors.border },
+    statValue: { fontSize: 22, fontWeight: '800', color: colors.textPrimary, letterSpacing: -0.5, marginTop: spacing.xs },
     statLabel: { ...typography.caption, color: colors.textSecondary, fontWeight: '500' },
 
     // Quick Actions
     quickActions: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.xl },
-    quickAction: { flex: 1, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.md, alignItems: 'center', ...shadows.sm },
-    quickIconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
+    quickAction: { flex: 1, backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.md, alignItems: 'center', gap: spacing.sm, borderWidth: 1, borderColor: colors.border },
     quickText: { ...typography.caption, color: colors.textPrimary, fontWeight: '600', textAlign: 'center' },
 
     // Section
@@ -260,7 +246,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     emptySubtext: { ...typography.caption, color: colors.textDisabled, marginTop: 2 },
 
     // Appointments
-    appointmentCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, ...shadows.sm },
+    appointmentCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
     apptLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
     apptAvatarWrap: { width: 42, height: 42, borderRadius: 14, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
     apptAvatarText: { fontSize: 16, fontWeight: '700', color: colors.primary },

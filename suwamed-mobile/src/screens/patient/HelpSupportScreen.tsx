@@ -102,7 +102,7 @@ const HelpSupportScreen: React.FC = () => {
                         onPress={() => Alert.alert('Support', 'Opening email client...')}
                         activeOpacity={0.7}
                     >
-                        <View style={[styles.contactIconWrap, { backgroundColor: '#EBF5FF' }]}>
+                        <View style={[styles.contactIconWrap, { backgroundColor: colors.primaryLight }]}>
                             <MaterialCommunityIcons name="email-outline" size={20} color={colors.primary} />
                         </View>
                         <View style={styles.contactInfo}>
@@ -125,7 +125,7 @@ const HelpSupportScreen: React.FC = () => {
                         onPress={() => Alert.alert('Support', 'Calling +94 11 234 5678...')}
                         activeOpacity={0.7}
                     >
-                        <View style={[styles.contactIconWrap, { backgroundColor: '#ECFDF5' }]}>
+                        <View style={[styles.contactIconWrap, { backgroundColor: colors.successLight }]}>
                             <MaterialCommunityIcons name="phone-outline" size={20} color={colors.success} />
                         </View>
                         <View style={styles.contactInfo}>
@@ -133,7 +133,7 @@ const HelpSupportScreen: React.FC = () => {
                             <Text style={styles.contactValue}>+94 11 234 5678</Text>
                         </View>
                         <TouchableOpacity
-                            style={[styles.contactAction, { backgroundColor: '#ECFDF5' }]}
+                            style={[styles.contactAction, { backgroundColor: colors.successLight }]}
                             onPress={() => Alert.alert('Calling...', '+94 11 234 5678')}
                             activeOpacity={0.7}
                         >
@@ -171,7 +171,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     headerTitle: { flex: 1, ...typography.h3, color: colors.textPrimary, textAlign: 'center' },
     scrollContent: { paddingHorizontal: spacing.xl, paddingBottom: 40 },
     heroBanner: { alignItems: 'center', paddingVertical: spacing.xxl },
-    heroIcon: { width: 72, height: 72, borderRadius: 24, backgroundColor: '#EBF5FF', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
+    heroIcon: { width: 72, height: 72, borderRadius: 24, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
     heroTitle: { ...typography.h2, color: colors.textPrimary, textAlign: 'center' },
     heroSubtitle: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.sm, lineHeight: 22 },
     sectionLabel: {
@@ -218,7 +218,7 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     contactLabel: { ...typography.caption, color: colors.textSecondary },
     contactValue: { ...typography.bodySmall, fontWeight: '600', color: colors.textPrimary, marginTop: 2 },
     contactAction: {
-        backgroundColor: '#EBF5FF',
+        backgroundColor: colors.primaryLight,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
         borderRadius: borderRadius.sm,

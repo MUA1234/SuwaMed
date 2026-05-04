@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import client from '../../api/client';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
+import IconWrap from '../../components/common/IconWrap';
 const languages = [
     { key: 'en', label: 'English', flag: '🇬🇧' },
     { key: 'si', label: 'සිංහල', flag: '🇱🇰' },
@@ -16,14 +17,14 @@ const languages = [
 ];
 
 const bodyAreas = [
-    { id: 'head', label: 'Head & Brain', icon: 'head', color: '#8B5CF6' },
-    { id: 'eyes', label: 'Eyes & Vision', icon: 'eye', color: '#3B82F6' },
-    { id: 'chest', label: 'Chest & Lungs', icon: 'lungs', color: '#DC2626' },
-    { id: 'heart', label: 'Heart', icon: 'heart-pulse', color: '#EC4899' },
-    { id: 'stomach', label: 'Stomach', icon: 'stomach', color: '#F59E0B' },
-    { id: 'skin', label: 'Skin', icon: 'hand-heart', color: '#10B981' },
-    { id: 'bones', label: 'Bones & Joints', icon: 'bone', color: '#6B7280' },
-    { id: 'general', label: 'General / Other', icon: 'account-question', color: '#1A73E8' },
+    { id: 'head', label: 'Head & Brain', icon: 'head-outline' },
+    { id: 'eyes', label: 'Eyes & Vision', icon: 'eye-outline' },
+    { id: 'chest', label: 'Chest & Lungs', icon: 'lungs' },
+    { id: 'heart', label: 'Heart', icon: 'heart-pulse' },
+    { id: 'stomach', label: 'Stomach', icon: 'stomach' },
+    { id: 'skin', label: 'Skin', icon: 'hand-heart-outline' },
+    { id: 'bones', label: 'Bones & Joints', icon: 'bone' },
+    { id: 'general', label: 'General / Other', icon: 'account-question-outline' },
 ];
 
 const commonSymptoms = [
@@ -95,8 +96,8 @@ const SymptomCheckerScreen: React.FC = () => {
         }
     };
 
-    const severityColor = (s: string) =>
-        s === 'severe' ? colors.error : s === 'moderate' ? colors.warning : colors.success;
+    const severityVariant = (s: string): 'warning' | 'success' =>
+        s === 'severe' || s === 'moderate' ? 'warning' : 'success';
 
     return (
         <SafeAreaView style={styles.container}>
@@ -130,19 +131,20 @@ const SymptomCheckerScreen: React.FC = () => {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>{t('patient.whatAreaAffected')}</Text>
                     <View style={styles.areaGrid}>
-                        {bodyAreas.map(area => (
-                            <TouchableOpacity
-                                key={area.id}
-                                style={[styles.areaCard, selectedBodyArea === area.id && { borderColor: area.color, borderWidth: 2 }]}
-                                activeOpacity={0.7}
-                                onPress={() => setSelectedBodyArea(prev => prev === area.id ? '' : area.id)}
-                            >
-                                <View style={[styles.areaIcon, { backgroundColor: area.color + '15' }]}>
-                                    <MaterialCommunityIcons name={area.icon as any} size={28} color={area.color} />
-                                </View>
-                                <Text style={styles.areaLabel}>{area.label}</Text>
-                            </TouchableOpacity>
-                        ))}
+                        {bodyAreas.map(area => {
+                            const selected = selectedBodyArea === area.id;
+                            return (
+                                <TouchableOpacity
+                                    key={area.id}
+                                    style={[styles.areaCard, selected && styles.areaCardActive]}
+                                    activeOpacity={0.7}
+                                    onPress={() => setSelectedBodyArea(prev => prev === area.id ? '' : area.id)}
+                                >
+                                    <IconWrap name={area.icon} variant={selected ? 'tinted' : 'outlined'} size="lg" />
+                                    <Text style={[styles.areaLabel, selected && styles.areaLabelActive]}>{area.label}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
                     </View>
                 </View>
 
@@ -210,9 +212,7 @@ const SymptomCheckerScreen: React.FC = () => {
                                     activeOpacity={0.7}
                                     onPress={() => navigation.navigate('SymptomHistoryScreen')}
                                 >
-                                    <View style={[styles.historyIcon, { backgroundColor: severityColor(check.severity) + '15' }]}>
-                                        <MaterialCommunityIcons name="clipboard-text-clock" size={20} color={severityColor(check.severity)} />
-                                    </View>
+                                    <IconWrap name="clipboard-text-clock-outline" variant={severityVariant(check.severity)} size="md" />
                                     <View style={styles.historyInfo}>
                                         <Text style={styles.historyTitle} numberOfLines={1}>{symptoms || 'Symptom check'}</Text>
                                         <Text style={styles.historyMeta}>
@@ -237,11 +237,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     subtitle: { ...typography.bodySmall, color: colors.textSecondary, marginTop: 2 },
     langRow: { flexDirection: 'row', paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.sm },
     langBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.sm, borderRadius: borderRadius.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, gap: spacing.xs },
-    langBtnActive: { backgroundColor: '#EBF5FF', borderColor: colors.primary },
+    langBtnActive: { backgroundColor: colors.primaryLight, borderColor: colors.primary },
     langFlag: { fontSize: 16 },
     langText: { ...typography.caption, fontWeight: '500', color: colors.textSecondary },
     langTextActive: { color: colors.primary, fontWeight: '600' },
-    infoBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EBF5FF', marginHorizontal: spacing.xl, borderRadius: borderRadius.md, padding: spacing.md, marginBottom: spacing.xxl, gap: spacing.sm },
+    infoBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryLight, marginHorizontal: spacing.xl, borderRadius: borderRadius.md, padding: spacing.md, marginBottom: spacing.xxl, gap: spacing.sm },
     infoText: { ...typography.caption, color: colors.primary, flex: 1 },
     section: { paddingHorizontal: spacing.xl, marginBottom: spacing.xxl },
     sectionTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.xs },
@@ -249,18 +249,18 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
     seeAll: { ...typography.bodySmall, color: colors.primary, fontWeight: '600' },
     areaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
-    areaCard: { width: '47%', backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.lg, alignItems: 'center', borderWidth: 1, borderColor: colors.border },
-    areaIcon: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm },
+    areaCard: { width: '47%', backgroundColor: colors.surface, borderRadius: borderRadius.lg, padding: spacing.lg, alignItems: 'center', gap: spacing.sm, borderWidth: 1, borderColor: colors.border },
+    areaCardActive: { borderColor: colors.primary, backgroundColor: colors.primaryLight },
     areaLabel: { ...typography.bodySmall, fontWeight: '500', color: colors.textPrimary, textAlign: 'center' },
+    areaLabelActive: { color: colors.primary, fontWeight: '600' },
     symptomGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
     symptomChip: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: borderRadius.xl, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, gap: 4 },
-    symptomChipActive: { backgroundColor: '#EBF5FF', borderColor: colors.primary },
+    symptomChipActive: { backgroundColor: colors.primaryLight, borderColor: colors.primary },
     symptomText: { ...typography.bodySmall, color: colors.textSecondary },
     symptomTextActive: { color: colors.primary, fontWeight: '600' },
     continueBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, marginHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: borderRadius.md, gap: spacing.sm, marginBottom: spacing.xxl },
     continueText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-    historyCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border },
-    historyIcon: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: spacing.md },
+    historyCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.lg, marginBottom: spacing.sm, gap: spacing.md, borderWidth: 1, borderColor: colors.border },
     historyInfo: { flex: 1 },
     historyTitle: { ...typography.body, fontWeight: '500', color: colors.textPrimary },
     historyMeta: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },

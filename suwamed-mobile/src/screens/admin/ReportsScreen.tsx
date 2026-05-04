@@ -43,22 +43,22 @@ const ReportsScreen: React.FC = () => {
         {
             label: 'Revenue Report',
             icon: 'cash-multiple',
-            color: '#10B981',
-            bg: '#ECFDF5',
+            color: colors.success,
+            bg: colors.successLight,
             screen: 'RevenueReportScreen',
         },
         {
             label: 'User Analytics',
             icon: 'account-multiple-outline',
-            color: '#1A73E8',
-            bg: '#EBF5FF',
+            color: colors.primary,
+            bg: colors.primaryLight,
             screen: 'UserAnalyticsScreen',
         },
         {
             label: 'Appointment Analytics',
             icon: 'calendar-clock-outline',
-            color: '#8B5CF6',
-            bg: '#F5F3FF',
+            color: colors.secondary,
+            bg: colors.secondaryLight,
             screen: 'AppointmentAnalyticsScreen',
         },
     ];

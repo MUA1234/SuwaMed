@@ -9,6 +9,7 @@ import * as adminApi from '../../api/admin.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import IconWrap, { IconWrapVariant } from '../../components/common/IconWrap';
 
 const UserAnalyticsScreen: React.FC = () => {
   const { theme: colors } = useTheme();
@@ -38,43 +39,21 @@ const UserAnalyticsScreen: React.FC = () => {
     const totalDoctors = stats ? (stats.totalDoctors ?? 0) : 0;
     const totalPatients = totalUsers - totalDoctors > 0 ? totalUsers - totalDoctors : 0;
 
-    const roleBreakdown = [
-        { label: 'Patients', value: totalPatients, color: '#1A73E8', icon: 'account-heart-outline' },
-        { label: 'Doctors', value: totalDoctors, color: '#10B981', icon: 'doctor' },
-        { label: 'Admins', value: stats?.totalAdmins ?? 1, color: '#8B5CF6', icon: 'shield-account-outline' },
+    type Role = { label: string; value: number; icon: string; variant: IconWrapVariant; barColor: string };
+    const roleBreakdown: Role[] = [
+        { label: 'Patients', value: totalPatients, icon: 'account-heart-outline', variant: 'tinted', barColor: colors.primary },
+        { label: 'Doctors', value: totalDoctors, icon: 'doctor', variant: 'success', barColor: colors.success },
+        { label: 'Admins', value: stats?.totalAdmins ?? 1, icon: 'shield-account-outline', variant: 'accent', barColor: colors.secondary },
     ];
 
     const overallTotal = roleBreakdown.reduce((sum, r) => sum + r.value, 0);
 
-    const statCards = [
-        {
-            label: 'Total Users',
-            value: totalUsers,
-            icon: 'account-group',
-            color: '#1A73E8',
-            bg: '#EBF5FF',
-        },
-        {
-            label: 'Total Doctors',
-            value: totalDoctors,
-            icon: 'doctor',
-            color: '#10B981',
-            bg: '#ECFDF5',
-        },
-        {
-            label: 'Total Patients',
-            value: totalPatients,
-            icon: 'account-heart-outline',
-            color: '#8B5CF6',
-            bg: '#F5F3FF',
-        },
-        {
-            label: 'Pending Verify',
-            value: stats?.pendingVerifications ?? 0,
-            icon: 'clock-alert-outline',
-            color: '#F59E0B',
-            bg: '#FFFBEB',
-        },
+    type StatCard = { label: string; value: number; icon: string; variant: IconWrapVariant };
+    const statCards: StatCard[] = [
+        { label: 'Total Users', value: totalUsers, icon: 'account-group-outline', variant: 'tinted' },
+        { label: 'Total Doctors', value: totalDoctors, icon: 'doctor', variant: 'tinted' },
+        { label: 'Total Patients', value: totalPatients, icon: 'account-heart-outline', variant: 'tinted' },
+        { label: 'Pending Verify', value: stats?.pendingVerifications ?? 0, icon: 'clock-alert-outline', variant: 'warning' },
     ];
 
     if (loading) {
@@ -116,10 +95,8 @@ const UserAnalyticsScreen: React.FC = () => {
                 {/* Stats grid */}
                 <View style={styles.statsGrid}>
                     {statCards.map((card, i) => (
-                        <View key={i} style={[styles.statCard, { borderTopColor: card.color }]}>
-                            <View style={[styles.statIcon, { backgroundColor: card.bg }]}>
-                                <MaterialCommunityIcons name={card.icon as any} size={22} color={card.color} />
-                            </View>
+                        <View key={i} style={styles.statCard}>
+                            <IconWrap name={card.icon} variant={card.variant} size="md" />
                             <Text style={styles.statValue}>{card.value}</Text>
                             <Text style={styles.statLabel}>{card.label}</Text>
                         </View>
@@ -133,13 +110,11 @@ const UserAnalyticsScreen: React.FC = () => {
                         const pct = overallTotal > 0 ? (role.value / overallTotal) : 0;
                         return (
                             <View key={i} style={styles.roleRow}>
-                                <View style={[styles.roleIconWrap, { backgroundColor: role.color + '15' }]}>
-                                    <MaterialCommunityIcons name={role.icon as any} size={20} color={role.color} />
-                                </View>
+                                <IconWrap name={role.icon} variant={role.variant} size="md" />
                                 <View style={styles.roleInfo}>
                                     <View style={styles.roleMeta}>
                                         <Text style={styles.roleName}>{role.label}</Text>
-                                        <Text style={[styles.roleCount, { color: role.color }]}>{role.value}</Text>
+                                        <Text style={[styles.roleCount, { color: role.barColor }]}>{role.value}</Text>
                                     </View>
                                     <View style={styles.barTrack}>
                                         <View
@@ -147,7 +122,7 @@ const UserAnalyticsScreen: React.FC = () => {
                                                 styles.barFill,
                                                 {
                                                     width: `${Math.round(pct * 100)}%` as any,
-                                                    backgroundColor: role.color,
+                                                    backgroundColor: role.barColor,
                                                 },
                                             ]}
                                         />
@@ -161,7 +136,7 @@ const UserAnalyticsScreen: React.FC = () => {
 
                 {/* Total Summary */}
                 <View style={styles.summaryCard}>
-                    <MaterialCommunityIcons name="account-group" size={24} color={colors.primary} />
+                    <IconWrap name="account-group-outline" variant="tinted" size="md" />
                     <View style={styles.summaryInfo}>
                         <Text style={styles.summaryLabel}>{t('admin.totalRegisteredUsers')}</Text>
                         <Text style={styles.summaryValue}>{totalUsers} users</Text>
@@ -190,12 +165,12 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: spacing.sm,
-        backgroundColor: colors.primary + '10',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.md,
         padding: spacing.md,
         marginBottom: spacing.xxl,
         borderWidth: 1,
-        borderColor: colors.primary + '25',
+        borderColor: colors.border,
     },
     infoText: { ...typography.bodySmall, color: colors.primary, fontWeight: '500' },
     statsGrid: {
@@ -209,20 +184,12 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         backgroundColor: colors.surface,
         borderRadius: borderRadius.md,
         padding: spacing.lg,
-        borderTopWidth: 3,
+        gap: spacing.sm,
         borderWidth: 1,
         borderColor: colors.border,
     },
-    statIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: spacing.sm,
-    },
     statValue: { ...typography.h2, color: colors.textPrimary },
-    statLabel: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
+    statLabel: { ...typography.caption, color: colors.textSecondary },
     sectionTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.md },
     breakdownCard: {
         backgroundColor: colors.surface,
@@ -234,21 +201,13 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         marginBottom: spacing.xxl,
     },
     roleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
-    roleIconWrap: {
-        width: 40,
-        height: 40,
-        borderRadius: borderRadius.sm,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
     roleInfo: { flex: 1 },
     roleMeta: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs },
     roleName: { ...typography.body, fontWeight: '600', color: colors.textPrimary },
     roleCount: { ...typography.body, fontWeight: '700' },
     barTrack: {
         height: 8,
-        backgroundColor: colors.border,
+        backgroundColor: colors.borderLight,
         borderRadius: 4,
         overflow: 'hidden',
         marginBottom: spacing.xs,
@@ -259,11 +218,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: spacing.md,
-        backgroundColor: colors.primary + '10',
+        backgroundColor: colors.primaryLight,
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
         borderWidth: 1,
-        borderColor: colors.primary + '25',
+        borderColor: colors.border,
     },
     summaryInfo: { flex: 1 },
     summaryLabel: { ...typography.bodySmall, color: colors.textSecondary },

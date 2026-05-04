@@ -9,11 +9,14 @@ import { getDoctors } from '../../api/doctor.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import IconWrap from '../../components/common/IconWrap';
 
+// Specialization → outlined teal icon. Distinction comes from the icon glyph
+// and the name — no per-row color, per the Calm Healing direction.
 const SPEC_ICONS: Record<string, string> = {
     'General Practitioner': 'stethoscope',
     'Cardiologist': 'heart-pulse',
-    'Dermatologist': 'face-man',
+    'Dermatologist': 'face-man-outline',
     'Endocrinologist': 'flask-outline',
     'Gastroenterologist': 'stomach',
     'Gynecologist': 'gender-female',
@@ -32,11 +35,6 @@ const SPEC_ICONS: Record<string, string> = {
     'Allergist': 'flower-pollen-outline',
     'Anesthesiologist': 'needle',
 };
-
-const SPEC_COLORS = [
-    '#1A73E8', '#10B981', '#8B5CF6', '#F59E0B', '#EC4899',
-    '#DC2626', '#3B82F6', '#14B8A6', '#F97316', '#6366F1',
-];
 
 interface SpecItem { name: string; count: number }
 
@@ -71,18 +69,14 @@ const SpecializationsScreen: React.FC = () => {
 
     useFocusEffect(useCallback(() => { fetchSpecs(); }, []));
 
-    const renderItem = ({ item, index }: { item: SpecItem; index: number }) => {
-        const color = SPEC_COLORS[index % SPEC_COLORS.length];
+    const renderItem = ({ item }: { item: SpecItem }) => {
         const icon = SPEC_ICONS[item.name] || 'stethoscope';
-
         return (
             <View style={styles.row}>
-                <View style={[styles.iconWrap, { backgroundColor: color + '18' }]}>
-                    <MaterialCommunityIcons name={icon as any} size={22} color={color} />
-                </View>
+                <IconWrap name={icon} variant="outlined" size="md" />
                 <Text style={styles.name}>{item.name}</Text>
-                <View style={[styles.badge, { backgroundColor: color + '15' }]}>
-                    <Text style={[styles.badgeText, { color }]}>{item.count} {item.count === 1 ? 'doctor' : 'doctors'}</Text>
+                <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{item.count} {item.count === 1 ? 'doctor' : 'doctors'}</Text>
                 </View>
             </View>
         );
@@ -146,21 +140,11 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
     headerTitle: { flex: 1, ...typography.h3, color: colors.textPrimary, textAlign: 'center' },
-    addBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 2,
-        paddingHorizontal: spacing.sm,
-        paddingVertical: spacing.xs,
-        borderRadius: borderRadius.sm,
-        backgroundColor: colors.primary + '12',
-    },
-    addText: { ...typography.caption, color: colors.primary, fontWeight: '600' },
     countBanner: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: spacing.sm,
-        backgroundColor: colors.primary + '10',
+        backgroundColor: colors.primaryLight,
         paddingHorizontal: spacing.xl,
         paddingVertical: spacing.md,
         borderBottomWidth: 1,
@@ -174,24 +158,18 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
         backgroundColor: colors.surface,
         borderRadius: borderRadius.lg,
         padding: spacing.lg,
+        gap: spacing.md,
         borderWidth: 1,
         borderColor: colors.border,
-    },
-    iconWrap: {
-        width: 44,
-        height: 44,
-        borderRadius: borderRadius.md,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: spacing.md,
     },
     name: { ...typography.body, fontWeight: '500', color: colors.textPrimary, flex: 1 },
     badge: {
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xs,
         borderRadius: borderRadius.xl,
+        backgroundColor: colors.primaryLight,
     },
-    badgeText: { fontSize: 11, fontWeight: '700' },
+    badgeText: { fontSize: 11, fontWeight: '700', color: colors.primary },
 });
 
 export default SpecializationsScreen;

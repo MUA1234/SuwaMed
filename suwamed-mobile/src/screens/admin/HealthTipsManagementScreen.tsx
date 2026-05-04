@@ -109,18 +109,18 @@ const HealthTipsManagementScreen: React.FC = () => {
         <View style={styles.tipCard}>
             <View style={styles.tipTop}>
                 <View style={styles.tipMeta}>
-                    <View style={[styles.catBadge, { backgroundColor: item.isPublished ? '#ECFDF5' : '#F5F3FF' }]}>
-                        <Text style={[styles.catText, { color: item.isPublished ? '#10B981' : '#8B5CF6' }]}>
+                    <View style={[styles.catBadge, { backgroundColor: item.isPublished ? colors.successLight : colors.primaryLight }]}>
+                        <Text style={[styles.catText, { color: item.isPublished ? colors.success : colors.primary }]}>
                             {CATEGORY_LABELS[item.category] || item.category}
                         </Text>
                     </View>
-                    <View style={[styles.statusBadge, { backgroundColor: item.isPublished ? '#ECFDF5' : '#FEF3C7' }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: item.isPublished ? colors.successLight : colors.warningLight }]}>
                         <MaterialCommunityIcons
                             name={item.isPublished ? 'eye' : 'eye-off'}
                             size={12}
-                            color={item.isPublished ? '#10B981' : '#F59E0B'}
+                            color={item.isPublished ? colors.success : colors.warning}
                         />
-                        <Text style={[styles.statusText, { color: item.isPublished ? '#10B981' : '#F59E0B' }]}>
+                        <Text style={[styles.statusText, { color: item.isPublished ? colors.success : colors.warning }]}>
                             {item.isPublished ? 'Published' : 'Draft'}
                         </Text>
                     </View>
@@ -133,7 +133,7 @@ const HealthTipsManagementScreen: React.FC = () => {
                             color={colors.primary}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#FEF2F2' }]} onPress={() => handleDelete(item)}>
+                    <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.errorLight }]} onPress={() => handleDelete(item)}>
                         <MaterialCommunityIcons name="trash-can-outline" size={18} color={colors.error} />
                     </TouchableOpacity>
                 </View>
@@ -253,11 +253,11 @@ const HealthTipsManagementScreen: React.FC = () => {
                                 style={styles.publishToggle}
                                 onPress={() => setIsPublished(!isPublished)}
                             >
-                                <View style={[styles.toggleIcon, { backgroundColor: isPublished ? '#ECFDF5' : '#F5F3FF' }]}>
+                                <View style={[styles.toggleIcon, { backgroundColor: isPublished ? colors.successLight : colors.primaryLight }]}>
                                     <MaterialCommunityIcons
                                         name={isPublished ? 'eye' : 'eye-off'}
                                         size={18}
-                                        color={isPublished ? '#10B981' : '#8B5CF6'}
+                                        color={isPublished ? colors.success : colors.primary}
                                     />
                                 </View>
                                 <Text style={styles.publishLabel}>
