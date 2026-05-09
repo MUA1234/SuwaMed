@@ -97,14 +97,42 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-// GET /api/admin/doctors/pending — list doctors awaiting verification
+// GET /api/admin/doctors/pending — list doctors awaiting verification (paginated + searchable)
 export const getPendingDoctors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const doctors = await Doctor.find({ verificationStatus: 'pending' })
-      .populate('userId', 'firstName lastName email phone avatar createdAt')
-      .sort({ createdAt: -1 });
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit as string) || 20);
+    const skip = (page - 1) * limit;
+    const search = (req.query.search as string) || '';
 
-    res.status(200).json({ success: true, data: doctors });
+    const filter: any = { verificationStatus: 'pending' };
+    if (search) {
+      // Search SLMC number / specialization on the Doctor doc
+      filter.$or = [
+        { slmcRegistrationNo: { $regex: search, $options: 'i' } },
+        { specialization: { $elemMatch: { $regex: search, $options: 'i' } } },
+      ];
+    }
+
+    const [doctors, total] = await Promise.all([
+      Doctor.find(filter)
+        .populate('userId', 'firstName lastName email phone avatar createdAt')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Doctor.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: doctors,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     next(error);
   }

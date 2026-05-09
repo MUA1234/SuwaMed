@@ -63,6 +63,21 @@ export const deleteHealthTip = async (req: Request, res: Response, next: NextFun
     }
 };
 
+// PATCH /api/health-tips/:id/view — increment viewCount (public)
+export const incrementHealthTipView = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const tip = await HealthTip.findByIdAndUpdate(
+            req.params.id,
+            { $inc: { viewCount: 1 } },
+            { new: true, projection: { viewCount: 1 } }
+        );
+        if (!tip) throw new Error('Health tip not found');
+        res.status(200).json({ success: true, data: { viewCount: tip.viewCount } });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // GET /api/health-tips — published health tips
 export const getHealthTips = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

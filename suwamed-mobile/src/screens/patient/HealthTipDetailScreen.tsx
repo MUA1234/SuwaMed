@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import IconWrap from '../../components/common/IconWrap';
 import { useTranslation } from 'react-i18next';
+import { incrementHealthTipView } from '../../api/healthTip.api';
 
 const categoryIcons: Record<string, string> = {
     nutrition: 'food-apple-outline',
@@ -46,6 +47,13 @@ const HealthTipDetailScreen: React.FC = () => {
 
     const catIcon = categoryIcons[tip.category] || 'leaf';
     const catLabel = categoryLabels[tip.category] || tip.category;
+
+    const counted = useRef(false);
+    useEffect(() => {
+        if (counted.current || !tip?._id) return;
+        counted.current = true;
+        incrementHealthTipView(tip._id).catch(() => {});
+    }, [tip?._id]);
 
     const formattedDate = tip.publishedAt
         ? new Date(tip.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })

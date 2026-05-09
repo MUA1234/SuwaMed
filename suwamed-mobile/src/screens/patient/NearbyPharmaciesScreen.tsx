@@ -7,6 +7,7 @@ import {
     FlatList,
     TouchableOpacity,
     Alert,
+    Linking,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -81,15 +82,32 @@ const NearbyPharmaciesScreen: React.FC = () => {
                             </View>
 
                             {item.phone ? (
-                                <View style={styles.phoneRow}>
+                                <TouchableOpacity
+                                    style={styles.phoneRow}
+                                    activeOpacity={0.7}
+                                    onPress={() => {
+                                        const tel = `tel:${item.phone.replace(/\s/g, '')}`;
+                                        Linking.openURL(tel).catch(() => {});
+                                    }}
+                                >
                                     <MaterialCommunityIcons name="phone-outline" size={14} color={colors.textSecondary} />
                                     <Text style={styles.phoneText}>{item.phone}</Text>
-                                </View>
+                                </TouchableOpacity>
                             ) : null}
 
                             <TouchableOpacity
                                 style={styles.directionsBtn}
-                                onPress={() => Alert.alert('Map Feature', 'Map feature coming soon')}
+                                onPress={async () => {
+                                    const query = encodeURIComponent(`${item.name} ${item.areas} Sri Lanka`);
+                                    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                                    try {
+                                        const supported = await Linking.canOpenURL(url);
+                                        if (supported) await Linking.openURL(url);
+                                        else Alert.alert(t('common.error') || 'Error', t('patient.cannotOpenMaps') || 'Unable to open maps on this device.');
+                                    } catch {
+                                        Alert.alert(t('common.error') || 'Error', t('patient.cannotOpenMaps') || 'Unable to open maps on this device.');
+                                    }
+                                }}
                                 activeOpacity={0.7}
                             >
                                 <MaterialCommunityIcons name="directions" size={16} color={colors.primary} />

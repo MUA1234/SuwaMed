@@ -21,16 +21,9 @@ const SystemSettingsScreen: React.FC = () => {
 
     const handleMaintenance = () => {
         Alert.alert(
-            'Enable Maintenance Mode',
-            'Are you sure you want to enable maintenance mode? Users will not be able to access the app.',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Enable',
-                    style: 'destructive',
-                    onPress: () => Alert.alert('Coming Soon', 'Maintenance mode coming soon'),
-                },
-            ]
+            t('admin.maintenance') || 'Maintenance Mode',
+            'Maintenance mode is controlled at the deployment level. Toggle the MAINTENANCE_MODE environment variable on the backend host and redeploy to enable it. This safeguard prevents accidental cluster-wide outages from a single tap.',
+            [{ text: 'OK', style: 'cancel' }]
         );
     };
 

@@ -17,6 +17,8 @@ import * as doctorApi from '../../api/doctor.api';
 import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useSettingsStore } from '../../store/settingsStore';
+import { LANGUAGES } from '../../config/constants';
 
 const DoctorProfileScreen: React.FC = () => {
   const { theme: colors } = useTheme();
@@ -24,6 +26,22 @@ const DoctorProfileScreen: React.FC = () => {
     const { user, logout } = useAuthStore();
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
+    const { language, setLanguage } = useSettingsStore();
+    const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
+
+    const handleLanguageSelect = () => {
+        Alert.alert(
+            t('common.language') || 'Select Language',
+            undefined,
+            [
+                ...LANGUAGES.map(lang => ({
+                    text: lang.label,
+                    onPress: () => setLanguage(lang.code),
+                })),
+                { text: t('common.cancel') || 'Cancel', style: 'cancel' as const },
+            ]
+        );
+    };
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -77,7 +95,7 @@ const DoctorProfileScreen: React.FC = () => {
             items: [
                 { icon: 'bell-outline', label: 'Notifications', color: colors.primary, onPress: () => navigation.navigate('NotificationsScreen') },
                 { icon: 'cog-outline', label: 'Settings', color: colors.textSecondary, onPress: () => navigation.navigate('SettingsScreen') },
-                { icon: 'translate', label: 'Language', color: colors.secondary, subtitle: 'English', onPress: () => Alert.alert('Language', 'Language selection coming soon.') },
+                { icon: 'translate', label: 'Language', color: colors.secondary, subtitle: currentLang.label, onPress: handleLanguageSelect },
             ],
         },
         {

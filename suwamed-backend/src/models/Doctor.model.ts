@@ -35,8 +35,8 @@ export interface IVerificationDocument {
 export interface IBankDetails {
   bankName?: string;
   branchName?: string;
-  accountNo?: string;
-  accountName?: string;
+  accountNumber?: string;
+  accountHolderName?: string;
 }
 
 export interface IDoctor extends Document {
@@ -111,8 +111,8 @@ const bankDetailsSchema = new Schema(
   {
     bankName: { type: String },
     branchName: { type: String },
-    accountNo: { type: String },
-    accountName: { type: String },
+    accountNumber: { type: String },
+    accountHolderName: { type: String },
   },
   { _id: false }
 );

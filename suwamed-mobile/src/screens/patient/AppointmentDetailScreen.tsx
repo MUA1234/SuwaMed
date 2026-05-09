@@ -56,7 +56,10 @@ const AppointmentDetailScreen: React.FC = () => {
     const onRefresh = () => { setRefreshing(true); fetchAppointment(); };
 
     const handleJoinConsultation = () => {
-        Alert.alert(t('common.comingSoon'), t('common.comingSoon'));
+        Alert.alert(
+            t('patient.consultationInProgress') || 'Consultation In Progress',
+            t('patient.consultationInProgressBody') || 'Your doctor has started the consultation. Please be available — they will contact you shortly via the in-app chat or by phone using the contact number on file.'
+        );
     };
 
     const handleLeaveReview = () => {

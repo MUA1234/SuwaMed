@@ -17,6 +17,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
 import * as doctorApi from '../../api/doctor.api';
+import * as notificationApi from '../../api/notification.api';
+import { useNotificationStore } from '../../store/notificationStore';
 import { useTranslation } from 'react-i18next';
 import { spacing, borderRadius, typography, shadows } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
@@ -34,9 +36,16 @@ const DashboardScreen: React.FC = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [stats, setStats] = useState<any>(null);
 
+    const setNotifications = useNotificationStore((s) => s.setNotifications);
+    const unreadCount = useNotificationStore((s) => s.unreadCount);
+
     const fetchData = async () => {
         try {
-            const res = await doctorApi.getDashboardStats();
+            const [res, notifsRes] = await Promise.all([
+                doctorApi.getDashboardStats(),
+                notificationApi.getNotifications().catch(() => ({ data: [] })),
+            ]);
+            setNotifications(notifsRes.data || []);
             setStats(res.data);
         } catch (err) {
             console.log('Dashboard fetch error:', err);
@@ -101,7 +110,11 @@ const DashboardScreen: React.FC = () => {
                         </View>
                         <TouchableOpacity style={styles.notifBtn} onPress={() => navigation.navigate('NotificationsScreen')} activeOpacity={0.7}>
                             <MaterialCommunityIcons name="bell-outline" size={22} color={colors.textPrimary} />
-                            <View style={styles.notifDot} />
+                            {unreadCount > 0 && (
+                                <View style={styles.notifBadge}>
+                                    <Text style={styles.notifBadgeText}>{unreadCount > 9 ? '9+' : String(unreadCount)}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     </View>
                 </FadeIn>
@@ -221,6 +234,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     doctorName: { fontSize: 22, fontWeight: '700', color: colors.textPrimary, marginTop: 2, letterSpacing: -0.3 },
     notifBtn: { width: 44, height: 44, borderRadius: borderRadius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
     notifDot: { position: 'absolute', top: 10, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.error, borderWidth: 1.5, borderColor: colors.surface },
+    notifBadge: { position: 'absolute', top: 4, right: 4, minWidth: 16, height: 16, borderRadius: 8, paddingHorizontal: 4, backgroundColor: colors.error, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: colors.surface },
+    notifBadgeText: { color: '#fff', fontSize: 9, fontWeight: '700', lineHeight: 11 },
 
     // Stats
     statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl },

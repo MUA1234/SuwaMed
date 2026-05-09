@@ -18,7 +18,9 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore';
 import * as appointmentApi from '../../api/appointment.api';
 import * as healthTipApi from '../../api/healthTip.api';
+import * as notificationApi from '../../api/notification.api';
 import { getDoctors } from '../../api/doctor.api';
+import { useNotificationStore } from '../../store/notificationStore';
 import { useTranslation } from 'react-i18next';
 import { spacing, borderRadius, typography, shadows, gradients } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
@@ -61,13 +63,18 @@ const HomeScreen: React.FC = () => {
     const [healthTips, setHealthTips] = useState<any[]>([]);
     const [specializations, setSpecializations] = useState<Array<{ name: string; icon: string }>>([]);
 
+    const setNotifications = useNotificationStore((s) => s.setNotifications);
+    const unreadCount = useNotificationStore((s) => s.unreadCount);
+
     const fetchData = async () => {
         try {
-            const [apptsRes, tipsRes, doctorsRes] = await Promise.all([
+            const [apptsRes, tipsRes, doctorsRes, notifsRes] = await Promise.all([
                 appointmentApi.getAppointments({ status: 'confirmed' }),
                 healthTipApi.getHealthTips({ language: 'en' }),
                 getDoctors(),
+                notificationApi.getNotifications().catch(() => ({ data: [] })),
             ]);
+            setNotifications(notifsRes.data || []);
             const upcoming = (apptsRes.data || []).filter((a: any) => new Date(a.date) >= new Date());
             setUpcomingAppt(upcoming[0] || null);
             setHealthTips((tipsRes.data || []).slice(0, 3));
@@ -142,7 +149,11 @@ const HomeScreen: React.FC = () => {
                         </View>
                         <TouchableOpacity style={styles.notifBtn} onPress={() => navigation.navigate('Profile', { screen: 'NotificationsScreen' })} activeOpacity={0.7}>
                             <MaterialCommunityIcons name="bell-outline" size={22} color={colors.textPrimary} />
-                            <View style={styles.notifDot} />
+                            {unreadCount > 0 && (
+                                <View style={styles.notifBadge}>
+                                    <Text style={styles.notifBadgeText}>{unreadCount > 9 ? '9+' : String(unreadCount)}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     </View>
                 </FadeIn>
@@ -284,6 +295,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     userName: { fontSize: 22, fontWeight: '700', color: colors.textPrimary, marginTop: 2, letterSpacing: -0.3 },
     notifBtn: { width: 44, height: 44, borderRadius: borderRadius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
     notifDot: { position: 'absolute', top: 10, right: 11, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.error, borderWidth: 1.5, borderColor: colors.surface },
+    notifBadge: { position: 'absolute', top: 4, right: 4, minWidth: 16, height: 16, borderRadius: 8, paddingHorizontal: 4, backgroundColor: colors.error, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: colors.surface },
+    notifBadgeText: { color: '#fff', fontSize: 9, fontWeight: '700', lineHeight: 11 },
 
     // Search
     searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: borderRadius.md, paddingHorizontal: spacing.lg, paddingVertical: spacing.md + 2, marginBottom: spacing.xl, gap: spacing.md, borderWidth: 1, borderColor: colors.border },

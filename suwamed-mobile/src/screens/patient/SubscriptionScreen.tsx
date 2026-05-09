@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Alert,
+    Linking,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -105,8 +106,18 @@ const SubscriptionScreen: React.FC = () => {
         if (plan.key === currentPlan) return;
         Alert.alert(
             'Upgrade Plan',
-            `Subscription payments coming soon. You will be able to upgrade to ${plan.name} for ${plan.price}/month.`,
-            [{ text: 'OK' }]
+            `Online payment for the ${plan.name} plan (${plan.price}/month) is processed via PayHere. Please contact support@suwamed.lk to upgrade — we will activate your plan within 24 hours of payment confirmation.`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Email Support',
+                    onPress: () => {
+                        const subject = encodeURIComponent(`Subscription upgrade — ${plan.name}`);
+                        const body = encodeURIComponent(`I would like to upgrade to the ${plan.name} plan (${plan.price}/month).`);
+                        Linking.openURL(`mailto:support@suwamed.lk?subject=${subject}&body=${body}`).catch(() => {});
+                    },
+                },
+            ]
         );
     };
 

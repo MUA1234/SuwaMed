@@ -10,7 +10,15 @@ import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { colors as staticColors } from '../../config/theme';
 import { useTranslation } from 'react-i18next';
 
-const managementItems = [
+type ManagementItem = {
+    title: string;
+    icon: string;
+    color: string;
+    bg: string;
+    screen: string | null;
+};
+
+const managementItems: ManagementItem[] = [
     {
         title: 'Content Management',
         icon: 'book-open-variant',
@@ -32,30 +40,6 @@ const managementItems = [
         bg: staticColors.secondaryLight,
         screen: 'SystemSettingsScreen',
     },
-    {
-        title: 'Data Export',
-        icon: 'download-outline',
-        color: staticColors.success,
-        bg: staticColors.successLight,
-        screen: null,
-        alert: 'Data export coming soon',
-    },
-    {
-        title: 'Backup & Restore',
-        icon: 'cloud-outline',
-        color: staticColors.primary,
-        bg: staticColors.primaryLight,
-        screen: null,
-        alert: 'Coming soon',
-    },
-    {
-        title: 'Support Tickets',
-        icon: 'help-circle-outline',
-        color: staticColors.error,
-        bg: staticColors.errorLight,
-        screen: null,
-        alert: 'Coming soon',
-    },
 ];
 
 const ManagementScreen: React.FC = () => {
@@ -64,11 +48,9 @@ const ManagementScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const { t } = useTranslation();
 
-    const handlePress = (item: typeof managementItems[0]) => {
+    const handlePress = (item: ManagementItem) => {
         if (item.screen) {
             navigation.navigate(item.screen);
-        } else if (item.alert) {
-            Alert.alert('Coming Soon', item.alert);
         }
     };
 

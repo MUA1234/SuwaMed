@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     View, Text, SafeAreaView, StyleSheet, ScrollView,
-    TouchableOpacity, Alert,
+    TouchableOpacity, Alert, Linking,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +15,7 @@ interface MenuItem {
     label: string;
     icon: string;
     screen: string | null;
-    alert?: string;
+    action?: () => void;
     variant: IconWrapVariant;
 }
 
@@ -32,10 +32,21 @@ const MoreScreen: React.FC = () => {
       ],
     },
     {
-      title: 'System',
+      title: 'Legal',
       items: [
-        { label: 'System Logs', icon: 'file-document-outline', screen: null, alert: 'Coming soon', variant: 'tinted' },
-        { label: 'Help & Documentation', icon: 'help-circle-outline', screen: null, alert: 'Coming soon', variant: 'tinted' },
+        { label: 'Privacy Policy', icon: 'shield-lock-outline', screen: 'Privacy', variant: 'tinted' },
+        { label: 'Terms of Service', icon: 'file-document-outline', screen: 'Terms', variant: 'tinted' },
+        {
+          label: 'Contact Support',
+          icon: 'help-circle-outline',
+          screen: null,
+          variant: 'tinted',
+          action: () => {
+            Linking.openURL('mailto:support@suwamed.lk?subject=SuwaMed%20Admin%20Support').catch(() => {
+              Alert.alert('Contact Support', 'Email: support@suwamed.lk');
+            });
+          },
+        },
       ],
     },
   ];
@@ -58,11 +69,11 @@ const MoreScreen: React.FC = () => {
         );
     };
 
-    const handlePress = (item: { screen: string | null; alert?: string }) => {
+    const handlePress = (item: { screen: string | null; action?: () => void }) => {
         if (item.screen) {
             navigation.navigate(item.screen);
-        } else if (item.alert) {
-            Alert.alert('Coming Soon', item.alert);
+        } else if (item.action) {
+            item.action();
         }
     };
 

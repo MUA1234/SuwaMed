@@ -24,3 +24,8 @@ export const deleteHealthTip = async (id: string) => {
     const response = await client.delete(`/health-tips/${id}`);
     return response.data;
 };
+
+export const incrementHealthTipView = async (id: string) => {
+    const response = await client.patch(`/health-tips/${id}/view`);
+    return response.data;
+};

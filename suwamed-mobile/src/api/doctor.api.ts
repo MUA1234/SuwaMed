@@ -30,13 +30,18 @@ export const setAvailability = async (data: any) => {
   return response.data;
 };
 
-export const blockSlot = async (data: any) => {
-  const response = await client.post('/doctors/availability/block', data);
+export const getBlockedSlots = async () => {
+  const response = await client.get('/doctors/blocked-slots');
   return response.data;
 };
 
-export const unblockSlot = async (id: string) => {
-  const response = await client.delete(`/doctors/availability/block/${id}`);
+export const addBlockedSlot = async (data: { date: string; startTime: string; endTime: string; reason?: string }) => {
+  const response = await client.post('/doctors/blocked-slots', data);
+  return response.data;
+};
+
+export const removeBlockedSlot = async (index: number) => {
+  const response = await client.delete(`/doctors/blocked-slots/${index}`);
   return response.data;
 };
 

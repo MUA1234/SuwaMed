@@ -16,6 +16,9 @@ import {
   uploadDoctorVerificationDocuments,
   setAvailability,
   getDoctorAvailability,
+  getBlockedSlots,
+  addBlockedSlot,
+  removeBlockedSlot,
 } from '../controllers/doctor.controller';
 
 const router = Router();
@@ -35,6 +38,9 @@ router.get('/patients/:id', protect, getPatientDetail);
 router.get('/patients/:id/health-records', protect, getPatientHealthRecords);
 router.get('/earnings', protect, getEarnings);
 router.put('/availability', protect, setAvailability);
+router.get('/blocked-slots', protect, getBlockedSlots);
+router.post('/blocked-slots', protect, addBlockedSlot);
+router.delete('/blocked-slots/:index', protect, removeBlockedSlot);
 
 // Parameterized (public)
 router.get('/:id', getDoctorById);

@@ -148,6 +148,95 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
     }
 };
 
+// PUT /api/appointments/:id/reschedule — patient or doctor moves the slot
+export const rescheduleAppointment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const role = (req as any).user.role;
+        const { date, startTime, endTime, reason } = req.body;
+
+        if (!date || !startTime || !endTime) {
+            throw new AppError('date, startTime and endTime are required', 400);
+        }
+
+        const appointment = await Appointment.findById(req.params.id);
+        if (!appointment) throw new AppError('Appointment not found', 404);
+
+        if (['completed', 'cancelled'].includes(appointment.status)) {
+            throw new AppError(`Cannot reschedule a ${appointment.status} appointment`, 400);
+        }
+
+        // Authorization — patient owns it, or doctor owns it
+        if (role === 'patient' && String(appointment.patientId) !== String(userId)) {
+            throw new AppError('Not authorized', 403);
+        }
+        if (role === 'doctor') {
+            const doctor = await Doctor.findOne({ userId });
+            if (!doctor || String(appointment.doctorId) !== String(doctor._id)) {
+                throw new AppError('Not authorized', 403);
+            }
+        }
+
+        const previousSlot = `${appointment.date.toISOString().slice(0, 10)} ${appointment.startTime}-${appointment.endTime}`;
+        const auditNote = `[Rescheduled by ${role} on ${new Date().toISOString()} from ${previousSlot}${reason ? `: ${reason}` : ''}]`;
+        const combinedNotes = appointment.notes ? `${appointment.notes}\n${auditNote}` : auditNote;
+
+        const updated = await Appointment.findByIdAndUpdate(
+            req.params.id,
+            {
+                date,
+                startTime,
+                endTime,
+                status: 'pending',
+                notes: combinedNotes,
+            },
+            { new: true }
+        );
+
+        res.status(200).json({ success: true, data: updated });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// PUT /api/appointments/:id/notes — doctor adds consultation notes
+export const addAppointmentNotes = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const role = (req as any).user.role;
+        const { notes } = req.body;
+
+        if (typeof notes !== 'string' || !notes.trim()) {
+            throw new AppError('notes is required', 400);
+        }
+        if (notes.length > 5000) {
+            throw new AppError('notes too long (max 5000 chars)', 400);
+        }
+
+        const appointment = await Appointment.findById(req.params.id);
+        if (!appointment) throw new AppError('Appointment not found', 404);
+
+        if (role === 'doctor') {
+            const doctor = await Doctor.findOne({ userId });
+            if (!doctor || String(appointment.doctorId) !== String(doctor._id)) {
+                throw new AppError('Not authorized', 403);
+            }
+        } else if (role !== 'admin') {
+            throw new AppError('Only the assigned doctor can add notes', 403);
+        }
+
+        const updated = await Appointment.findByIdAndUpdate(
+            req.params.id,
+            { notes: notes.trim() },
+            { new: true }
+        );
+
+        res.status(200).json({ success: true, data: updated });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // PUT /api/appointments/:id/start — doctor starts consultation
 export const startConsultation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

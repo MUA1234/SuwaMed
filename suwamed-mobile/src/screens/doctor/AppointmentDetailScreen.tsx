@@ -102,7 +102,7 @@ const AppointmentDetailScreen: React.FC = () => {
         try {
             await appointmentApi.startConsultation(appointmentId);
             fetchDetail();
-            Alert.alert('Coming Soon', 'Video calls are coming soon. The appointment has been marked as in progress.');
+            Alert.alert(t('doctor.consultationStarted') || 'Consultation Started', t('doctor.consultationStartedBody') || 'The appointment has been marked as in progress. Use the in-app chat to communicate with the patient.');
         } catch {
             Alert.alert('Error', 'Failed to start consultation.');
         } finally {

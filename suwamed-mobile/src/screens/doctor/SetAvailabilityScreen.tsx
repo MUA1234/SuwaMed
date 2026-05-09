@@ -49,6 +49,24 @@ const SetAvailabilityScreen: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
+    // Blocked slots state
+    type BlockedSlot = { date: string; startTime: string; endTime: string; reason?: string };
+    const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([]);
+    const [bsDate, setBsDate] = useState('');
+    const [bsStart, setBsStart] = useState('');
+    const [bsEnd, setBsEnd] = useState('');
+    const [bsReason, setBsReason] = useState('');
+    const [bsAdding, setBsAdding] = useState(false);
+
+    const fetchBlockedSlots = async () => {
+        try {
+            const res = await doctorApi.getBlockedSlots();
+            setBlockedSlots(res.data || []);
+        } catch (err) {
+            console.log('Blocked slots fetch error:', err);
+        }
+    };
+
     const fetchAvailability = async () => {
         try {
             const res = await doctorApi.getDoctorProfile();
@@ -77,7 +95,64 @@ const SetAvailabilityScreen: React.FC = () => {
         }
     };
 
-    useFocusEffect(useCallback(() => { fetchAvailability(); }, []));
+    useFocusEffect(useCallback(() => {
+        fetchAvailability();
+        fetchBlockedSlots();
+    }, []));
+
+    const handleAddBlockedSlot = async () => {
+        const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+        const timeRe = /^([01]\d|2[0-3]):[0-5]\d$/;
+        if (!dateRe.test(bsDate)) {
+            Alert.alert(t('common.error') || 'Error', 'Date must be YYYY-MM-DD');
+            return;
+        }
+        if (!timeRe.test(bsStart) || !timeRe.test(bsEnd)) {
+            Alert.alert(t('common.error') || 'Error', 'Times must be HH:MM (24h)');
+            return;
+        }
+        if (bsStart >= bsEnd) {
+            Alert.alert(t('common.error') || 'Error', 'End time must be after start time');
+            return;
+        }
+        setBsAdding(true);
+        try {
+            const res = await doctorApi.addBlockedSlot({
+                date: bsDate,
+                startTime: bsStart,
+                endTime: bsEnd,
+                reason: bsReason.trim() || undefined,
+            });
+            setBlockedSlots(res.data || []);
+            setBsDate(''); setBsStart(''); setBsEnd(''); setBsReason('');
+        } catch (err: any) {
+            Alert.alert(t('common.error') || 'Error', err?.response?.data?.message || 'Failed to add blocked slot');
+        } finally {
+            setBsAdding(false);
+        }
+    };
+
+    const handleRemoveBlockedSlot = (index: number) => {
+        Alert.alert(
+            'Remove Blocked Slot',
+            'Are you sure you want to unblock this time?',
+            [
+                { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                {
+                    text: 'Remove',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            const res = await doctorApi.removeBlockedSlot(index);
+                            setBlockedSlots(res.data || []);
+                        } catch (err: any) {
+                            Alert.alert(t('common.error') || 'Error', err?.response?.data?.message || 'Failed to remove blocked slot');
+                        }
+                    },
+                },
+            ]
+        );
+    };
 
     const updateDay = (day: number, field: keyof DayAvailability, value: any) => {
         setSchedule((prev) =>
@@ -236,6 +311,119 @@ const SetAvailabilityScreen: React.FC = () => {
                     </View>
                 ))}
 
+                {/* Blocked Slots */}
+                <View style={styles.bsSection}>
+                    <View style={styles.bsHeader}>
+                        <MaterialCommunityIcons name="calendar-remove" size={18} color={colors.warning} />
+                        <Text style={styles.bsTitle}>Blocked Time Off</Text>
+                    </View>
+                    <Text style={styles.bsHelp}>
+                        Block specific dates/times when you are unavailable (vacation, conferences, personal). Patients cannot book during these.
+                    </Text>
+
+                    {blockedSlots.length === 0 ? (
+                        <Text style={styles.bsEmpty}>No blocked slots.</Text>
+                    ) : (
+                        blockedSlots.map((slot, idx) => {
+                            const dateLabel = new Date(slot.date).toISOString().slice(0, 10);
+                            return (
+                                <View key={`${dateLabel}-${slot.startTime}-${idx}`} style={styles.bsItem}>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.bsItemDate}>{dateLabel}</Text>
+                                        <Text style={styles.bsItemTime}>{slot.startTime} – {slot.endTime}</Text>
+                                        {slot.reason ? <Text style={styles.bsItemReason}>{slot.reason}</Text> : null}
+                                    </View>
+                                    <TouchableOpacity
+                                        onPress={() => handleRemoveBlockedSlot(idx)}
+                                        style={styles.bsRemoveBtn}
+                                        activeOpacity={0.7}
+                                    >
+                                        <MaterialCommunityIcons name="trash-can-outline" size={18} color={colors.error} />
+                                    </TouchableOpacity>
+                                </View>
+                            );
+                        })
+                    )}
+
+                    <View style={styles.bsForm}>
+                        <Text style={styles.fieldLabel}>Date (YYYY-MM-DD)</Text>
+                        <View style={styles.timeInputWrap}>
+                            <MaterialCommunityIcons name="calendar" size={16} color={colors.primary} />
+                            <TextInput
+                                style={styles.timeInput}
+                                value={bsDate}
+                                onChangeText={setBsDate}
+                                placeholder="2026-06-15"
+                                placeholderTextColor={colors.textDisabled}
+                                maxLength={10}
+                            />
+                        </View>
+
+                        <View style={[styles.timeRow, { marginTop: spacing.md }]}>
+                            <View style={styles.timeField}>
+                                <Text style={styles.fieldLabel}>Start (HH:MM)</Text>
+                                <View style={styles.timeInputWrap}>
+                                    <MaterialCommunityIcons name="clock-start" size={16} color={colors.primary} />
+                                    <TextInput
+                                        style={styles.timeInput}
+                                        value={bsStart}
+                                        onChangeText={setBsStart}
+                                        placeholder="09:00"
+                                        placeholderTextColor={colors.textDisabled}
+                                        keyboardType="numbers-and-punctuation"
+                                        maxLength={5}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.timeSeparator}><Text style={styles.timeSepText}>to</Text></View>
+                            <View style={styles.timeField}>
+                                <Text style={styles.fieldLabel}>End (HH:MM)</Text>
+                                <View style={styles.timeInputWrap}>
+                                    <MaterialCommunityIcons name="clock-end" size={16} color={colors.primary} />
+                                    <TextInput
+                                        style={styles.timeInput}
+                                        value={bsEnd}
+                                        onChangeText={setBsEnd}
+                                        placeholder="17:00"
+                                        placeholderTextColor={colors.textDisabled}
+                                        keyboardType="numbers-and-punctuation"
+                                        maxLength={5}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+
+                        <Text style={[styles.fieldLabel, { marginTop: spacing.md }]}>Reason (optional)</Text>
+                        <View style={styles.timeInputWrap}>
+                            <MaterialCommunityIcons name="text-short" size={16} color={colors.primary} />
+                            <TextInput
+                                style={styles.timeInput}
+                                value={bsReason}
+                                onChangeText={setBsReason}
+                                placeholder="Vacation, conference, etc."
+                                placeholderTextColor={colors.textDisabled}
+                                maxLength={120}
+                            />
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.bsAddBtn, bsAdding && styles.saveBtnDisabled]}
+                            onPress={handleAddBlockedSlot}
+                            disabled={bsAdding}
+                            activeOpacity={0.8}
+                        >
+                            {bsAdding ? (
+                                <ActivityIndicator size="small" color="#fff" />
+                            ) : (
+                                <>
+                                    <MaterialCommunityIcons name="plus" size={18} color="#fff" />
+                                    <Text style={styles.saveBtnText}>Add Blocked Slot</Text>
+                                </>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
                 <TouchableOpacity
                     style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
                     onPress={handleSave}
@@ -351,6 +539,44 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     },
     saveBtnDisabled: { opacity: 0.6 },
     saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+    bsSection: {
+        backgroundColor: colors.surface,
+        borderRadius: borderRadius.lg,
+        borderWidth: 1,
+        borderColor: colors.border,
+        padding: spacing.lg,
+        marginTop: spacing.lg,
+        marginBottom: spacing.md,
+    },
+    bsHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs },
+    bsTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
+    bsHelp: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.md, lineHeight: 18 },
+    bsEmpty: { ...typography.caption, color: colors.textDisabled, fontStyle: 'italic', paddingVertical: spacing.md },
+    bsItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.background,
+        borderRadius: borderRadius.md,
+        padding: spacing.md,
+        marginBottom: spacing.sm,
+        borderWidth: 1,
+        borderColor: colors.border,
+    },
+    bsItemDate: { ...typography.bodySmall, fontWeight: '700', color: colors.textPrimary },
+    bsItemTime: { ...typography.caption, color: colors.textSecondary, marginTop: 1 },
+    bsItemReason: { ...typography.caption, color: colors.textDisabled, marginTop: 1, fontStyle: 'italic' },
+    bsRemoveBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: borderRadius.sm },
+    bsForm: { marginTop: spacing.lg, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
+    bsAddBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.warning,
+        paddingVertical: spacing.md,
+        borderRadius: borderRadius.md,
+        gap: spacing.sm,
+        marginTop: spacing.md,
+    },
 });
 
 export default SetAvailabilityScreen;

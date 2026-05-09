@@ -327,7 +327,7 @@ export const updateDoctorProfile = async (req: Request, res: Response, next: Nex
         const doctor = await Doctor.findOne({ userId });
         if (!doctor) throw new AppError('Doctor profile not found', 404);
 
-        const { bio, consultationFee, followUpFee, languages, hospital, clinicAddress } = req.body;
+        const { bio, consultationFee, followUpFee, languages, hospital, clinicAddress, bankDetails } = req.body;
 
         const updateFields: any = {};
         if (bio !== undefined) updateFields.bio = bio;
@@ -336,6 +336,7 @@ export const updateDoctorProfile = async (req: Request, res: Response, next: Nex
         if (languages !== undefined) updateFields.languages = languages;
         if (hospital !== undefined) updateFields.hospital = hospital;
         if (clinicAddress !== undefined) updateFields.clinicAddress = clinicAddress;
+        if (bankDetails !== undefined) updateFields.bankDetails = bankDetails;
 
         const updated = await Doctor.findByIdAndUpdate(doctor._id, updateFields, { new: true })
             .populate('userId', 'firstName lastName email phone avatar gender');
@@ -387,6 +388,69 @@ export const setAvailability = async (req: Request, res: Response, next: NextFun
         ).select('availability');
 
         res.status(200).json({ success: true, data: updated });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// GET /api/doctors/blocked-slots — list logged-in doctor's blocked slots
+export const getBlockedSlots = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const doctor = await Doctor.findOne({ userId }).select('blockedSlots');
+        if (!doctor) throw new AppError('Doctor profile not found', 404);
+        res.status(200).json({ success: true, data: doctor.blockedSlots || [] });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST /api/doctors/blocked-slots — add a blocked range (date + time window)
+export const addBlockedSlot = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const { date, startTime, endTime, reason } = req.body;
+        if (!date || !startTime || !endTime) {
+            throw new AppError('date, startTime and endTime are required', 400);
+        }
+        // Basic HH:MM format validation
+        const timeRe = /^([01]\d|2[0-3]):[0-5]\d$/;
+        if (!timeRe.test(startTime) || !timeRe.test(endTime)) {
+            throw new AppError('startTime and endTime must be HH:MM (24h)', 400);
+        }
+        if (startTime >= endTime) {
+            throw new AppError('endTime must be after startTime', 400);
+        }
+
+        const doctor = await Doctor.findOne({ userId });
+        if (!doctor) throw new AppError('Doctor profile not found', 404);
+
+        doctor.blockedSlots.push({ date: new Date(date), startTime, endTime, reason } as any);
+        await doctor.save();
+
+        res.status(201).json({ success: true, data: doctor.blockedSlots });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// DELETE /api/doctors/blocked-slots/:index — remove a blocked range by array index
+export const removeBlockedSlot = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const userId = (req as any).user.id;
+        const idx = parseInt(req.params.index as string, 10);
+        if (Number.isNaN(idx) || idx < 0) throw new AppError('Invalid index', 400);
+
+        const doctor = await Doctor.findOne({ userId });
+        if (!doctor) throw new AppError('Doctor profile not found', 404);
+        if (idx >= doctor.blockedSlots.length) {
+            throw new AppError('Blocked slot not found at that index', 404);
+        }
+
+        doctor.blockedSlots.splice(idx, 1);
+        await doctor.save();
+
+        res.status(200).json({ success: true, data: doctor.blockedSlots });
     } catch (error) {
         next(error);
     }
