@@ -81,6 +81,59 @@ export const createAppointment = async (req: Request, res: Response, next: NextF
         const doctor = await Doctor.findById(doctorId);
         if (!doctor) throw new AppError('Doctor not found', 404);
 
+        // ---- Conflict checks --------------------------------------------
+        // Normalize the date to the day's midnight (UTC) so equality works
+        // across timezone-prefixed ISO strings the mobile client may send.
+        const dayStart = new Date(date);
+        if (isNaN(dayStart.getTime())) throw new AppError('Invalid date', 400);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+
+        // 1) The doctor must not already have a non-cancelled appointment in
+        //    this slot. We treat any pending/confirmed/in-progress booking
+        //    as a hard lock — patients can rebook a cancelled slot.
+        const doctorConflict = await Appointment.findOne({
+            doctorId,
+            date: { $gte: dayStart, $lt: dayEnd },
+            startTime,
+            status: { $in: ['pending', 'confirmed', 'in_progress'] },
+        }).lean();
+        if (doctorConflict) {
+            throw new AppError('This time slot is no longer available. Please choose another.', 409);
+        }
+
+        // 2) The same patient must not already hold a non-cancelled booking
+        //    at the same time — protects against double-tap submissions and
+        //    keeps the patient's calendar coherent.
+        const patientConflict = await Appointment.findOne({
+            patientId: userId,
+            date: { $gte: dayStart, $lt: dayEnd },
+            startTime,
+            status: { $in: ['pending', 'confirmed', 'in_progress'] },
+        }).lean();
+        if (patientConflict) {
+            throw new AppError('You already have an appointment at this time.', 409);
+        }
+
+        // 3) Respect any blocked-time-off the doctor has set for this day.
+        const blocked = ((doctor as any).blockedSlots ?? []) as Array<{
+            date?: Date | string;
+            startTime?: string;
+            endTime?: string;
+        }>;
+        for (const b of blocked) {
+            if (!b?.date || !b.startTime || !b.endTime) continue;
+            const bDate = new Date(b.date);
+            if (isNaN(bDate.getTime())) continue;
+            bDate.setHours(0, 0, 0, 0);
+            if (bDate.getTime() !== dayStart.getTime()) continue;
+            // Compare HH:MM strings lexicographically — works for zero-padded times.
+            if (startTime >= b.startTime && startTime < b.endTime) {
+                throw new AppError('The doctor is unavailable at this time.', 409);
+            }
+        }
+
         const appointment = await Appointment.create({
             patientId: userId,
             doctorId,
