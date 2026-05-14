@@ -17,6 +17,7 @@ import DoctorProfileScreen from '../screens/doctor/DoctorProfileScreen';
 // Dashboard stack
 import AppointmentRequestsScreen from '../screens/doctor/AppointmentRequestsScreen';
 import AppointmentDetailScreen from '../screens/doctor/AppointmentDetailScreen';
+import ChatScreen from '../screens/shared/ChatScreen';
 
 // Schedule stack
 import SetAvailabilityScreen from '../screens/doctor/SetAvailabilityScreen';
@@ -53,6 +54,7 @@ const DashboardStackNavigator = () => (
     <DashboardStack.Screen name="AppointmentDetailScreen" component={AppointmentDetailScreen} />
     <DashboardStack.Screen name="WritePrescriptionScreen" component={WritePrescriptionScreen} />
     <DashboardStack.Screen name="NotificationsScreen" component={NotificationsScreen} />
+    <DashboardStack.Screen name="ChatScreen" component={ChatScreen} />
   </DashboardStack.Navigator>
 );
 
@@ -62,6 +64,7 @@ const ScheduleStackNavigator = () => (
     <ScheduleStack.Screen name="SetAvailabilityScreen" component={SetAvailabilityScreen} />
     <ScheduleStack.Screen name="AppointmentDetailScreen" component={AppointmentDetailScreen} />
     <ScheduleStack.Screen name="WritePrescriptionScreen" component={WritePrescriptionScreen} />
+    <ScheduleStack.Screen name="ChatScreen" component={ChatScreen} />
   </ScheduleStack.Navigator>
 );
 

@@ -12,6 +12,7 @@ import { mongoSanitize } from './src/middleware/sanitize.middleware';
 import errorHandler from './src/middleware/error.middleware';
 import logger from './src/utils/logger';
 import { startReminderJobs } from './src/services/reminder.service';
+import { initSocket } from './src/socket';
 
 const app = express();
 const server = http.createServer(app);
@@ -80,6 +81,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
+  initSocket(server);
   startReminderJobs();
   server.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);

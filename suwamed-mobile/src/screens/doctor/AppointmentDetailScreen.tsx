@@ -101,13 +101,25 @@ const AppointmentDetailScreen: React.FC = () => {
         setActionLoading('start');
         try {
             await appointmentApi.startConsultation(appointmentId);
-            fetchDetail();
-            Alert.alert(t('doctor.consultationStarted') || 'Consultation Started', t('doctor.consultationStartedBody') || 'The appointment has been marked as in progress. Use the in-app chat to communicate with the patient.');
+            await fetchDetail();
+            const patientUser = (appointment?.patientId as any);
+            const patientName = patientUser
+                ? `${patientUser.firstName ?? ''} ${patientUser.lastName ?? ''}`.trim()
+                : t('common.patient');
+            navigation.navigate('ChatScreen', { appointmentId, patientName });
         } catch {
-            Alert.alert('Error', 'Failed to start consultation.');
+            Alert.alert(t('common.error'), t('doctor.failedStartConsultation') || 'Failed to start consultation.');
         } finally {
             setActionLoading(null);
         }
+    };
+
+    const handleOpenChat = () => {
+        const patientUser = (appointment?.patientId as any);
+        const patientName = patientUser
+            ? `${patientUser.firstName ?? ''} ${patientUser.lastName ?? ''}`.trim()
+            : t('common.patient');
+        navigation.navigate('ChatScreen', { appointmentId, patientName });
     };
 
     const handleEndConsultation = async () => {
@@ -397,6 +409,15 @@ const AppointmentDetailScreen: React.FC = () => {
                     )}
 
                     {status === 'in_progress' && (
+                        <>
+                        <TouchableOpacity
+                            style={[styles.actionBtn, styles.prescriptionBtn]}
+                            onPress={handleOpenChat}
+                            activeOpacity={0.8}
+                        >
+                            <MaterialCommunityIcons name="message-text" size={20} color={colors.primary} />
+                            <Text style={[styles.actionBtnText, { color: colors.primary }]}>{t('common.openChat')}</Text>
+                        </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.endBtn, actionLoading === 'end' && styles.btnDisabled]}
                             onPress={handleEndConsultation}
@@ -412,6 +433,7 @@ const AppointmentDetailScreen: React.FC = () => {
                                 </>
                             )}
                         </TouchableOpacity>
+                        </>
                     )}
                 </View>
             </ScrollView>

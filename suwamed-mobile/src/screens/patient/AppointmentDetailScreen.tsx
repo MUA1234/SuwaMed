@@ -56,10 +56,14 @@ const AppointmentDetailScreen: React.FC = () => {
     const onRefresh = () => { setRefreshing(true); fetchAppointment(); };
 
     const handleJoinConsultation = () => {
-        Alert.alert(
-            t('patient.consultationInProgress') || 'Consultation In Progress',
-            t('patient.consultationInProgressBody') || 'Your doctor has started the consultation. Please be available — they will contact you shortly via the in-app chat or by phone using the contact number on file.'
-        );
+        const doctorUser = (appointment?.doctorId as any)?.userId;
+        const doctorName = doctorUser
+            ? `Dr. ${doctorUser.firstName ?? ''} ${doctorUser.lastName ?? ''}`.trim()
+            : t('common.doctor');
+        navigation.navigate('ChatScreen', {
+            appointmentId: appointment?._id,
+            doctorName,
+        });
     };
 
     const handleLeaveReview = () => {

@@ -27,6 +27,7 @@ import EmergencyScreen from '../screens/patient/EmergencyScreen';
 
 // Appointments stack
 import AppointmentDetailScreen from '../screens/patient/AppointmentDetailScreen';
+import ChatScreen from '../screens/shared/ChatScreen';
 import ReviewDoctorScreen from '../screens/patient/ReviewDoctorScreen';
 
 // Symptom stack
@@ -76,6 +77,7 @@ const AppointmentsStackNavigator = () => (
   <AppointmentsStack.Navigator screenOptions={{ headerShown: false }}>
     <AppointmentsStack.Screen name="MyAppointmentsScreen" component={MyAppointmentsScreen} />
     <AppointmentsStack.Screen name="AppointmentDetailScreen" component={AppointmentDetailScreen} />
+    <AppointmentsStack.Screen name="ChatScreen" component={ChatScreen} />
     <AppointmentsStack.Screen name="ReviewDoctorScreen" component={ReviewDoctorScreen} />
   </AppointmentsStack.Navigator>
 );
