@@ -39,6 +39,10 @@ export interface IAppointment extends Document {
   cancelReason?: string;
   review?: Types.ObjectId;
   reminderSent: boolean;
+  // Granular reminder flags added in 2026-05-14 for the 24h + 1h cron.
+  // `reminderSent` is kept for backwards compatibility with existing rows.
+  reminder24hSent?: boolean;
+  reminder1hSent?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -106,6 +110,8 @@ const appointmentSchema = new Schema<IAppointment>(
     cancelReason: { type: String },
     review: { type: Schema.Types.ObjectId, ref: 'Review' },
     reminderSent: { type: Boolean, default: false },
+    reminder24hSent: { type: Boolean, default: false },
+    reminder1hSent: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -114,6 +120,11 @@ appointmentSchema.index({ patientId: 1 });
 appointmentSchema.index({ doctorId: 1 });
 appointmentSchema.index({ date: 1 });
 appointmentSchema.index({ status: 1 });
+// Compound index used by the reminder cron (find confirmed appts in a date
+// window that haven't been reminded yet). Sparse so it doesn't bloat for
+// completed/cancelled rows.
+appointmentSchema.index({ status: 1, date: 1, reminder24hSent: 1 });
+appointmentSchema.index({ status: 1, date: 1, reminder1hSent: 1 });
 
 const Appointment = mongoose.model<IAppointment>(
   'Appointment',
