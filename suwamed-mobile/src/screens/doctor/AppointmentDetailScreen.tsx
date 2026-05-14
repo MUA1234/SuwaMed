@@ -106,7 +106,8 @@ const AppointmentDetailScreen: React.FC = () => {
             const patientName = patientUser
                 ? `${patientUser.firstName ?? ''} ${patientUser.lastName ?? ''}`.trim()
                 : t('common.patient');
-            navigation.navigate('ChatScreen', { appointmentId, patientName });
+            const target = appointment?.type === 'video' ? 'VideoCallScreen' : 'ChatScreen';
+            navigation.navigate(target, { appointmentId, patientName, counterpartyName: patientName });
         } catch {
             Alert.alert(t('common.error'), t('doctor.failedStartConsultation') || 'Failed to start consultation.');
         } finally {
@@ -120,6 +121,14 @@ const AppointmentDetailScreen: React.FC = () => {
             ? `${patientUser.firstName ?? ''} ${patientUser.lastName ?? ''}`.trim()
             : t('common.patient');
         navigation.navigate('ChatScreen', { appointmentId, patientName });
+    };
+
+    const handleOpenVideo = () => {
+        const patientUser = (appointment?.patientId as any);
+        const patientName = patientUser
+            ? `${patientUser.firstName ?? ''} ${patientUser.lastName ?? ''}`.trim()
+            : t('common.patient');
+        navigation.navigate('VideoCallScreen', { appointmentId, counterpartyName: patientName });
     };
 
     const handleEndConsultation = async () => {
@@ -410,6 +419,16 @@ const AppointmentDetailScreen: React.FC = () => {
 
                     {status === 'in_progress' && (
                         <>
+                        {appointment?.type === 'video' && (
+                            <TouchableOpacity
+                                style={[styles.actionBtn, styles.startBtn]}
+                                onPress={handleOpenVideo}
+                                activeOpacity={0.8}
+                            >
+                                <MaterialCommunityIcons name="video" size={20} color="#fff" />
+                                <Text style={styles.actionBtnText}>{t('doctor.joinConsultation') || 'Join Video Call'}</Text>
+                            </TouchableOpacity>
+                        )}
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.prescriptionBtn]}
                             onPress={handleOpenChat}

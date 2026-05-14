@@ -60,10 +60,20 @@ const AppointmentDetailScreen: React.FC = () => {
         const doctorName = doctorUser
             ? `Dr. ${doctorUser.firstName ?? ''} ${doctorUser.lastName ?? ''}`.trim()
             : t('common.doctor');
-        navigation.navigate('ChatScreen', {
+        const target = appointment?.type === 'video' ? 'VideoCallScreen' : 'ChatScreen';
+        navigation.navigate(target, {
             appointmentId: appointment?._id,
             doctorName,
+            counterpartyName: doctorName,
         });
+    };
+
+    const handleOpenChat = () => {
+        const doctorUser = (appointment?.doctorId as any)?.userId;
+        const doctorName = doctorUser
+            ? `Dr. ${doctorUser.firstName ?? ''} ${doctorUser.lastName ?? ''}`.trim()
+            : t('common.doctor');
+        navigation.navigate('ChatScreen', { appointmentId: appointment?._id, doctorName });
     };
 
     const handleLeaveReview = () => {
@@ -303,10 +313,22 @@ const AppointmentDetailScreen: React.FC = () => {
 
                 {/* Action Buttons */}
                 {canJoin && (
-                    <TouchableOpacity style={styles.joinBtn} activeOpacity={0.8} onPress={handleJoinConsultation}>
-                        <MaterialCommunityIcons name="video" size={20} color="#fff" />
-                        <Text style={styles.joinBtnText}>{t('doctor.joinConsultation')}</Text>
-                    </TouchableOpacity>
+                    <>
+                        <TouchableOpacity style={styles.joinBtn} activeOpacity={0.8} onPress={handleJoinConsultation}>
+                            <MaterialCommunityIcons
+                                name={appointment?.type === 'video' ? 'video' : 'message-text'}
+                                size={20}
+                                color="#fff"
+                            />
+                            <Text style={styles.joinBtnText}>{t('doctor.joinConsultation')}</Text>
+                        </TouchableOpacity>
+                        {appointment?.type === 'video' && (
+                            <TouchableOpacity style={styles.reviewBtn} activeOpacity={0.8} onPress={handleOpenChat}>
+                                <MaterialCommunityIcons name="message-text" size={20} color={colors.primary} />
+                                <Text style={styles.reviewBtnText}>{t('common.openChat')}</Text>
+                            </TouchableOpacity>
+                        )}
+                    </>
                 )}
 
                 {canReview && (
