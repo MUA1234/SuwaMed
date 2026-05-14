@@ -81,7 +81,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   logout: async () => {
-    await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
+    await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user', 'suwamed_push_token']);
     set({
       user: null,
       accessToken: null,

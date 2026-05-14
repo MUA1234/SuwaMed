@@ -3,6 +3,18 @@ import Appointment from '../models/Appointment.model';
 import Doctor from '../models/Doctor.model';
 import Payment from '../models/Payment.model';
 import { AppError } from '../utils/errorResponse';
+import { sendToUser, sendToUsers } from '../services/notification.service';
+
+// Resolve a Doctor _id back to the underlying User _id, used so we can target
+// notifications to the doctor's account (User row), not the Doctor profile row.
+async function resolveDoctorUserId(doctorId: unknown): Promise<string | null> {
+  try {
+    const doc = await Doctor.findById(doctorId).select('userId').lean();
+    return doc ? String((doc as { userId: unknown }).userId) : null;
+  } catch {
+    return null;
+  }
+}
 
 // GET /api/appointments — list appointments for the logged-in user
 export const getAppointments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -126,6 +138,17 @@ export const confirmAppointment = async (req: Request, res: Response, next: Next
             });
         }
 
+        // Notify both sides that the booking is now confirmed.
+        const doctorUserId = await resolveDoctorUserId(appointment.doctorId);
+        const targets = [String(appointment.patientId), ...(doctorUserId ? [doctorUserId] : [])];
+        const slot = `${(appointment.date as Date).toISOString().slice(0, 10)} ${appointment.startTime}`;
+        await sendToUsers(targets, {
+            type: 'appointment_confirmed',
+            title: 'Appointment confirmed',
+            body: `Your consultation is confirmed for ${slot}.`,
+            data: { appointmentId: String(appointment._id), startTime: appointment.startTime },
+        });
+
         res.status(200).json({ success: true, data: appointment });
     } catch (error) {
         next(error);
@@ -142,6 +165,18 @@ export const cancelAppointment = async (req: Request, res: Response, next: NextF
             { new: true }
         );
         if (!appointment) throw new AppError('Appointment not found', 404);
+
+        const doctorUserId = await resolveDoctorUserId(appointment.doctorId);
+        const targets = [String(appointment.patientId), ...(doctorUserId ? [doctorUserId] : [])];
+        await sendToUsers(targets, {
+            type: 'appointment_cancelled',
+            title: 'Appointment cancelled',
+            body: req.body.reason
+                ? `Cancellation reason: ${String(req.body.reason).slice(0, 200)}`
+                : 'Your appointment has been cancelled.',
+            data: { appointmentId: String(appointment._id) },
+        });
+
         res.status(200).json({ success: true, data: appointment });
     } catch (error) {
         next(error);
@@ -246,6 +281,16 @@ export const startConsultation = async (req: Request, res: Response, next: NextF
             { new: true }
         );
         if (!appointment) throw new AppError('Appointment not found', 404);
+
+        // Ping the patient that the doctor has joined / started the session.
+        await sendToUser({
+            userId: String(appointment.patientId),
+            type: 'consultation_started',
+            title: 'Your doctor is ready',
+            body: 'Your consultation has started. Open the app to join.',
+            data: { appointmentId: String(appointment._id) },
+        });
+
         res.status(200).json({ success: true, data: appointment });
     } catch (error) {
         next(error);
@@ -283,6 +328,15 @@ export const endConsultation = async (req: Request, res: Response, next: NextFun
                 },
             });
         }
+
+        // Ask the patient for a review now that the consultation is over.
+        await sendToUser({
+            userId: String(appointment.patientId),
+            type: 'review_request',
+            title: 'How was your consultation?',
+            body: 'Leave a quick review to help other patients choose the right doctor.',
+            data: { appointmentId: String(appointment._id) },
+        });
 
         res.status(200).json({ success: true, data: updated });
     } catch (error) {

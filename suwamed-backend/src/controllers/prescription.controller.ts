@@ -3,6 +3,7 @@ import Prescription from '../models/Prescription.model';
 import Doctor from '../models/Doctor.model';
 import Appointment from '../models/Appointment.model';
 import { AppError } from '../utils/errorResponse';
+import { sendToUser } from '../services/notification.service';
 
 // POST /api/prescriptions — create a prescription (doctor only)
 export const createPrescription = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -54,6 +55,14 @@ export const createPrescription = async (req: Request, res: Response, next: Next
       .populate('doctorId', 'userId specialization')
       .populate('patientId', 'firstName lastName')
       .populate('appointmentId', 'date type');
+
+    await sendToUser({
+      userId: String(patientId),
+      type: 'prescription_ready',
+      title: 'New prescription available',
+      body: diagnosis ? `Diagnosis: ${String(diagnosis).slice(0, 120)}` : 'Your doctor has issued a new prescription.',
+      data: { prescriptionId: String(prescription._id), appointmentId: String(appointmentId) },
+    });
 
     res.status(201).json({ success: true, data: populated });
   } catch (error) {

@@ -4,6 +4,7 @@ import Doctor from '../models/Doctor.model';
 import Patient from '../models/Patient.model';
 import Appointment from '../models/Appointment.model';
 import { AppError } from '../utils/errorResponse';
+import { sendToUser } from '../services/notification.service';
 
 // GET /api/admin/dashboard — overall platform stats
 export const getDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -152,6 +153,16 @@ export const verifyDoctor = async (req: Request, res: Response, next: NextFuncti
       { new: true }
     ).populate('userId', 'firstName lastName email phone');
 
+    if (doctor.userId) {
+      await sendToUser({
+        userId: String(doctor.userId),
+        type: 'doctor_verified',
+        title: 'You are verified',
+        body: 'Your SLMC registration has been approved. You can now accept appointments on SuwaMed.',
+        data: { doctorId: String(doctor._id) },
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: 'Doctor verified successfully',
@@ -176,6 +187,18 @@ export const rejectDoctor = async (req: Request, res: Response, next: NextFuncti
       { verificationStatus: 'rejected', verifiedBy: adminId, verifiedAt: new Date() },
       { new: true }
     ).populate('userId', 'firstName lastName email phone');
+
+    if (doctor.userId) {
+      await sendToUser({
+        userId: String(doctor.userId),
+        type: 'doctor_rejected',
+        title: 'Verification update',
+        body: reason
+          ? `Your verification was not approved: ${String(reason).slice(0, 200)}`
+          : 'Your verification application was not approved. Please contact support for details.',
+        data: { doctorId: String(doctor._id) },
+      });
+    }
 
     res.status(200).json({
       success: true,

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { navigationRef } from './navigationRef';
 import { useAuthStore } from '../store/authStore';
 import { useSettingsStore } from '../store/settingsStore';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -23,7 +24,7 @@ const RootNavigator = () => {
 
   if (!isAuthenticated) {
     return (
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <AuthNavigator />
       </NavigationContainer>
     );
@@ -46,7 +47,7 @@ const RootNavigator = () => {
     }
   };
 
-  return <NavigationContainer>{renderNavigator()}</NavigationContainer>;
+  return <NavigationContainer ref={navigationRef}>{renderNavigator()}</NavigationContainer>;
 };
 
 export default RootNavigator;
