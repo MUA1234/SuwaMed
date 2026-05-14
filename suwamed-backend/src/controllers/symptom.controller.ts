@@ -1,20 +1,34 @@
 import { Request, Response, NextFunction } from 'express';
 import SymptomCheck from '../models/SymptomCheck.model';
+import Patient from '../models/Patient.model';
+import User from '../models/User.model';
 import { AppError } from '../utils/errorResponse';
+import {
+  analyzeWithOpenAI,
+  SYMPTOM_DISCLAIMER,
+  type Lang,
+  type OpenAiSymptomAnalysis,
+  type SymptomAnalysisInput,
+} from '../services/openai.service';
 
-// Rule-based symptom analysis engine
-interface AnalysisResult {
-  possibleConditions: { name: string; probability: number; description: string }[];
-  recommendation: 'self_care' | 'consult_doctor' | 'emergency';
-  selfCareAdvice: string;
-  suggestedSpecializations: string[];
-  disclaimer: string;
-  severity: 'mild' | 'moderate' | 'severe';
-  assessmentText: string;
-}
+// ---------------------------------------------------------------------------
+// Deterministic rule-based fallback. Used when:
+//   - OPENAI_API_KEY is unset (dev / staging without billing wired)
+//   - the OpenAI call fails (rate limit, network error, malformed response)
+// ---------------------------------------------------------------------------
 
-function analyzeSymptoms(symptoms: string[], bodyArea?: string): AnalysisResult {
-  const normalized = symptoms.map((s) => s.toLowerCase().trim());
+function ruleBasedAnalysis(
+  symptoms: string[],
+  additionalNotes: string,
+  language: Lang,
+): OpenAiSymptomAnalysis {
+  // Combine selected chips with free-text notes for keyword matching.
+  const haystack = [...symptoms, additionalNotes].join(' ').toLowerCase();
+  const norm = symptoms.map((s) => s.toLowerCase().trim());
+
+  const has = (keywords: string[]): boolean =>
+    norm.some((s) => keywords.some((k) => s.includes(k))) ||
+    keywords.some((k) => haystack.includes(k));
 
   const cardiacKeywords = ['chest pain', 'chest tightness', 'palpitation', 'palpitations', 'heart racing', 'shortness of breath'];
   const respiratoryKeywords = ['fever', 'cough', 'sore throat', 'runny nose', 'breathlessness', 'wheezing', 'phlegm', 'sneezing'];
@@ -22,16 +36,15 @@ function analyzeSymptoms(symptoms: string[], bodyArea?: string): AnalysisResult 
   const gastrointestinalKeywords = ['nausea', 'vomiting', 'diarrhoea', 'diarrhea', 'abdominal pain', 'stomach pain', 'bloating', 'constipation'];
   const musculoskeletalKeywords = ['joint pain', 'muscle pain', 'back pain', 'swelling', 'stiffness', 'weakness'];
 
-  const hasCardiac = normalized.some((s) => cardiacKeywords.some((k) => s.includes(k)));
-  const hasRespiratory = normalized.some((s) => respiratoryKeywords.some((k) => s.includes(k)));
-  const hasNeurological = normalized.some((s) => neurologicalKeywords.some((k) => s.includes(k)));
-  const hasGastrointestinal = normalized.some((s) => gastrointestinalKeywords.some((k) => s.includes(k)));
-  const hasMusculoskeletal = normalized.some((s) => musculoskeletalKeywords.some((k) => s.includes(k)));
+  const hasCardiac = has(cardiacKeywords);
+  const hasRespiratory = has(respiratoryKeywords);
+  const hasNeurological = has(neurologicalKeywords);
+  const hasGastrointestinal = has(gastrointestinalKeywords);
+  const hasMusculoskeletal = has(musculoskeletalKeywords);
 
   const possibleConditions: { name: string; probability: number; description: string }[] = [];
   const suggestedSpecializations: string[] = [];
   let severity: 'mild' | 'moderate' | 'severe' = 'mild';
-  // Use a string variable to avoid TypeScript narrowing issues when doing conditional reassignments
   let recommendationRaw: string = 'consult_doctor';
   let assessmentText = '';
 
@@ -44,21 +57,22 @@ function analyzeSymptoms(symptoms: string[], bodyArea?: string): AnalysisResult 
     suggestedSpecializations.push('Cardiology');
     severity = 'severe';
     recommendationRaw = 'emergency';
-    assessmentText = 'Cardiac concern detected. Your symptoms may indicate a serious heart condition. Please seek emergency care immediately.';
+    assessmentText =
+      'Cardiac concern detected. Your symptoms may indicate a serious heart condition. Please seek emergency care immediately.';
   }
-
   if (hasRespiratory) {
     possibleConditions.push({
       name: 'Respiratory infection',
-      probability: 0.70,
+      probability: 0.7,
       description: 'Symptoms are consistent with an upper or lower respiratory tract infection.',
     });
     suggestedSpecializations.push('General Practitioner', 'Pulmonology');
     if (severity === 'mild') severity = 'moderate';
     if (recommendationRaw !== 'emergency') recommendationRaw = 'consult_doctor';
-    if (!assessmentText) assessmentText = 'Respiratory symptoms detected. Likely a respiratory infection. Please consult a doctor for proper diagnosis and treatment.';
+    if (!assessmentText)
+      assessmentText =
+        'Respiratory symptoms detected. Likely a respiratory infection. Please consult a doctor for proper diagnosis and treatment.';
   }
-
   if (hasNeurological) {
     possibleConditions.push({
       name: 'Neurological concern',
@@ -68,19 +82,20 @@ function analyzeSymptoms(symptoms: string[], bodyArea?: string): AnalysisResult 
     suggestedSpecializations.push('Neurology', 'General Practitioner');
     if (severity === 'mild') severity = 'moderate';
     if (recommendationRaw !== 'emergency') recommendationRaw = 'consult_doctor';
-    if (!assessmentText) assessmentText = 'Neurological symptoms detected. Please consult a doctor to evaluate the cause of your symptoms.';
+    if (!assessmentText)
+      assessmentText =
+        'Neurological symptoms detected. Please consult a doctor to evaluate the cause of your symptoms.';
   }
-
   if (hasGastrointestinal) {
     possibleConditions.push({
       name: 'Gastrointestinal condition',
-      probability: 0.60,
+      probability: 0.6,
       description: 'Symptoms may indicate a gastrointestinal disorder.',
     });
     suggestedSpecializations.push('Gastroenterology', 'General Practitioner');
-    if (!assessmentText) assessmentText = 'Gastrointestinal symptoms detected. If symptoms persist, please consult a doctor.';
+    if (!assessmentText)
+      assessmentText = 'Gastrointestinal symptoms detected. If symptoms persist, please consult a doctor.';
   }
-
   if (hasMusculoskeletal) {
     possibleConditions.push({
       name: 'Musculoskeletal condition',
@@ -88,30 +103,30 @@ function analyzeSymptoms(symptoms: string[], bodyArea?: string): AnalysisResult 
       description: 'Symptoms may indicate a musculoskeletal disorder.',
     });
     suggestedSpecializations.push('Orthopedics', 'General Practitioner');
-    if (!assessmentText) assessmentText = 'Musculoskeletal symptoms detected. Rest and over-the-counter pain relief may help, but consult a doctor if symptoms worsen.';
+    if (!assessmentText)
+      assessmentText =
+        'Musculoskeletal symptoms detected. Rest and over-the-counter pain relief may help, but consult a doctor if symptoms worsen.';
   }
-
-  // Default fallback
   if (possibleConditions.length === 0) {
     possibleConditions.push({
       name: 'General consultation recommended',
-      probability: 0.50,
+      probability: 0.5,
       description: 'Your symptoms did not match a specific pattern. A general consultation is recommended.',
     });
     suggestedSpecializations.push('General Practitioner');
     severity = 'mild';
     recommendationRaw = 'consult_doctor';
-    assessmentText = 'Your symptoms do not match a specific pattern in our system. A general consultation with a doctor is recommended.';
+    assessmentText =
+      'Your symptoms do not match a specific pattern in our system. A general consultation with a doctor is recommended.';
   }
-
-  const recommendation = recommendationRaw as 'self_care' | 'consult_doctor' | 'emergency';
 
   return {
     possibleConditions,
-    recommendation,
-    selfCareAdvice: 'Stay hydrated, rest adequately, and monitor your symptoms. Always seek professional medical advice.',
+    recommendation: recommendationRaw as 'self_care' | 'consult_doctor' | 'emergency',
+    selfCareAdvice:
+      'Stay hydrated, rest adequately, and monitor your symptoms. Always seek professional medical advice.',
     suggestedSpecializations: [...new Set(suggestedSpecializations)],
-    disclaimer: 'This symptom analysis is for informational purposes only and is NOT a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider.',
+    disclaimer: SYMPTOM_DISCLAIMER[language],
     severity,
     assessmentText,
   };
@@ -121,18 +136,73 @@ function analyzeSymptoms(symptoms: string[], bodyArea?: string): AnalysisResult 
 export const checkSymptoms = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const patientId = (req as any).user.id;
-    const { symptoms, bodyArea, language } = req.body;
+    const { symptoms, bodyArea, language, additionalNotes } = req.body as {
+      symptoms?: unknown;
+      bodyArea?: string;
+      language?: string;
+      additionalNotes?: string;
+    };
 
-    if (!symptoms || !Array.isArray(symptoms) || symptoms.length === 0) {
+    if (!Array.isArray(symptoms) || symptoms.length === 0) {
+      throw new AppError('At least one symptom is required', 400);
+    }
+    const symptomStrings = (symptoms as unknown[])
+      .map((s) => (typeof s === 'string' ? s.trim() : ''))
+      .filter((s) => s.length > 0);
+    if (symptomStrings.length === 0) {
       throw new AppError('At least one symptom is required', 400);
     }
 
-    const analysis = analyzeSymptoms(symptoms as string[], bodyArea);
+    const lang: Lang = language && ['en', 'si', 'ta'].includes(language) ? (language as Lang) : 'en';
+    const notes = typeof additionalNotes === 'string' ? additionalNotes.trim() : '';
 
-    // Map the flat string[] symptoms from the request into the ISymptom[] shape the model expects
-    const symptomDocs = (symptoms as string[]).map((s) => ({
+    // Pull lightweight patient context so the AI can tune triage by age/sex/PMH.
+    // Demographics live on User; medical lists live on Patient.
+    let age: number | undefined;
+    let gender: string | undefined;
+    let existingConditions: string[] = [];
+    const currentMedications: string[] = [];
+    try {
+      const [user, patient] = await Promise.all([
+        User.findById(patientId).lean(),
+        Patient.findOne({ userId: patientId }).lean(),
+      ]);
+      if (user?.dateOfBirth) {
+        const dob = new Date(user.dateOfBirth as unknown as string);
+        if (!isNaN(dob.getTime())) {
+          const ageMs = Date.now() - dob.getTime();
+          age = Math.floor(ageMs / (365.25 * 24 * 60 * 60 * 1000));
+        }
+      }
+      if (user?.gender) gender = String(user.gender);
+      if (patient?.chronicConditions && Array.isArray(patient.chronicConditions)) {
+        existingConditions = patient.chronicConditions.map((c) => String(c)).filter(Boolean);
+      }
+    } catch {
+      // Patient context is optional — never block analysis on it.
+    }
+
+    const aiInput: SymptomAnalysisInput = {
+      symptoms: symptomStrings,
+      additionalNotes: notes,
+      bodyArea,
+      language: lang,
+      age,
+      gender,
+      existingConditions,
+      currentMedications,
+    };
+
+    let analysis = await analyzeWithOpenAI(aiInput);
+    let source: 'openai' | 'rule_based' = 'openai';
+    if (!analysis) {
+      analysis = ruleBasedAnalysis(symptomStrings, notes, lang);
+      source = 'rule_based';
+    }
+
+    const symptomDocs = symptomStrings.map((s) => ({
       name: s,
-      severity: analysis.severity,
+      severity: analysis!.severity,
       bodyPart: bodyArea,
     }));
 
@@ -140,8 +210,10 @@ export const checkSymptoms = async (req: Request, res: Response, next: NextFunct
       patientId,
       symptoms: symptomDocs,
       additionalInfo: {
-        existingConditions: [],
-        currentMedications: [],
+        age,
+        gender,
+        existingConditions,
+        currentMedications,
       },
       aiResponse: {
         possibleConditions: analysis.possibleConditions,
@@ -150,7 +222,7 @@ export const checkSymptoms = async (req: Request, res: Response, next: NextFunct
         suggestedSpecializations: analysis.suggestedSpecializations,
         disclaimer: analysis.disclaimer,
       },
-      language: language && ['en', 'si', 'ta'].includes(language) ? language : 'en',
+      language: lang,
     });
 
     res.status(201).json({
@@ -164,6 +236,7 @@ export const checkSymptoms = async (req: Request, res: Response, next: NextFunct
         suggestedSpecializations: analysis.suggestedSpecializations,
         selfCareAdvice: analysis.selfCareAdvice,
         disclaimer: analysis.disclaimer,
+        source,
       },
     });
   } catch (error) {

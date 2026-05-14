@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
     View, Text, SafeAreaView, StyleSheet, ScrollView,
-    TouchableOpacity, ActivityIndicator, Alert,
+    TouchableOpacity, ActivityIndicator, Alert, TextInput,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -41,6 +41,7 @@ const SymptomCheckerScreen: React.FC = () => {
     const [selectedLang, setSelectedLang] = useState('en');
     const [selectedBodyArea, setSelectedBodyArea] = useState<string>('');
     const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+    const [additionalNotes, setAdditionalNotes] = useState('');
     const [analyzing, setAnalyzing] = useState(false);
     const [recentChecks, setRecentChecks] = useState<any[]>([]);
 
@@ -62,16 +63,23 @@ const SymptomCheckerScreen: React.FC = () => {
     };
 
     const handleAnalyze = async () => {
-        if (selectedSymptoms.length === 0) {
+        const trimmedNotes = additionalNotes.trim();
+        if (selectedSymptoms.length === 0 && trimmedNotes.length === 0) {
             Alert.alert(t('patient.selectSymptoms'), t('patient.selectAtLeastOneSymptom'));
             return;
         }
+        // If only free-text was provided, synthesize a single symptom row from
+        // it so the server's "at least one symptom" guard still passes.
+        const symptomsToSend = selectedSymptoms.length > 0
+            ? selectedSymptoms
+            : [trimmedNotes.split(/[\.\n,;]/)[0].slice(0, 80) || 'Free text symptom'];
         setAnalyzing(true);
         try {
             const res = await client.post('/symptoms/check', {
-                symptoms: selectedSymptoms,
+                symptoms: symptomsToSend,
                 bodyArea: selectedBodyArea || 'general',
                 language: selectedLang,
+                additionalNotes: trimmedNotes || undefined,
             });
             const result = res.data?.data;
             navigation.navigate('SymptomResultScreen', {
@@ -89,6 +97,7 @@ const SymptomCheckerScreen: React.FC = () => {
             // Reset selections after navigation
             setSelectedSymptoms([]);
             setSelectedBodyArea('');
+            setAdditionalNotes('');
         } catch (err: any) {
             Alert.alert(t('common.error'), err?.response?.data?.message || t('patient.failedAnalyzeSymptoms'));
         } finally {
@@ -170,7 +179,24 @@ const SymptomCheckerScreen: React.FC = () => {
                     </View>
                 </View>
 
-                {selectedSymptoms.length > 0 && (
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>{t('patient.describeMore')}</Text>
+                    <Text style={styles.sectionSubtitle}>{t('patient.describeMoreHint')}</Text>
+                    <TextInput
+                        style={styles.notesInput}
+                        value={additionalNotes}
+                        onChangeText={setAdditionalNotes}
+                        placeholder={t('patient.symptomNotesPlaceholder')}
+                        placeholderTextColor={colors.textDisabled}
+                        multiline
+                        numberOfLines={4}
+                        maxLength={500}
+                        textAlignVertical="top"
+                    />
+                    <Text style={styles.notesCounter}>{additionalNotes.length}/500</Text>
+                </View>
+
+                {(selectedSymptoms.length > 0 || additionalNotes.trim().length > 0) && (
                     <TouchableOpacity
                         style={[styles.continueBtn, analyzing && { opacity: 0.7 }]}
                         activeOpacity={0.8}
@@ -181,7 +207,10 @@ const SymptomCheckerScreen: React.FC = () => {
                             <ActivityIndicator color="#fff" size="small" />
                         ) : (
                             <>
-                                <Text style={styles.continueText}>{t('patient.analyzeSymptoms')} ({selectedSymptoms.length})</Text>
+                                <Text style={styles.continueText}>
+                                    {t('patient.analyzeSymptoms')}
+                                    {selectedSymptoms.length > 0 ? ` (${selectedSymptoms.length})` : ''}
+                                </Text>
                                 <MaterialCommunityIcons name="arrow-right" size={20} color="#fff" />
                             </>
                         )}
@@ -266,6 +295,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     historyMeta: { ...typography.caption, color: colors.textSecondary, marginTop: 2 },
     emptyChecks: { alignItems: 'center', paddingVertical: spacing.xl },
     emptyText: { ...typography.caption, color: colors.textDisabled, marginTop: spacing.sm },
+    notesInput: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: borderRadius.md, padding: spacing.md, minHeight: 100, color: colors.textPrimary, ...typography.body },
+    notesCounter: { ...typography.caption, color: colors.textDisabled, alignSelf: 'flex-end', marginTop: spacing.xs },
 });
 
 export default SymptomCheckerScreen;
