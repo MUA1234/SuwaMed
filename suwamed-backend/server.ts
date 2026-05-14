@@ -13,6 +13,8 @@ import errorHandler from './src/middleware/error.middleware';
 import logger from './src/utils/logger';
 import { startReminderJobs } from './src/services/reminder.service';
 import { initSocket } from './src/socket';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './src/config/swagger';
 
 const app = express();
 const server = http.createServer(app);
@@ -66,6 +68,11 @@ app.use((req, _res, next) => {
   logger.info(`${req.method} ${req.originalUrl}`);
   next();
 });
+
+// Interactive API explorer at /api/docs. The spec is mounted before the
+// generic /api router so rate limits don't apply to the docs UI.
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+app.get('/api/openapi.json', (_req, res) => res.json(swaggerSpec));
 
 // Rate-limit every /api request. Auth endpoints additionally apply the stricter authLimiter.
 app.use('/api', apiLimiter, routes);
