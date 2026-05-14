@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     Alert,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -101,16 +102,20 @@ const ProfileScreen: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                {/* Profile Header — only place a hero gradient appears on this screen */}
+                {/* Profile Header — uploaded photo if present, gradient + initials otherwise */}
                 <View style={styles.profileHeader}>
-                    <LinearGradient
-                        colors={gradients.hero}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.avatarLarge}
-                    >
-                        <Text style={styles.avatarText}>{initials}</Text>
-                    </LinearGradient>
+                    {user?.avatar ? (
+                        <Image source={{ uri: user.avatar }} style={styles.avatarLarge} />
+                    ) : (
+                        <LinearGradient
+                            colors={gradients.hero}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.avatarLarge}
+                        >
+                            <Text style={styles.avatarText}>{initials}</Text>
+                        </LinearGradient>
+                    )}
                     <Text style={styles.name}>{user?.firstName} {user?.lastName}</Text>
                     <Text style={styles.email}>{user?.email || user?.phone}</Text>
                 </View>

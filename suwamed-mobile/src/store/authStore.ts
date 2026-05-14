@@ -91,8 +91,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
     });
   },
 
-  updateUser: (data) =>
-    set((state) => ({
-      user: state.user ? { ...state.user, ...data } : null,
-    })),
+  updateUser: (data) => {
+    set((state) => {
+      const nextUser = state.user ? { ...state.user, ...data } : null;
+      // Persist back to AsyncStorage so changes survive app restart. The write
+      // is fire-and-forget — Zustand state is the source of truth in-session;
+      // AsyncStorage just rehydrates it on next launch.
+      if (nextUser) {
+        AsyncStorage.setItem('user', JSON.stringify(nextUser)).catch(() => undefined);
+      }
+      return { user: nextUser };
+    });
+  },
 }));

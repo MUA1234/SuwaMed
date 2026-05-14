@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     View, Text, SafeAreaView, StyleSheet, ScrollView,
-    TouchableOpacity,
+    TouchableOpacity, Image,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -50,9 +50,13 @@ const AdminProfileScreen: React.FC = () => {
                 {/* Avatar Section */}
                 <View style={styles.avatarSection}>
                     <View style={styles.avatarOuter}>
-                        <View style={styles.avatar}>
-                            <Text style={styles.avatarText}>{initials}</Text>
-                        </View>
+                        {user?.avatar ? (
+                            <Image source={{ uri: user.avatar }} style={styles.avatar} />
+                        ) : (
+                            <View style={styles.avatar}>
+                                <Text style={styles.avatarText}>{initials}</Text>
+                            </View>
+                        )}
                         <View style={styles.verifiedBadge}>
                             <MaterialCommunityIcons name="shield-check" size={16} color="#fff" />
                         </View>

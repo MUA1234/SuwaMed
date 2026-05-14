@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     View, Text, SafeAreaView, StyleSheet, ScrollView,
-    TouchableOpacity, Alert, Linking,
+    TouchableOpacity, Alert, Linking, Image,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -91,9 +91,13 @@ const MoreScreen: React.FC = () => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
                 {/* Profile summary */}
                 <View style={styles.profileCard}>
-                    <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>{initials}</Text>
-                    </View>
+                    {user?.avatar ? (
+                        <Image source={{ uri: user.avatar }} style={styles.avatar} />
+                    ) : (
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>{initials}</Text>
+                        </View>
+                    )}
                     <View style={styles.profileInfo}>
                         <Text style={styles.profileName}>
                             {user ? `${user.firstName} ${user.lastName}` : 'Admin'}

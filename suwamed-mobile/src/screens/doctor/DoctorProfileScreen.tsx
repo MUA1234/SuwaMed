@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     Alert,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -121,16 +122,20 @@ const DoctorProfileScreen: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                {/* Profile Header */}
+                {/* Profile Header — uploaded photo if present, gradient + initials otherwise */}
                 <View style={styles.profileHeader}>
-                    <LinearGradient
-                        colors={gradients.hero}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.avatarLarge}
-                    >
-                        <Text style={styles.avatarInitials}>{initials}</Text>
-                    </LinearGradient>
+                    {user?.avatar ? (
+                        <Image source={{ uri: user.avatar }} style={styles.avatarLarge} />
+                    ) : (
+                        <LinearGradient
+                            colors={gradients.hero}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.avatarLarge}
+                        >
+                            <Text style={styles.avatarInitials}>{initials}</Text>
+                        </LinearGradient>
+                    )}
                     <Text style={styles.name}>Dr. {user?.firstName} {user?.lastName}</Text>
                     <Text style={styles.specialization}>{profile?.specialization?.join(', ') || 'Doctor'}</Text>
                     {profile?.hospital && <Text style={styles.hospital}>{profile.hospital}</Text>}
