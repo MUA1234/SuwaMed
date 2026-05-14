@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,10 @@ import { useTranslation } from 'react-i18next';
 const STORAGE_KEY = 'suwamed_medication_reminders';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+// expo-notifications weekday values: 1 = Sunday … 7 = Saturday.
+const DAY_TO_WEEKDAY: Record<string, number> = {
+    Sun: 1, Mon: 2, Tue: 3, Wed: 4, Thu: 5, Fri: 6, Sat: 7,
+};
 
 interface Reminder {
     id: string;
@@ -29,6 +34,53 @@ interface Reminder {
     days: string[];
     notes: string;
     enabled: boolean;
+    notificationIds?: string[];
+}
+
+async function scheduleReminderNotifications(reminder: Reminder): Promise<string[]> {
+    // Parse HH:MM. Any malformed value silently drops scheduling — the in-app
+    // list still renders, the user just doesn't get a push.
+    const [hh, mm] = reminder.time.split(':').map((p) => parseInt(p, 10));
+    if (!isFinite(hh) || !isFinite(mm)) return [];
+    const settings = await Notifications.getPermissionsAsync();
+    if (!settings.granted) {
+        const req = await Notifications.requestPermissionsAsync();
+        if (!req.granted) return [];
+    }
+    const ids: string[] = [];
+    for (const day of reminder.days) {
+        const weekday = DAY_TO_WEEKDAY[day];
+        if (!weekday) continue;
+        try {
+            const id = await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `Time for ${reminder.medicationName}`,
+                    body: reminder.notes || 'Don’t forget to take your medication.',
+                    sound: 'default',
+                    data: { kind: 'medication_reminder', reminderId: reminder.id },
+                },
+                // Calendar trigger with `weekday` repeats weekly at the same time.
+                trigger: {
+                    weekday,
+                    hour: hh,
+                    minute: mm,
+                    repeats: true,
+                    channelId: 'default',
+                } as Notifications.CalendarTriggerInput,
+            });
+            ids.push(id);
+        } catch {
+            /* per-day failure is non-fatal; continue scheduling the rest */
+        }
+    }
+    return ids;
+}
+
+async function cancelReminderNotifications(reminder: Reminder): Promise<void> {
+    if (!reminder.notificationIds || reminder.notificationIds.length === 0) return;
+    for (const id of reminder.notificationIds) {
+        try { await Notifications.cancelScheduledNotificationAsync(id); } catch { /* ignore */ }
+    }
 }
 
 const MedicationRemindersScreen: React.FC = () => {
@@ -96,6 +148,7 @@ const MedicationRemindersScreen: React.FC = () => {
             notes: notes.trim(),
             enabled: true,
         };
+        newReminder.notificationIds = await scheduleReminderNotifications(newReminder);
 
         const updated = [...reminders, newReminder];
         await saveReminders(updated);
@@ -110,6 +163,8 @@ const MedicationRemindersScreen: React.FC = () => {
                 text: 'Delete',
                 style: 'destructive',
                 onPress: async () => {
+                    const target = reminders.find((r) => r.id === id);
+                    if (target) await cancelReminderNotifications(target);
                     const updated = reminders.filter((r) => r.id !== id);
                     await saveReminders(updated);
                 },
@@ -118,8 +173,18 @@ const MedicationRemindersScreen: React.FC = () => {
     };
 
     const handleToggle = async (id: string) => {
+        const target = reminders.find((r) => r.id === id);
+        if (!target) return;
+        const willEnable = !target.enabled;
+        let nextIds = target.notificationIds ?? [];
+        if (willEnable) {
+            nextIds = await scheduleReminderNotifications(target);
+        } else {
+            await cancelReminderNotifications(target);
+            nextIds = [];
+        }
         const updated = reminders.map((r) =>
-            r.id === id ? { ...r, enabled: !r.enabled } : r
+            r.id === id ? { ...r, enabled: willEnable, notificationIds: nextIds } : r
         );
         await saveReminders(updated);
     };

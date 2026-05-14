@@ -5,6 +5,7 @@ import Patient from '../models/Patient.model';
 import Appointment from '../models/Appointment.model';
 import { AppError } from '../utils/errorResponse';
 import { sendToUser } from '../services/notification.service';
+import { logEvent } from '../services/systemLog.service';
 
 // GET /api/admin/dashboard — overall platform stats
 export const getDashboard = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -163,6 +164,13 @@ export const verifyDoctor = async (req: Request, res: Response, next: NextFuncti
       });
     }
 
+    await logEvent('admin.doctor.verify', {
+      actorId: adminId,
+      targetId: String(doctor._id),
+      req,
+      details: { userId: String(doctor.userId) },
+    });
+
     res.status(200).json({
       success: true,
       message: 'Doctor verified successfully',
@@ -200,6 +208,13 @@ export const rejectDoctor = async (req: Request, res: Response, next: NextFuncti
       });
     }
 
+    await logEvent('admin.doctor.reject', {
+      actorId: adminId,
+      targetId: String(doctor._id),
+      req,
+      details: { reason: reason ?? null },
+    });
+
     res.status(200).json({
       success: true,
       message: 'Doctor application rejected',
@@ -224,6 +239,13 @@ export const updateUserStatus = async (req: Request, res: Response, next: NextFu
       { isActive: status === 'active' },
       { new: true }
     ).select('-password -refreshToken -otp -otpExpiresAt');
+
+    await logEvent('admin.user.status', {
+      actorId: (req as any).user.id,
+      targetId: String(req.params.id),
+      req,
+      details: { status },
+    });
 
     if (!user) throw new AppError('User not found', 404);
 
@@ -314,6 +336,30 @@ export const getRevenue = async (req: Request, res: Response, next: NextFunction
         totalRevenue,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/admin/system-logs — paginated audit trail.
+export const getSystemLogs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { default: SystemLog } = await import('../models/SystemLog.model');
+    const { page = '1', limit = '50', action } = req.query as Record<string, string>;
+    const p = Math.max(parseInt(page, 10) || 1, 1);
+    const l = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+    const filter: Record<string, unknown> = {};
+    if (action) filter.action = action;
+    const [logs, total] = await Promise.all([
+      SystemLog.find(filter)
+        .populate('userId', 'firstName lastName email role')
+        .sort({ createdAt: -1 })
+        .skip((p - 1) * l)
+        .limit(l)
+        .lean(),
+      SystemLog.countDocuments(filter),
+    ]);
+    res.status(200).json({ success: true, data: logs, total, page: p, limit: l });
   } catch (error) {
     next(error);
   }

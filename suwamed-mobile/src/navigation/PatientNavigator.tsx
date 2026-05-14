@@ -50,6 +50,7 @@ import SettingsScreen from '../screens/shared/SettingsScreen';
 import PrivacyPolicyScreen from '../screens/shared/PrivacyPolicyScreen';
 import TermsScreen from '../screens/shared/TermsScreen';
 import HelpSupportScreen from '../screens/patient/HelpSupportScreen';
+import SubmitTicketScreen from '../screens/patient/SubmitTicketScreen';
 
 const HomeStack = createNativeStackNavigator();
 const AppointmentsStack = createNativeStackNavigator();
@@ -110,6 +111,7 @@ const ProfileStackNavigator = () => (
     <ProfileStack.Screen name="NotificationsScreen" component={NotificationsScreen} />
     <ProfileStack.Screen name="SettingsScreen" component={SettingsScreen} />
     <ProfileStack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
+    <ProfileStack.Screen name="SubmitTicketScreen" component={SubmitTicketScreen} />
     <ProfileStack.Screen name="Privacy" component={PrivacyPolicyScreen} />
     <ProfileStack.Screen name="Terms" component={TermsScreen} />
   </ProfileStack.Navigator>

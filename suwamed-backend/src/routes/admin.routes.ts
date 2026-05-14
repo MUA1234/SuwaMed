@@ -10,6 +10,7 @@ import {
   rejectDoctor,
   getRevenue,
   getAppointmentAnalytics,
+  getSystemLogs,
 } from '../controllers/admin.controller';
 
 const router = Router();
@@ -24,5 +25,6 @@ router.put('/doctors/:id/verify', verifyDoctor);
 router.put('/doctors/:id/reject', rejectDoctor);
 router.get('/revenue', getRevenue);
 router.get('/appointment-analytics', getAppointmentAnalytics);
+router.get('/system-logs', getSystemLogs);
 
 export default router;

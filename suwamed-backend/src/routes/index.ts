@@ -15,6 +15,7 @@ import adminRoutes from './admin.routes';
 import consultationRoutes from './consultation.routes';
 import chatRoutes from './chat.routes';
 import slmcRoutes from './slmc.routes';
+import supportTicketRoutes from './supportTicket.routes';
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use('/admin', adminRoutes);
 router.use('/consultations', consultationRoutes);
 router.use('/chat', chatRoutes);
 router.use('/slmc', slmcRoutes);
+router.use('/support-tickets', supportTicketRoutes);
 
 export default router;

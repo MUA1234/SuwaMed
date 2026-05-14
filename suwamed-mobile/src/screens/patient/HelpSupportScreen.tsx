@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Alert,
+    Linking,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -40,7 +41,7 @@ const FAQS = [
 const HelpSupportScreen: React.FC = () => {
   const { theme: colors } = useTheme();
   const styles = makeStyles(colors);
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const { t } = useTranslation();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -65,6 +66,14 @@ const HelpSupportScreen: React.FC = () => {
                     </View>
                     <Text style={styles.heroTitle}>{t('patient.howCanWeHelp')}</Text>
                     <Text style={styles.heroSubtitle}>{t('patient.findAnswers')}</Text>
+                    <TouchableOpacity
+                        style={styles.heroCta}
+                        onPress={() => navigation.navigate('SubmitTicketScreen')}
+                        activeOpacity={0.85}
+                    >
+                        <MaterialCommunityIcons name="ticket-confirmation-outline" size={18} color="#fff" />
+                        <Text style={styles.heroCtaText}>Submit a support ticket</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <Text style={styles.sectionLabel}>{t('patient.faq')}</Text>
@@ -99,7 +108,7 @@ const HelpSupportScreen: React.FC = () => {
                 <View style={styles.contactCard}>
                     <TouchableOpacity
                         style={styles.contactRow}
-                        onPress={() => Alert.alert('Support', 'Opening email client...')}
+                        onPress={() => Linking.openURL('mailto:support@suwamed.lk?subject=SuwaMed%20support%20request')}
                         activeOpacity={0.7}
                     >
                         <View style={[styles.contactIconWrap, { backgroundColor: colors.primaryLight }]}>
@@ -111,7 +120,7 @@ const HelpSupportScreen: React.FC = () => {
                         </View>
                         <TouchableOpacity
                             style={styles.contactAction}
-                            onPress={() => Alert.alert('Opening email...', 'support@suwamed.lk')}
+                            onPress={() => Linking.openURL('mailto:support@suwamed.lk?subject=SuwaMed%20support%20request')}
                             activeOpacity={0.7}
                         >
                             <Text style={styles.contactActionText}>{t('auth.email')}</Text>
@@ -122,7 +131,7 @@ const HelpSupportScreen: React.FC = () => {
 
                     <TouchableOpacity
                         style={styles.contactRow}
-                        onPress={() => Alert.alert('Support', 'Calling +94 11 234 5678...')}
+                        onPress={() => Linking.openURL('tel:+94112345678')}
                         activeOpacity={0.7}
                     >
                         <View style={[styles.contactIconWrap, { backgroundColor: colors.successLight }]}>
@@ -174,6 +183,8 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     heroIcon: { width: 72, height: 72, borderRadius: 24, backgroundColor: colors.primaryLight, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md },
     heroTitle: { ...typography.h2, color: colors.textPrimary, textAlign: 'center' },
     heroSubtitle: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginTop: spacing.sm, lineHeight: 22 },
+    heroCta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, backgroundColor: colors.primary, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, borderRadius: borderRadius.xl, marginTop: spacing.lg },
+    heroCtaText: { color: '#fff', fontWeight: '600', fontSize: 14 },
     sectionLabel: {
         ...typography.bodySmall,
         fontWeight: '700',
