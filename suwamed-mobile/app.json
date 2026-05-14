@@ -26,7 +26,6 @@
     "android": {
       "package": "com.mua1234.suwamedmobile",
       "versionCode": 1,
-      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
