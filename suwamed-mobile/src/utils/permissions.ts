@@ -1,5 +1,42 @@
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { Platform, Alert, Linking } from 'react-native';
+
+// ---------------------------------------------------------------------------
+// Image post-processing
+//
+// Phone cameras shoot 3000×4000 photos at 8–12 MB each. Uploading those to
+// our Cloudinary bucket from a Sri Lankan 3G connection takes 20–40 seconds
+// and frequently times out. We resize to a 1600px long edge and re-encode at
+// 0.75 JPEG quality before returning — final size is typically 200–500 KB
+// for typical photos, which uploads in 1–3 s on the same connection.
+//
+// The resize keeps EXIF-driven orientation correct by re-encoding (manipulator
+// strips EXIF). Quality is fine for medical record scans and ID documents at
+// 1600px wide.
+// ---------------------------------------------------------------------------
+
+const MAX_DIMENSION = 1600;
+const JPEG_QUALITY = 0.75;
+
+async function compressImage(uri: string): Promise<string> {
+  try {
+    const result = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: MAX_DIMENSION } }],
+      {
+        compress: JPEG_QUALITY,
+        format: ImageManipulator.SaveFormat.JPEG,
+      },
+    );
+    return result.uri;
+  } catch {
+    // If manipulation fails for any reason (corrupt image, missing native
+    // module in Expo Go) fall back to the original — better to upload the
+    // big file than to fail the whole flow.
+    return uri;
+  }
+}
 
 export const requestCameraPermission = async (): Promise<boolean> => {
   const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -45,7 +82,7 @@ export const pickImage = async (): Promise<string | null> => {
   });
 
   if (!result.canceled && result.assets[0]) {
-    return result.assets[0].uri;
+    return await compressImage(result.assets[0].uri);
   }
   return null;
 };
@@ -61,12 +98,14 @@ export const takePhoto = async (): Promise<string | null> => {
   });
 
   if (!result.canceled && result.assets[0]) {
-    return result.assets[0].uri;
+    return await compressImage(result.assets[0].uri);
   }
   return null;
 };
 
 export const pickDocument = async (): Promise<string | null> => {
+  // Document/health-record picker — no aspect crop, just compress so a 12 MB
+  // phone photo of a prescription doesn't strangle the upload.
   const hasPermission = await requestMediaLibraryPermission();
   if (!hasPermission) return null;
 
@@ -76,7 +115,7 @@ export const pickDocument = async (): Promise<string | null> => {
   });
 
   if (!result.canceled && result.assets[0]) {
-    return result.assets[0].uri;
+    return await compressImage(result.assets[0].uri);
   }
   return null;
 };
