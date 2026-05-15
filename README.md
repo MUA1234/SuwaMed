@@ -16,7 +16,7 @@ You have two options for marking the project, in descending order of convenience
 
 A pre-built Android APK is provided in the OneDrive submission folder:
 
-> **APK location:** `<ONEDRIVE_SHARE_LINK_PASTE_HERE>` *(see submission email for the share link)*
+> **APK location:** https://liveplymouthac-my.sharepoint.com/:f:/g/personal/10953507_students_plymouth_ac_uk/IgDuKzUmXsqBSpJHtDbNVp2qAd_NYveH_TTeLbFzoy-46kk?e=gzwx5H
 
 1. Download `SuwaMed.apk` to an Android phone (Android 8.0+).
 2. Open the file. Android will warn about installing from an unknown source — accept.
