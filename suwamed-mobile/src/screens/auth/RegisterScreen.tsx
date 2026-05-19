@@ -270,16 +270,28 @@ const RegisterScreen: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const { confirmPassword, consultationFee, experience, ...registerData } = data;
+      const {
+        confirmPassword,
+        consultationFee,
+        experience,
+        slmcRegistrationNo,
+        specialization,
+        bio,
+        ...commonData
+      } = data;
       // Ensure phone has +94 prefix
-      const phone = registerData.phone.startsWith('+94') ? registerData.phone : `+94${registerData.phone.replace(/^0/, '')}`;
+      const phone = commonData.phone.startsWith('+94') ? commonData.phone : `+94${commonData.phone.replace(/^0/, '')}`;
       const payload: any = {
-        ...registerData,
+        ...commonData,
         phone,
         role,
       };
-      // Add doctor-specific numeric fields
+      // Doctor-only fields — only include when registering as a doctor, and only
+      // when populated. Joi's string().optional() still rejects empty strings.
       if (role === 'doctor') {
+        if (slmcRegistrationNo) payload.slmcRegistrationNo = slmcRegistrationNo;
+        if (specialization?.length) payload.specialization = specialization;
+        if (bio) payload.bio = bio;
         payload.consultationFee = consultationFee ? parseFloat(consultationFee) : 0;
         if (experience) payload.experience = parseInt(experience, 10);
       }
