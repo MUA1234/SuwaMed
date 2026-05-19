@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -6,9 +6,13 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    ActivityIndicator,
+    Alert,
+    Linking,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import * as WebBrowser from 'expo-web-browser';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +44,29 @@ const PrescriptionDetailScreen: React.FC = () => {
         ? new Date(prescription.followUpDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         : null;
 
+    const [openingPdf, setOpeningPdf] = useState(false);
+    const pdfUrl: string | undefined = prescription.pdfUrl;
+
+    const handleOpenPdf = async () => {
+        if (!pdfUrl) return;
+        setOpeningPdf(true);
+        try {
+            await WebBrowser.openBrowserAsync(pdfUrl, {
+                toolbarColor: colors.primary,
+                controlsColor: '#ffffff',
+                showTitle: true,
+            });
+        } catch {
+            try {
+                await Linking.openURL(pdfUrl);
+            } catch {
+                Alert.alert('Unable to open document', 'Please check your internet connection and try again.');
+            }
+        } finally {
+            setOpeningPdf(false);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -51,6 +78,28 @@ const PrescriptionDetailScreen: React.FC = () => {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+                {pdfUrl ? (
+                    <TouchableOpacity
+                        style={styles.pdfBtn}
+                        onPress={handleOpenPdf}
+                        activeOpacity={0.85}
+                        disabled={openingPdf}
+                    >
+                        <View style={styles.pdfIconWrap}>
+                            <MaterialCommunityIcons name="file-pdf-box" size={28} color="#fff" />
+                        </View>
+                        <View style={styles.pdfTextWrap}>
+                            <Text style={styles.pdfTitle}>View prescription document</Text>
+                            <Text style={styles.pdfSubtitle}>Signed PDF · opens in browser</Text>
+                        </View>
+                        {openingPdf ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <MaterialCommunityIcons name="open-in-new" size={22} color="#fff" />
+                        )}
+                    </TouchableOpacity>
+                ) : null}
+
                 <View style={styles.doctorCard}>
                     <View style={styles.doctorAvatar}>
                         <Text style={styles.doctorInitials}>{initials}</Text>
@@ -182,6 +231,27 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
     headerTitle: { flex: 1, ...typography.h3, color: colors.textPrimary, textAlign: 'center' },
     scrollContent: { paddingHorizontal: spacing.xl, paddingBottom: 40 },
+    pdfBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.primary,
+        borderRadius: borderRadius.lg,
+        padding: spacing.md,
+        marginTop: spacing.sm,
+        marginBottom: spacing.md,
+        gap: spacing.md,
+    },
+    pdfIconWrap: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(255,255,255,0.18)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    pdfTextWrap: { flex: 1 },
+    pdfTitle: { color: '#fff', fontSize: 15, fontWeight: '700' },
+    pdfSubtitle: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
     doctorCard: {
         flexDirection: 'row',
         alignItems: 'center',

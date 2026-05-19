@@ -96,7 +96,8 @@
           "photosPermission": "SuwaMed needs photo library access so you can attach existing medical records and choose a profile picture.",
           "cameraPermission": "SuwaMed needs camera access so you can capture medical records and take a profile picture."
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "runtimeVersion": {
       "policy": "appVersion"

@@ -20,6 +20,7 @@ export interface IPrescription extends Document {
   followUpInstructions?: string;
   digitalSignature?: string;
   issuedAt?: Date;
+  pdfUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +61,7 @@ const prescriptionSchema = new Schema<IPrescription>(
     followUpInstructions: { type: String },
     digitalSignature: { type: String },
     issuedAt: { type: Date },
+    pdfUrl: { type: String },
   },
   { timestamps: true }
 );
