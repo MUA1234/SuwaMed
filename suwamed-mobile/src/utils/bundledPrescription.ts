@@ -3,43 +3,54 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Alert, Platform } from 'react-native';
 
-// Single source of truth for the bundled-PDF showcase. When a HealthRecord's
-// title matches one of these keys we use the local APK asset instead of the
-// remote URL — handy for demos where the Cloudinary delivery is rate-limited
-// or the network is unreliable.
-const BUNDLED_PRESCRIPTIONS: Record<string, { module: number; filename: string }> = {
-  'Prescription - Dr. Chamara': {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    module: require('../../assets/prescriptions/dr-chamara-essential-hypertension.pdf'),
-    filename: 'SuwaMed-Prescription-Dr-Chamara.pdf',
-  },
+// The one PDF we ship in the APK for the prescription showcase. Any health
+// record whose category is "prescription" routes here regardless of title —
+// the Cloudinary URL on a prescription record is unreliable on the demo
+// account (PDF/ZIP delivery is restricted on the free tier), so bundling
+// guarantees the Download button always works.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const BUNDLED_PDF_MODULE = require('../../assets/prescriptions/dr-chamara-essential-hypertension.pdf');
+
+type BundleEntry = { module: number; filename: string };
+
+const resolveBundle = (record?: { title?: string; category?: string }): BundleEntry | null => {
+  if (!record) return null;
+  // Match either by category or by a "Prescription -" title prefix so that
+  // both seed-shaped HealthRecords and ad-hoc ones download the bundled PDF.
+  const isPrescription =
+    record.category === 'prescription' ||
+    (typeof record.title === 'string' && /^prescription\b/i.test(record.title.trim()));
+  if (!isPrescription) return null;
+  const safeTitle = (record.title || 'Prescription').replace(/[^a-zA-Z0-9._-]+/g, '-');
+  return { module: BUNDLED_PDF_MODULE, filename: `SuwaMed-${safeTitle}.pdf` };
 };
 
-export const hasBundledPrescription = (recordTitle?: string): boolean => {
-  if (!recordTitle) return false;
-  return !!BUNDLED_PRESCRIPTIONS[recordTitle];
+export const hasBundledPrescription = (recordOrTitle?: any): boolean => {
+  if (!recordOrTitle) return false;
+  // Backwards-compat: callers used to pass just a title string.
+  if (typeof recordOrTitle === 'string') {
+    return !!resolveBundle({ title: recordOrTitle });
+  }
+  return !!resolveBundle(recordOrTitle);
 };
 
-// Resolves the bundled asset to a file:// URI that downstream APIs can consume.
-// Copies into the document directory under a friendly filename so the share
-// sheet shows "SuwaMed-Prescription-Dr-Chamara.pdf" rather than a hashed name.
-const materializeAsset = async (entry: { module: number; filename: string }): Promise<string> => {
+const materializeAsset = async (entry: BundleEntry): Promise<string> => {
   const asset = Asset.fromModule(entry.module);
   if (!asset.localUri) {
     await asset.downloadAsync();
   }
   const sourceUri = asset.localUri || asset.uri;
   const destUri = `${FileSystem.documentDirectory}${entry.filename}`;
-  // copyAsync overwrites the destination; safe to call every time
   await FileSystem.copyAsync({ from: sourceUri, to: destUri });
   return destUri;
 };
 
-// Download (or share-save) the bundled PDF associated with the given record.
-// On Android this brings up the system share sheet with "Save to Files",
-// "Drive", and any installed PDF viewers. On iOS it opens the share sheet.
-export const downloadBundledPrescription = async (recordTitle: string): Promise<void> => {
-  const entry = BUNDLED_PRESCRIPTIONS[recordTitle];
+// Hand the bundled PDF to the OS share/save sheet. On iOS this is the
+// standard "Save to Files" experience; on Android it's the share sheet with
+// the same option plus Drive, WhatsApp, etc.
+export const downloadBundledPrescription = async (recordOrTitle: any): Promise<void> => {
+  const record = typeof recordOrTitle === 'string' ? { title: recordOrTitle } : recordOrTitle;
+  const entry = resolveBundle(record);
   if (!entry) {
     Alert.alert('Document unavailable', 'No bundled document found for this record.');
     return;
@@ -57,9 +68,7 @@ export const downloadBundledPrescription = async (recordTitle: string): Promise<
     }
     Alert.alert(
       'Downloaded',
-      Platform.OS === 'android'
-        ? `Saved to ${fileUri}`
-        : 'Document saved.'
+      Platform.OS === 'android' ? `Saved to ${fileUri}` : 'Document saved.'
     );
   } catch (err: any) {
     Alert.alert('Could not save document', err?.message || 'Unexpected error.');

@@ -125,12 +125,12 @@ const HealthRecordsScreen: React.FC = () => {
                 renderItem={({ item }) => {
                     const catIcon = categoryIcons[item.category] || categoryIcons.other;
                     const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-                    const isBundled = hasBundledPrescription(item.title);
+                    const isBundled = hasBundledPrescription(item);
                     const hasFile = isBundled || !!item.fileUrl;
                     const openFile = async (e: any) => {
                         e?.stopPropagation?.();
                         if (isBundled) {
-                            await downloadBundledPrescription(item.title);
+                            await downloadBundledPrescription(item);
                             return;
                         }
                         if (!item.fileUrl) return;

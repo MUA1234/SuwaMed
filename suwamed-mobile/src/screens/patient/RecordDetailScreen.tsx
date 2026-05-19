@@ -51,13 +51,13 @@ const RecordDetailScreen: React.FC = () => {
         : 'Unknown date';
 
     const [opening, setOpening] = useState(false);
-    const isBundled = hasBundledPrescription(record.title);
+    const isBundled = hasBundledPrescription(record);
 
     const handleOpenFile = async () => {
         setOpening(true);
         try {
             if (isBundled) {
-                await downloadBundledPrescription(record.title);
+                await downloadBundledPrescription(record);
                 return;
             }
             if (!record.fileUrl) return;
