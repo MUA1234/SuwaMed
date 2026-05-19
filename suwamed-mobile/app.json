@@ -97,7 +97,8 @@
           "cameraPermission": "SuwaMed needs camera access so you can capture medical records and take a profile picture."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-asset"
     ],
     "runtimeVersion": {
       "policy": "appVersion"

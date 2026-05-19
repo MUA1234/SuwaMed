@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as WebBrowser from 'expo-web-browser';
 import * as healthRecordApi from '../../api/healthRecord.api';
+import { hasBundledPrescription, downloadBundledPrescription } from '../../utils/bundledPrescription';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import IconWrap from '../../components/common/IconWrap';
@@ -124,9 +125,14 @@ const HealthRecordsScreen: React.FC = () => {
                 renderItem={({ item }) => {
                     const catIcon = categoryIcons[item.category] || categoryIcons.other;
                     const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-                    const hasFile = !!item.fileUrl;
+                    const isBundled = hasBundledPrescription(item.title);
+                    const hasFile = isBundled || !!item.fileUrl;
                     const openFile = async (e: any) => {
                         e?.stopPropagation?.();
+                        if (isBundled) {
+                            await downloadBundledPrescription(item.title);
+                            return;
+                        }
                         if (!item.fileUrl) return;
                         try {
                             await WebBrowser.openBrowserAsync(item.fileUrl, {
@@ -153,7 +159,7 @@ const HealthRecordsScreen: React.FC = () => {
                                 activeOpacity={0.6}
                             >
                                 <MaterialCommunityIcons
-                                    name={hasFile ? 'file-pdf-box' : 'download'}
+                                    name={isBundled ? 'download' : hasFile ? 'file-pdf-box' : 'download'}
                                     size={22}
                                     color={hasFile ? colors.primary : colors.textDisabled}
                                 />

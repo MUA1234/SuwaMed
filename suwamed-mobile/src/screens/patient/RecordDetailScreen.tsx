@@ -17,6 +17,7 @@ import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import IconWrap from '../../components/common/IconWrap';
+import { hasBundledPrescription, downloadBundledPrescription } from '../../utils/bundledPrescription';
 
 // Category → glyph only. The hero icon and category badge always render in primary teal —
 // distinction comes from icon shape and the label, not from a rainbow tile.
@@ -50,21 +51,28 @@ const RecordDetailScreen: React.FC = () => {
         : 'Unknown date';
 
     const [opening, setOpening] = useState(false);
+    const isBundled = hasBundledPrescription(record.title);
 
     const handleOpenFile = async () => {
-        if (!record.fileUrl) return;
         setOpening(true);
         try {
-            await WebBrowser.openBrowserAsync(record.fileUrl, {
-                toolbarColor: colors.primary,
-                controlsColor: '#ffffff',
-                showTitle: true,
-            });
-        } catch {
+            if (isBundled) {
+                await downloadBundledPrescription(record.title);
+                return;
+            }
+            if (!record.fileUrl) return;
             try {
-                await Linking.openURL(record.fileUrl);
+                await WebBrowser.openBrowserAsync(record.fileUrl, {
+                    toolbarColor: colors.primary,
+                    controlsColor: '#ffffff',
+                    showTitle: true,
+                });
             } catch {
-                Alert.alert('Unable to open document', 'Please check your internet connection and try again.');
+                try {
+                    await Linking.openURL(record.fileUrl);
+                } catch {
+                    Alert.alert('Unable to open document', 'Please check your internet connection and try again.');
+                }
             }
         } finally {
             setOpening(false);
@@ -82,7 +90,7 @@ const RecordDetailScreen: React.FC = () => {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                {record.fileUrl ? (
+                {(record.fileUrl || isBundled) ? (
                     <TouchableOpacity
                         style={styles.fileBtn}
                         onPress={handleOpenFile}
@@ -90,16 +98,16 @@ const RecordDetailScreen: React.FC = () => {
                         disabled={opening}
                     >
                         <View style={styles.fileIconWrap}>
-                            <MaterialCommunityIcons name="file-pdf-box" size={28} color="#fff" />
+                            <MaterialCommunityIcons name={isBundled ? 'download' : 'file-pdf-box'} size={28} color="#fff" />
                         </View>
                         <View style={styles.fileTextWrap}>
-                            <Text style={styles.fileBtnTitle}>View document</Text>
-                            <Text style={styles.fileBtnSubtitle}>Opens in browser</Text>
+                            <Text style={styles.fileBtnTitle}>{isBundled ? 'Download prescription' : 'View document'}</Text>
+                            <Text style={styles.fileBtnSubtitle}>{isBundled ? 'PDF · save to device' : 'Opens in browser'}</Text>
                         </View>
                         {opening ? (
                             <ActivityIndicator color="#fff" />
                         ) : (
-                            <MaterialCommunityIcons name="open-in-new" size={22} color="#fff" />
+                            <MaterialCommunityIcons name={isBundled ? 'arrow-down-bold' : 'open-in-new'} size={22} color="#fff" />
                         )}
                     </TouchableOpacity>
                 ) : null}
