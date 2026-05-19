@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -6,9 +6,13 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    ActivityIndicator,
+    Alert,
+    Linking,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import * as WebBrowser from 'expo-web-browser';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -45,6 +49,28 @@ const RecordDetailScreen: React.FC = () => {
         ? new Date(record.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
         : 'Unknown date';
 
+    const [opening, setOpening] = useState(false);
+
+    const handleOpenFile = async () => {
+        if (!record.fileUrl) return;
+        setOpening(true);
+        try {
+            await WebBrowser.openBrowserAsync(record.fileUrl, {
+                toolbarColor: colors.primary,
+                controlsColor: '#ffffff',
+                showTitle: true,
+            });
+        } catch {
+            try {
+                await Linking.openURL(record.fileUrl);
+            } catch {
+                Alert.alert('Unable to open document', 'Please check your internet connection and try again.');
+            }
+        } finally {
+            setOpening(false);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -56,6 +82,28 @@ const RecordDetailScreen: React.FC = () => {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+                {record.fileUrl ? (
+                    <TouchableOpacity
+                        style={styles.fileBtn}
+                        onPress={handleOpenFile}
+                        activeOpacity={0.85}
+                        disabled={opening}
+                    >
+                        <View style={styles.fileIconWrap}>
+                            <MaterialCommunityIcons name="file-pdf-box" size={28} color="#fff" />
+                        </View>
+                        <View style={styles.fileTextWrap}>
+                            <Text style={styles.fileBtnTitle}>View document</Text>
+                            <Text style={styles.fileBtnSubtitle}>Opens in browser</Text>
+                        </View>
+                        {opening ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <MaterialCommunityIcons name="open-in-new" size={22} color="#fff" />
+                        )}
+                    </TouchableOpacity>
+                ) : null}
+
                 <View style={styles.heroBanner}>
                     <IconWrap name={cat.icon} variant="tinted" size="xl" />
                     <Text style={styles.heroTitle}>{record.title}</Text>
@@ -188,6 +236,24 @@ const makeStyles = (colors: ThemeColors) => StyleSheet.create({
     backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
     headerTitle: { flex: 1, ...typography.h3, color: colors.textPrimary, textAlign: 'center', marginHorizontal: spacing.sm },
     scrollContent: { paddingHorizontal: spacing.xl, paddingBottom: 40 },
+    fileBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: colors.primary,
+        borderRadius: borderRadius.lg,
+        padding: spacing.md,
+        marginTop: spacing.sm,
+        marginBottom: spacing.md,
+        gap: spacing.md,
+    },
+    fileIconWrap: {
+        width: 44, height: 44, borderRadius: 22,
+        backgroundColor: 'rgba(255,255,255,0.18)',
+        alignItems: 'center', justifyContent: 'center',
+    },
+    fileTextWrap: { flex: 1 },
+    fileBtnTitle: { color: '#fff', fontSize: 15, fontWeight: '700' },
+    fileBtnSubtitle: { color: 'rgba(255,255,255,0.85)', fontSize: 12, marginTop: 2 },
     heroBanner: { alignItems: 'center', paddingVertical: spacing.xxl, gap: spacing.md },
     heroTitle: { ...typography.h2, color: colors.textPrimary, textAlign: 'center' },
     categoryBadge: { paddingHorizontal: spacing.lg, paddingVertical: spacing.xs, borderRadius: borderRadius.xl, backgroundColor: colors.primaryLight },

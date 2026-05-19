@@ -9,9 +9,12 @@ import {
     FlatList,
     ActivityIndicator,
     RefreshControl,
+    Linking,
+    Alert,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import * as WebBrowser from 'expo-web-browser';
 import * as healthRecordApi from '../../api/healthRecord.api';
 import { spacing, borderRadius, typography } from '../../config/theme';
 import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
@@ -121,6 +124,21 @@ const HealthRecordsScreen: React.FC = () => {
                 renderItem={({ item }) => {
                     const catIcon = categoryIcons[item.category] || categoryIcons.other;
                     const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+                    const hasFile = !!item.fileUrl;
+                    const openFile = async (e: any) => {
+                        e?.stopPropagation?.();
+                        if (!item.fileUrl) return;
+                        try {
+                            await WebBrowser.openBrowserAsync(item.fileUrl, {
+                                toolbarColor: colors.primary,
+                                controlsColor: '#ffffff',
+                                showTitle: true,
+                            });
+                        } catch {
+                            try { await Linking.openURL(item.fileUrl); }
+                            catch { Alert.alert('Unable to open document', 'Please check your internet connection.'); }
+                        }
+                    };
                     return (
                         <TouchableOpacity style={styles.recordCard} activeOpacity={0.7} onPress={() => navigation.navigate('RecordDetailScreen', { record: item })}>
                             <IconWrap name={catIcon} variant="tinted" size="md" />
@@ -128,7 +146,18 @@ const HealthRecordsScreen: React.FC = () => {
                                 <Text style={styles.recordTitle}>{item.title}</Text>
                                 <Text style={styles.recordDate}>{dateStr}{item.doctor ? ` · ${item.doctor}` : ''}</Text>
                             </View>
-                            <MaterialCommunityIcons name="download" size={20} color={colors.textDisabled} />
+                            <TouchableOpacity
+                                onPress={openFile}
+                                disabled={!hasFile}
+                                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                                activeOpacity={0.6}
+                            >
+                                <MaterialCommunityIcons
+                                    name={hasFile ? 'file-pdf-box' : 'download'}
+                                    size={22}
+                                    color={hasFile ? colors.primary : colors.textDisabled}
+                                />
+                            </TouchableOpacity>
                         </TouchableOpacity>
                     );
                 }}
